@@ -88,9 +88,9 @@
                             </td>
                             <td>
                                 @if ($category->feature_status)
-                                        Aktif
+                                        <a href="javascript:void(0)" data-id="{{ $category->id }}" class="btn btn-success btn-sm btnChangeFeatureStatus">Aktif</a>
                                     @else    
-                                        Pasif
+                                        <a href="javascript:void(0)" data-id="{{ $category->id }}" class="btn btn-danger btn-sm btnChangeFeatureStatus">Pasif</a>
                                 @endif
                             </td>
 
@@ -109,7 +109,7 @@
             </x-bootstrap.table>
         </x-slot:body>
     </x-bootstrap.card>
-    <form action="" method="POST" id="statusChange">
+    <form action="" method="POST" id="statusChangeForm">
         @csrf
         <input type="hidden" name="id" id="inputStatus" value="">
     </form>
@@ -122,10 +122,66 @@
                 $('.btnChangeStatus').click(function () { 
                     let categoryID=$(this).data('id');
                     $('#inputStatus').val(categoryID);    
-
-                    $('#statusChange').attr("action", "{{ route('categories.changeStatus')}}");
-
+                    
+                    Swal.fire({
+                        title: 'Status degistirmek istediginize emin misiniz?',
+                        showDenyButton: true,
+                        showCancelButton: true,
+                        confirmButtonText: 'Evet',
+                        denyButtonText: `Hayir`,
+                        cancelButtonText: "Iptal"
+                    }).then((result) => {
+                    /* Read more about isConfirmed, isDenied below */
+                    if (result.isConfirmed) {
+                        $('#statusChangeForm').attr("action", "{{ route('categories.changeStatus')}}");
+                        $('#statusChangeForm').submit();
+                    } 
+                    else if (result.isDenied) 
+                    {
+                        Swal.fire({
+                            title: "Bilgi",
+                            text: "Herhangi bir islem yapilmadi!",
+                            confirmButtonText: "Tamam",
+                            icon: "info"
+                        });           
+                    }
+                    })
                 });
             });
+
+        $(document).ready(function () 
+            {
+                $('.btnChangeFeatureStatus').click(function () { 
+                    let categoryID=$(this).data('id');
+                    $('#inputStatus').val(categoryID);    
+                    
+                    Swal.fire({
+                        title: 'Feature Status degistirmek istediginize emin misiniz?',
+                        showDenyButton: true,
+                        showCancelButton: true,
+                        confirmButtonText: 'Evet',
+                        denyButtonText: `Hayir`,
+                        cancelButtonText: "Iptal"
+                    }).then((result) => {
+                    /* Read more about isConfirmed, isDenied below */
+                    if (result.isConfirmed) {
+                        $('#statusChangeForm').attr("action", "{{ route('categories.changeFeatureStatus')}}");
+                        $('#statusChangeForm').submit();
+                    } 
+                    else if (result.isDenied) 
+                    {
+                        Swal.fire({
+                            title: "Bilgi",
+                            text: "Herhangi bir islem yapilmadi!",
+                            confirmButtonText: "Tamam",
+                            icon: "info"
+                        });           
+                    }
+                    })
+                });
+            });
+
+            
+    
     </script>
 @endsection
