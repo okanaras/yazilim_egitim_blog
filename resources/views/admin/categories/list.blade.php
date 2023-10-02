@@ -81,9 +81,9 @@
                             <td>{{ $category->slug }}</td>
                             <td>
                                 @if ($category->status)
-                                        Aktif
+                                        <a href="javascript:void(0)" data-id="{{ $category->id }}" class="btn btn-success btn-sm btnChangeStatus">Aktif</a>
                                     @else    
-                                        Pasif
+                                        <a href="javascript:void(0)" data-id="{{ $category->id }}" class="btn btn-danger btn-sm btnChangeStatus">Pasif</a>
                                 @endif
                             </td>
                             <td>
@@ -109,7 +109,23 @@
             </x-bootstrap.table>
         </x-slot:body>
     </x-bootstrap.card>
+    <form action="" method="POST" id="statusChange">
+        @csrf
+        <input type="hidden" name="id" id="inputStatus" value="">
+    </form>
 @endsection
 
 @section('js') 
+    <script>
+        $(document).ready(function () 
+            {
+                $('.btnChangeStatus').click(function () { 
+                    let categoryID=$(this).data('id');
+                    $('#inputStatus').val(categoryID);    
+
+                    $('#statusChange').attr("action", "{{ route('categories.changeStatus')}}");
+
+                });
+            });
+    </script>
 @endsection
