@@ -75,23 +75,36 @@
                 </x-slot:columns>
 
                 <x-slot:rows>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>Jacob</td>
-                        <td>Thornton</td>
-                        <td>@fat</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td colspan="2">Larry the Bird</td>
-                        <td>@twitter</td>
-                    </tr>
+                    @foreach ($list as $category)
+                        <tr>
+                            <th scope="row">{{ $category->name }}</th>
+                            <td>{{ $category->slug }}</td>
+                            <td>
+                                @if ($category->status)
+                                        Aktif
+                                    @else    
+                                        Pasif
+                                @endif
+                            </td>
+                            <td>
+                                @if ($category->feature_status)
+                                        Aktif
+                                    @else    
+                                        Pasif
+                                @endif
+                            </td>
+
+                            <td>{{ substr($category->description , 0, 20) }}</td>
+                            <td>{{ $category->order }}</td>
+                            <td>{{ $category->parent_category?->name  }}</td>
+                            <td>{{ $category->user->name  }}</td>
+                            <td class="d-flex">
+                                <a href="" class="btn btn-warning btn-sm"><i class="material-icons ms-0">edit</i></a>    
+                                <a href="" class="btn btn-danger btn-sm"><i class="material-icons ms-0">delete</i></a>    
+                            </td>
+
+                        </tr>
+                    @endforeach
                 </x-slot:rows>
             </x-bootstrap.table>
         </x-slot:body>
