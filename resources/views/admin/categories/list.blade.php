@@ -99,8 +99,8 @@
                             <td>{{ $category->parent_category?->name  }}</td>
                             <td>{{ $category->user->name  }}</td>
                             <td class="d-flex">
-                                <a href="" class="btn btn-warning btn-sm"><i class="material-icons ms-0">edit</i></a>    
-                                <a href="" class="btn btn-danger btn-sm"><i class="material-icons ms-0">delete</i></a>    
+                                <a href="{{ route('categories.edit', ['id' => $category->id]) }}" class="btn btn-warning btn-sm"><i class="material-icons ms-0">edit</i></a>    
+                                <a href="javascript:void(0)" class="btn btn-danger btn-sm btnDelete" data-id="{{ $category->id }}" data-name="{{ $category->name }}"><i class="material-icons ms-0">delete</i></a>    
                             </td>
 
                         </tr>
@@ -156,7 +156,7 @@
                     $('#inputStatus').val(categoryID);    
                     
                     Swal.fire({
-                        title: 'Feature Status degistirmek istediginize emin misiniz?',
+                        title: categoryName + '"i" silmek istediginize emin misiniz?',
                         showDenyButton: true,
                         showCancelButton: true,
                         confirmButtonText: 'Evet',
@@ -180,6 +180,39 @@
                     })
                 });
             });
+        $(document).ready(function () 
+            {
+                $('.btnDelete').click(function () { 
+                    let categoryID = $(this).data('id');
+                    let categoryName = $(this).data('name');
+                    $('#inputStatus').val(categoryID);    
+                    
+                    Swal.fire({
+                        title: 'Feature Status degistirmek istediginize emin misiniz?',
+                        showDenyButton: true,
+                        showCancelButton: true,
+                        confirmButtonText: 'Evet',
+                        denyButtonText: `Hayir`,
+                        cancelButtonText: "Iptal"
+                    }).then((result) => {
+                    /* Read more about isConfirmed, isDenied below */
+                    if (result.isConfirmed) {
+                        $('#statusChangeForm').attr("action", "{{ route('categories.delete')}}");
+                        $('#statusChangeForm').submit();
+                    } 
+                    else if (result.isDenied) 
+                    {
+                        Swal.fire({
+                            title: "Bilgi",
+                            text: "Herhangi bir islem yapilmadi!",
+                            confirmButtonText: "Tamam",
+                            icon: "info"
+                        });           
+                    }
+                    })
+                });
+            });
+       
 
             
     
