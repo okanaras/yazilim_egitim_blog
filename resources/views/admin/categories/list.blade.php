@@ -6,11 +6,11 @@
 
 @section('css') 
     <style>
-        .table-hover > tbody > tr:hover{
+        .table-hover > tbody > tr:hover {
         --bs-table-hover-bg:transparent;
         background: #363638;
         color: #fff;
-    }
+        }
     </style>
 @endsection
 
@@ -59,7 +59,7 @@
 
                             <td>{{ substr($category->description , 0, 20) }}</td>
                             <td>{{ $category->order }}</td>
-                            <td>{{ $category->parent_category?->name  }}</td>
+                            <td>{{ $category->parentCategory?->name  }}</td>
                             <td>{{ $category->user->name  }}</td>
                             <td class="d-flex">
                                 <a href="{{ route('categories.edit', ['id' => $category->id]) }}" class="btn btn-warning btn-sm"><i class="material-icons ms-0">edit</i></a>    
