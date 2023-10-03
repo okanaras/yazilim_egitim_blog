@@ -15,43 +15,6 @@
 @endsection
 
 @section('content')
-    {{-- <div class="card">
-        <div class="card-header">
-            <h2>Kategori Listesi</h2>
-        </div>
-        <div class="card-body">
-            <table class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">First</th>
-                        <th scope="col">Last</th>
-                        <th scope="col">Handle</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>Jacob</td>
-                        <td>Thornton</td>
-                        <td>@fat</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td colspan="2">Larry the Bird</td>
-                        <td>@twitter</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div> --}}
-
     <x-bootstrap.card>
         <x-slot:header>
             <h2>Kategori Listesi</h2>
@@ -107,6 +70,10 @@
                     @endforeach
                 </x-slot:rows>
             </x-bootstrap.table>
+            <div class="d-flex justify-content-center">
+                {{-- {{ $list->onEachside(1)->links("vendor.pagination.bootstrap-5") }} --}}
+                {{ $list->onEachside(1)->links() }}
+            </div>
         </x-slot:body>
     </x-bootstrap.card>
     <form action="" method="POST" id="statusChangeForm">
