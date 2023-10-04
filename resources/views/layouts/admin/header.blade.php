@@ -77,6 +77,19 @@
                             </ul>
                     </li>
                     <li class="nav-item hidden-on-mobile">
+                        <a class="nav-link language-dropdown-toggle" href="#" id="languageDropDown" data-bs-toggle="dropdown">
+                            {{ auth()->user()->name }}
+                        </a>
+                            <ul class="dropdown-menu dropdown-menu-end language-dropdown" aria-labelledby="languageDropDown">
+                                <li>
+                                    <a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Cikis Yap</a>
+                                    <form action="{{ route("logout") }}" method="POST" id="logout-form">
+                                        @csrf
+                                    </form>
+                                </li>
+                            </ul>
+                    </li>
+                    <li class="nav-item hidden-on-mobile">
                         <a class="nav-link nav-notifications-toggle" id="notificationsDropDown" href="#" data-bs-toggle="dropdown">4</a>
                         <div class="dropdown-menu dropdown-menu-end notifications-dropdown" aria-labelledby="notificationsDropDown">
                             <h6 class="dropdown-header">Notifications</h6>
