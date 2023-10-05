@@ -68,27 +68,28 @@
                             <a class="nav-link toggle-search" href="#"><i class="material-icons">search</i></a>
                     </li>
                     @endif
-                    <li class="nav-item hidden-on-mobile">
-                        <a class="nav-link language-dropdown-toggle" href="#" id="languageDropDown" data-bs-toggle="dropdown"><img src="{{ asset('assets/admin/images/flags/us.png') }}" alt=""></a>
-                            <ul class="dropdown-menu dropdown-menu-end language-dropdown" aria-labelledby="languageDropDown">
-                                <li><a class="dropdown-item" href="#"><img src="{{ asset('assets/admin/images/flags/germany.png') }}" alt="">German</a></li>
-                                <li><a class="dropdown-item" href="#"><img src="{{ asset('assets/admin/images/flags/italy.png') }}" alt="">Italian</a></li>
-                                <li><a class="dropdown-item" href="#"><img src="{{ asset('assets/admin/images/flags/china.png') }}" alt="">Chinese</a></li>
-                            </ul>
-                    </li>
+
+                    {{-- burasi kapanmasi gerek --}}
+                        <a id="languageDropDown"></a>
+                    {{-- burasi kapanmasi gerek --}}
+                    
                     <li class="nav-item hidden-on-mobile">
                         <a class="nav-link language-dropdown-toggle" href="#" id="languageDropDown" data-bs-toggle="dropdown">
                             {{ auth()->user()->name }}
                         </a>
                             <ul class="dropdown-menu dropdown-menu-end language-dropdown" aria-labelledby="languageDropDown">
                                 <li>
-                                    <a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Cikis Yap</a>
+                                    <a class="dropdown-item" href="#" 
+                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                        Cikis Yap
+                                    </a>
                                     <form action="{{ route("logout") }}" method="POST" id="logout-form">
                                         @csrf
                                     </form>
                                 </li>
                             </ul>
                     </li>
+                    
                     <li class="nav-item hidden-on-mobile">
                         <a class="nav-link nav-notifications-toggle" id="notificationsDropDown" href="#" data-bs-toggle="dropdown">4</a>
                         <div class="dropdown-menu dropdown-menu-end notifications-dropdown" aria-labelledby="notificationsDropDown">

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CategoryStoreRequest;
 use App\Models\Category;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -13,14 +14,33 @@ use RealRashid\SweetAlert\Facades\Alert;
 
 class CategoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $parentCategories = Category::all();
+        $users = User::all();
+
+        $parentID = $request->parent_id;
+        $userID = $request->user_id;
         $categories = Category::with(["parentCategory:id,name", 'user'])
+            ->where(function ($query) use ($parentID, $userID) {
+                if (!is_null($parentID)) {
+                    $query->where('parent_id', $parentID);
+                }
+                if (!is_null($userID)) {
+                    $query->where('user_id', $userID);
+                }
+            })
+            ->name($request->name)
+            ->description($request->description)
+            ->slug($request->slug)
+            ->order($request->order)
+            ->status($request->status)
+            ->featureStatus($request->feature_status)
             ->orderBy("order", "DESC")
             ->paginate(5); //5er 5er veri gosterilmesi
         // ->get();
 
-        return view("admin.categories.list", ['list' => $categories]);
+        return view("admin.categories.list", ['list' => $categories, 'parentCategories' => $parentCategories, 'users' => $users]);
     }
 
     public function create()
