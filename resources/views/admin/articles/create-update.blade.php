@@ -26,7 +26,7 @@
                     @endif
                     <form
                         action="{{ isset($article) ? route('article.edit', ['id' => $article->id]) : route('article.create') }}"
-                        method="POST">
+                        method="POST" enctype="multipart/form-data">
                         @csrf
                         <label for="title" class="form-label">Makale Basligi</label>
                         <input type="text" id="title"
@@ -61,7 +61,7 @@
                         </select>
 
                         <label for="summernote" class="form-label">Icerik</label>
-                        <div id="summernote" class="m-b-sm">Hello Summernote</div>
+                        <textarea id="summernote" name="body" class="m-b-sm">Hello Summernote</textarea>
 
                         <label for="seo_keywords" class="form-label m-t-sm">Seo Anahtar Kelimeler</label>
                         <textarea class="form-control form-control-solid-bordered  m-b-sm" name="seo_keywords" id="seo_keywords" cols="30"
@@ -79,6 +79,11 @@
                         <input type="file" name="image" id="image" class="form-control"
                             accept="image/png,image/jpeg,image/jpg">
                         <div class="form-text m-b-sm">Makale gorseli max 2 MB olmalidir.</div>
+
+                        @if (isset($article) && $article->image)
+                            <img src="{{ asset($article->image) }}" alt="" class="img-fluid"
+                                style="max-height: 200px;">
+                        @endif
 
                         <div class="form-check m-t-sm">
                             <input type="checkbox" class="form-check-input" value="1" name="status" id="status"
