@@ -73,7 +73,8 @@
 
                         <label for="publish_date" class="form-label">Yayimlanma Tarihi</label>
                         <input class="form-control flatpickr2 m-b-sm" id="publish_date" type="text" name="publish_date"
-                            type="text" placeholder="Ne zaman yayinlansin?">
+                            type="text" placeholder="Ne zaman yayinlansin?"
+                            value="{{ isset($article) ? $article->publish_date : '' }}">
 
                         <label for="image" class="form-label">Makale Gorseli</label>
                         <input type="file" name="image" id="image" class="form-control"
