@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ArticleFilterRequest;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\User;
@@ -15,9 +16,27 @@ use Illuminate\Support\Str;
 
 class ArticleController extends Controller
 {
-    public function index()
+    public function index(ArticleFilterRequest $request)
     {
-        return view("admin.articles.list");
+        // dd($request->all());
+
+        $categories = Category::all();
+        $users = User::all();
+        $list = Article::query()
+            ->with(["category", "user"])
+            ->where(function ($query) use ($request) {
+                $query->orWhere("title", "LIKE", "%" . $request->search_text)
+                    ->orWhere("slug", "LIKE", "%" . $request->search_text)
+                    ->orWhere("body", "LIKE", "%" . $request->search_text)
+                    ->orWhere("tags", "LIKE", "%" . $request->search_text);
+            })
+            ->status($request->status)
+            ->category($request->category_id)
+            ->user($request->user_id)
+            ->publishDate($request->publish_date)
+            ->paginate(5);
+
+        return view("admin.articles.list", compact("categories", "users", "list"));
     }
 
     public function create()
