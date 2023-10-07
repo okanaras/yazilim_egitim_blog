@@ -103,7 +103,7 @@
                 <x-slot:rows>
                     @foreach ($list as $category)
                         <tr>
-                            <th scope="row">{{ $category->name }}</th>
+                            <th>{{ $category->name }}</th>
                             <td>{{ $category->slug }}</td>
                             <td>
                                 @if ($category->status)
@@ -168,6 +168,8 @@
 @endsection
 
 @section('js')
+    <script src="{{ asset('assets/admin/plugins/select2/js/select2.full.min.js') }}"></script>
+    <script src="{{ asset('assets/admin/js/pages/select2.js') }}"></script>
     <script>
         $(document).ready(function() {
             $('.btnChangeStatus').click(function() {
@@ -235,14 +237,13 @@
                 $('#inputStatus').val(categoryID);
 
                 Swal.fire({
-                    title: 'Feature Status degistirmek istediginize emin misiniz?',
+                    title: categoryName + ' silmek istediginize emin misiniz?',
                     showDenyButton: true,
                     showCancelButton: true,
                     confirmButtonText: 'Evet',
                     denyButtonText: `Hayir`,
                     cancelButtonText: "Iptal"
                 }).then((result) => {
-                    /* Read more about isConfirmed, isDenied below */
                     if (result.isConfirmed) {
                         $('#statusChangeForm').attr("action", "{{ route('categories.delete') }}");
                         $('#statusChangeForm').submit();
@@ -258,9 +259,6 @@
             });
         });
 
-
         $('#selectParentCategory').select2();
     </script>
-    <script src="{{ asset('assets/admin/plugins/select2/js/select2.full.min.js') }}"></script>
-    <script src="{{ asset('assets/admin/js/pages/select2.js') }}"></script>
 @endsection

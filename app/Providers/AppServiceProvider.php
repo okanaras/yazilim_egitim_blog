@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -26,5 +27,6 @@ class AppServiceProvider extends ServiceProvider
     {
         // Paginator::useBootstrapFive(); bs5 kullanimi
         Paginator::defaultView("vendor.pagination.yazilimegitimPagination"); // default kullanma
+        Carbon::setLocale(config("app.locale"));
     }
 }

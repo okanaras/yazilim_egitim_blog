@@ -32,7 +32,7 @@
                             <option value="{{ null }}">Kategori Secin</option>
                             @foreach ($categories as $parent)
                                 <option value="{{ $parent->id }}"
-                                    {{ request()->get('parent_id') == $parent->id ? 'selected' : '' }}>{{ $parent->name }}
+                                    {{ request()->get('category_id') == $parent->id ? 'selected' : '' }}>{{ $parent->name }}
                                 </option>
                             @endforeach
                         </select>
@@ -123,7 +123,7 @@
 
                 <x-slot:rows>
                     @foreach ($list as $article)
-                        <tr>
+                        <tr id="row-{{ $article->id }}">
                             <td>
                                 @if (!empty($article->image))
                                     <img src="{{ asset($article->image) }}" height="100" class="img-fluid">
@@ -133,11 +133,11 @@
                             <td>{{ $article->slug }}</td>
                             <td>
                                 @if ($article->status)
-                                    <a href="javascript:void(0)" class="btn btn-success btn-sm btnChangeStatus"
-                                        data-id="{{ $article->id }}">Aktif</a>
+                                    <a href="javascript:void(0)" data-id="{{ $article->id }}"
+                                        class="btn btn-success btn-sm btnChangeStatus">Aktif</a>
                                 @else
-                                    <a href="javascript:void(0)" class="btn btn-danger btn-sm btnChangeStatus"
-                                        data-id="{{ $article->id }}">Pasif</a>
+                                    <a href="javascript:void(0)" data-id="{{ $article->id }}"
+                                        class="btn btn-danger btn-sm btnChangeStatus">Pasif</a>
                                 @endif
                             </td>
                             <td>
@@ -148,10 +148,12 @@
                             <td>{{ $article->view_count }}</td>
                             <td>{{ $article->like_count }}</td>
                             <td>{{ $article->category->name }}</td>
+                            <td>{{ Carbon\Carbon::parse($article->publish_date)->translatedFormat('d F Y H:i:s') }}</td>
                             <td>{{ $article->user->name }}</td>
                             <td>
                                 <div class="d-flex">
-                                    <a href="javascript:void(0)" class="btn btn-warning btn-sm">
+                                    <a href="{{ route('article.edit', ['id' => $article->id]) }}"
+                                        class="btn btn-warning btn-sm">
                                         <i class="material-icons ms-0">edit</i>
                                     </a>
                                     <a href="javascript:void(0)" class="btn btn-danger btn-sm btnDelete"
@@ -170,10 +172,6 @@
             </div>
         </x-slot:body>
     </x-bootstrap.card>
-    <form action="" method="POST" id="statusChangeForm">
-        @csrf
-        <input type="hidden" name="id" id="inputStatus" value="">
-    </form>
 @endsection
 
 @section('js')
@@ -186,8 +184,8 @@
     <script>
         $(document).ready(function() {
             $('.btnChangeStatus').click(function() {
-                let categoryID = $(this).data('id');
-                $('#inputStatus').val(categoryID);
+                let articleID = $(this).data('id');
+                let self = $(this);
 
                 Swal.fire({
                     title: 'Status degistirmek istediginize emin misiniz?',
@@ -199,9 +197,35 @@
                 }).then((result) => {
                     /* Read more about isConfirmed, isDenied below */
                     if (result.isConfirmed) {
-                        $('#statusChangeForm').attr("action",
-                            "{{ route('categories.changeStatus') }}");
-                        $('#statusChangeForm').submit();
+                        $.ajax({
+                            method: "POST",
+                            url: "{{ route('article.changeStatus') }}",
+                            data: {
+                                articleID: articleID
+                            },
+                            async: false,
+                            success: function(data) {
+                                if (data.article_status) {
+                                    self.removeClass("btn-danger");
+                                    self.addClass("btn-success");
+                                    self.text("Aktif");
+
+                                } else {
+                                    self.removeClass("btn-success");
+                                    self.addClass("btn-danger");
+                                    self.text("Pasif");
+                                }
+                                Swal.fire({
+                                    title: "Basarili",
+                                    text: "Status Guncellendi!",
+                                    confirmButtonText: "Tamam",
+                                    icon: "success"
+                                });
+                            },
+                            error: function() {
+                                console.log("hata geldi");
+                            }
+                        });
                     } else if (result.isDenied) {
                         Swal.fire({
                             title: "Bilgi",
@@ -214,67 +238,57 @@
             });
         });
 
-        $(document).ready(function() {
-            $('.btnChangeFeatureStatus').click(function() {
-                let categoryID = $(this).data('id');
-                $('#inputStatus').val(categoryID);
+        $('.btnDelete').click(function() {
+            let articleID = $(this).data('id');
+            let categoryName = $(this).data('name');
 
-                Swal.fire({
-                    title: 'Feature Status degistirmek istediginize emin misiniz?',
-                    showDenyButton: true,
-                    showCancelButton: true,
-                    confirmButtonText: 'Evet',
-                    denyButtonText: `Hayir`,
-                    cancelButtonText: "Iptal"
-                }).then((result) => {
-                    /* Read more about isConfirmed, isDenied below */
-                    if (result.isConfirmed) {
-                        $('#statusChangeForm').attr("action",
-                            "{{ route('categories.changeFeatureStatus') }}");
-                        $('#statusChangeForm').submit();
-                    } else if (result.isDenied) {
-                        Swal.fire({
-                            title: "Bilgi",
-                            text: "Herhangi bir islem yapilmadi!",
-                            confirmButtonText: "Tamam",
-                            icon: "info"
-                        });
-                    }
-                })
-            });
-        });
-        $(document).ready(function() {
-            $('.btnDelete').click(function() {
-                let categoryID = $(this).data('id');
-                let categoryName = $(this).data('name');
-                $('#inputStatus').val(categoryID);
+            Swal.fire({
+                title: categoryName + ' i Silmek istediğinize emin misiniz?',
+                showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: 'Evet',
+                denyButtonText: `Hayir`,
+                cancelButtonText: "İptal"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        method: "POST",
+                        url: "{{ route('article.delete') }}",
+                        data: {
+                            "_method": "DELETE",
+                            articleID: articleID
+                        },
+                        async: false,
+                        success: function(data) {
 
-                Swal.fire({
-                    title: 'Feature Status degistirmek istediginize emin misiniz?',
-                    showDenyButton: true,
-                    showCancelButton: true,
-                    confirmButtonText: 'Evet',
-                    denyButtonText: `Hayir`,
-                    cancelButtonText: "Iptal"
-                }).then((result) => {
-                    /* Read more about isConfirmed, isDenied below */
-                    if (result.isConfirmed) {
-                        $('#statusChangeForm').attr("action", "{{ route('categories.delete') }}");
-                        $('#statusChangeForm').submit();
-                    } else if (result.isDenied) {
-                        Swal.fire({
-                            title: "Bilgi",
-                            text: "Herhangi bir islem yapilmadi!",
-                            confirmButtonText: "Tamam",
-                            icon: "info"
-                        });
-                    }
-                })
-            });
+                            $('#row-' + articleID).remove();
+                            Swal.fire({
+                                title: "Basarili",
+                                text: "Makale Silindi",
+                                confirmButtonText: 'Tamam',
+                                icon: "success"
+                            });
+                        },
+                        error: function() {
+                            console.log("hata geldi");
+                        }
+                    })
+
+                } else if (result.isDenied) {
+                    Swal.fire({
+                        title: "Bilgi",
+                        text: "Herhangi bir islem yapilmadi",
+                        confirmButtonText: 'Tamam',
+                        icon: "info"
+                    });
+                }
+            })
+
         });
 
         $('#selectParentCategory').select2();
     </script>
+
     <script>
         $("#publish_date").flatpickr({
             enableTime: true,

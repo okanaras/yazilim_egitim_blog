@@ -7,6 +7,7 @@ use App\Http\Requests\ArticleFilterRequest;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use \Illuminate\Support\Facades\File;
 use \Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -25,7 +26,7 @@ class ArticleController extends Controller
         $list = Article::query()
             ->with(["category", "user"])
             ->where(function ($query) use ($request) {
-                $query->orWhere("title", "LIKE", "%" . $request->search_text)
+                $query->orWhere("title", "LIKE", "%" . $request->search_text . "%")
                     ->orWhere("slug", "LIKE", "%" . $request->search_text)
                     ->orWhere("body", "LIKE", "%" . $request->search_text)
                     ->orWhere("tags", "LIKE", "%" . $request->search_text);
@@ -34,6 +35,20 @@ class ArticleController extends Controller
             ->category($request->category_id)
             ->user($request->user_id)
             ->publishDate($request->publish_date)
+            ->where(function ($query) use ($request) {
+                if ($request->min_view_count) {
+                    $query->where('view_count', ">=", (int) $request->min_view_count);
+                }
+                if ($request->max_view_count) {
+                    $query->where('view_count', "<=", (int) $request->max_view_count);
+                }
+                if ($request->min_like_count) {
+                    $query->where('like_count', ">=", (int) $request->min_like_count);
+                }
+                if ($request->max_like_count) {
+                    $query->where('like_count', "<=", (int) $request->max_like_count);
+                }
+            })
             ->paginate(5);
 
         return view("admin.articles.list", compact("categories", "users", "list"));
@@ -195,5 +210,42 @@ class ArticleController extends Controller
     public function slugCheck(string $text)
     {
         return Article::where("slug", $text)->first();
+    }
+    public function changeStatus(Request $request): JsonResponse
+    {
+        $articleID = $request->articleID;
+        $article = Article::query()
+            ->where("id", $articleID)
+            ->first();
+
+        if ($article) {
+            $article->status = $article->status ? 0 : 1;
+            $article->save();
+            return response()
+                ->json(['status' => "success", "message" => "basarili", "data" => $article, "article_status" => $article->status])
+                ->setStatusCode(200);
+        }
+        return response()
+            ->json(['status' => "error", "message" => "makale bulunamadi"])
+            ->setStatusCode(404);
+    }
+
+    public function delete(Request $request)
+    {
+        $articleID = $request->articleID;
+
+        $article = Article::query()
+            ->where("id", $articleID)
+            ->first();
+
+        if ($article) {
+            $article->delete();
+            return response()
+                ->json(['status' => "success", "message" => "basarili"])
+                ->setStatusCode(200);
+        }
+        return response()
+            ->json(['status' => "error", "message" => "makale bulunamadi"])
+            ->setStatusCode(404);
     }
 }
