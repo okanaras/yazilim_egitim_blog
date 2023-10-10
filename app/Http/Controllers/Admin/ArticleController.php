@@ -19,17 +19,15 @@ class ArticleController extends Controller
 {
     public function index(ArticleFilterRequest $request)
     {
-        // dd($request->all());
-
         $categories = Category::all();
         $users = User::all();
         $list = Article::query()
             ->with(["category", "user"])
             ->where(function ($query) use ($request) {
                 $query->orWhere("title", "LIKE", "%" . $request->search_text . "%")
-                    ->orWhere("slug", "LIKE", "%" . $request->search_text)
-                    ->orWhere("body", "LIKE", "%" . $request->search_text)
-                    ->orWhere("tags", "LIKE", "%" . $request->search_text);
+                    ->orWhere("slug", "LIKE", "%" . $request->search_text . "%")
+                    ->orWhere("body", "LIKE", "%" . $request->search_text . "%")
+                    ->orWhere("tags", "LIKE", "%" . $request->search_text . "%");
             })
             ->status($request->status)
             ->category($request->category_id)
@@ -63,22 +61,24 @@ class ArticleController extends Controller
 
     public function store(Request $request)
     {
-        $imageFile = $request->file("image"); // alacagim dosya inputtaki name
-        $originalName = $imageFile->getClientOriginalName(); // original name
-        $originalExtension = $imageFile->getClientOriginalExtension(); // original extension
-        // $originalExtension = $imageFile->extension();
-        $explodeName = explode(".", $originalName)[0]; // burada 0. indisi gondererek explode ile sadece adini aliyoruz
-        $fileName = Str::slug($explodeName) . "." . $originalExtension; // slug ile bosluklari temizleyip sonuna uzantisini ekliyoruz
+        if (!is_null($request->image)) {
+            $imageFile = $request->file("image"); // alacagim dosya inputtaki name
+            $originalName = $imageFile->getClientOriginalName(); // original name
+            $originalExtension = $imageFile->getClientOriginalExtension(); // original extension
+            // $originalExtension = $imageFile->extension();
+            $explodeName = explode(".", $originalName)[0]; // burada 0. indisi gondererek explode ile sadece adini aliyoruz
+            $fileName = Str::slug($explodeName) . "." . $originalExtension; // slug ile bosluklari temizleyip sonuna uzantisini ekliyoruz
 
-        $folder = "articles";
-        $publicPath = "storage/" . $folder;
+            $folder = "articles";
+            $publicPath = "storage/" . $folder;
 
-        if (file_exists(public_path($publicPath . $fileName))) {
-            return redirect()->back()->withErrors([
-                'image' => "Ayni gorsel daha once yuklenmistir"
-            ]);
+
+            if (file_exists(public_path($publicPath . $fileName))) {
+                return redirect()->back()->withErrors([
+                    'image' => "Ayni gorsel daha once yuklenmistir"
+                ]);
+            }
         }
-
         $data = $request->except("_token"); // requestten gelen token disindaki verileri al
         $slug = $data['slug'] ?? $data['title']; // slug kontrolu
         $slug = Str::slug($slug); // sluglama islemi
@@ -95,7 +95,10 @@ class ArticleController extends Controller
             }
         }
         $data["slug"] = $slug;
-        $data["image"] = $publicPath . "/" . $fileName;
+
+        if (!is_null($request->image)) {
+            $data["image"] = $publicPath . "/" . $fileName;
+        }
         $data["user_id"] = auth()->id();
         /*
         * 4 yontemde kaydeder
@@ -106,7 +109,9 @@ class ArticleController extends Controller
 
         // dd($data);
         Article::create($data);
-        $imageFile->storeAs($folder, $fileName, "public"); // public in altina articles klasorune verdigimiz ad'daki sekilde atar ve local yerine public ozelliklerini kullanir
+        if (!is_null($request->image)) {
+            $imageFile->storeAs($folder, $fileName, "public"); // public in altina articles klasorune verdigimiz ad'daki sekilde atar ve local yerine public ozelliklerini kullanir
+        }
 
         /*
         $imageFile->store("articles", "public");

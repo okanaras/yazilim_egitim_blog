@@ -26,7 +26,7 @@
                     @endif
                     <form
                         action="{{ isset($article) ? route('article.edit', ['id' => $article->id]) : route('article.create') }}"
-                        method="POST" enctype="multipart/form-data">
+                        method="POST" enctype="multipart/form-data" id="articleForm">
                         @csrf
                         <label for="title" class="form-label">Makale Basligi</label>
                         <input type="text" id="title"
@@ -46,8 +46,8 @@
 
                         <label for="tags" class="form-label">Etiketler</label>
                         <input type="text" class="form-control form-control-solid-bordered " placeholder="Etiketler"
-                            name="tags" value="{{ isset($article) ? $article->tags : '' }}">
-                        <div id="tags" class="form-text m-b-sm">Etiketleri virgullerle ayirarak yaziniz.</div>
+                            id="tags" name="tags" value="{{ isset($article) ? $article->tags : '' }}">
+                        <div class="form-text m-b-sm">Etiketleri virgullerle ayirarak yaziniz.</div>
 
                         <label for="category_id" class="form-label">Kategori Secimi</label>
                         <select class="form-select bg-light m-b-sm" id="category_id" name="category_id">
@@ -95,7 +95,7 @@
                         </div>
                         <hr>
                         <div class="col-6 mx-auto mt-5">
-                            <button type="submit"
+                            <button type="button" id="btnSave"
                                 class="btn btn-success btn-rounded w-100">{{ isset($article) ? 'Guncelle' : 'Kaydet' }}
                             </button>
                         </div>
@@ -116,6 +116,41 @@
         $("#publish_date").flatpickr({
             enableTime: true,
             dateFormat: "Y-m-d H:i",
+        });
+    </script>
+
+    <script>
+        let title = $('#title');
+        let tags = $('#tags');
+        let category_id = $('#category_id');
+
+        $(document).ready(function() {
+            $('#btnSave').click(function() {
+                if (title.val().trim() === "" || title.val().trim() == null) {
+                    Swal.fire({
+                        title: "Uyari",
+                        text: "Makale basligi bos birakilamaz!",
+                        confirmButtonText: "Tamam",
+                        icon: "info"
+                    });
+                } else if (tags.val().trim().length < 3) {
+                    Swal.fire({
+                        title: "Uyari",
+                        text: "Etiket alani bos birakilamaz!",
+                        confirmButtonText: "Tamam",
+                        icon: "info"
+                    });
+                } else if (category_id.val().trim() === "" || category_id.val().trim() == null) {
+                    Swal.fire({
+                        title: "Uyari",
+                        text: "Kategori bos birakilamaz!",
+                        confirmButtonText: "Tamam",
+                        icon: "info"
+                    });
+                } else {
+                    $('#articleForm').submit();
+                }
+            });
         });
     </script>
 @endsection

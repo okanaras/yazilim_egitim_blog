@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CategoryStoreRequest;
 use App\Models\Category;
 use App\Models\User;
+use \Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\File as FacadesFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -63,8 +65,30 @@ class CategoryController extends Controller
             $category->feature_status = $request->feature_status ? 1 : 0;
             $category->seo_keywords = $request->seo_keywords;
             $category->seo_description = $request->seo_description;
-            $category->user_id = random_int(1, 10);
+            $category->user_id = auth()->id();
             $category->order = $request->order;
+
+            if (!is_null($request->image)) {
+                $imageFile = $request->file("image"); // alacagim dosya inputtaki name
+                $originalName = $imageFile->getClientOriginalName(); // original name
+                $originalExtension = $imageFile->getClientOriginalExtension(); // original extension
+                // $originalExtension = $imageFile->extension();
+                $explodeName = explode(".", $originalName)[0]; // burada 0. indisi gondererek explode ile sadece adini aliyoruz
+                $fileName = Str::slug($explodeName) . "." . $originalExtension; // slug ile bosluklari temizleyip sonuna uzantisini ekliyoruz
+
+                $folder = "categories";
+                $publicPath = "storage/" . $folder;
+
+                if (file_exists(public_path($publicPath . $fileName))) {
+                    return redirect()->back()->withErrors([
+                        'image' => "Ayni gorsel daha once yuklenmistir"
+                    ]);
+                }
+
+                $category->image = $publicPath . "/" . $fileName;
+                $imageFile->storeAs($folder, $fileName, "public");
+            }
+
             $category->save();
         } catch (\Exception $exception) {
             abort(404, $exception->getMessage());
@@ -199,8 +223,35 @@ class CategoryController extends Controller
         $category->feature_status = $request->feature_status ? 1 : 0;
         $category->seo_keywords = $request->seo_keywords;
         $category->seo_description = $request->seo_description;
-        $category->user_id = random_int(1, 10);
-        // $category->order = $request->order;
+        // $category->user_id = random_int(1, 10);
+        $category->order = $request->order;
+
+        if (!is_null($request->image)) {
+            $imageFile = $request->file("image"); // alacagim dosya inputtaki name
+            $originalName = $imageFile->getClientOriginalName(); // original name
+            $originalExtension = $imageFile->getClientOriginalExtension(); // original extension
+            // $originalExtension = $imageFile->extension();
+            $explodeName = explode(".", $originalName)[0]; // burada 0. indisi gondererek explode ile sadece adini aliyoruz
+            $fileName = Str::slug($explodeName) . "." . $originalExtension; // slug ile bosluklari temizleyip sonuna uzantisini ekliyoruz
+
+            $folder = "categories";
+            $publicPath = "storage/" . $folder;
+
+            if (file_exists(public_path($publicPath . $fileName))) {
+                return redirect()->back()->withErrors([
+                    'image' => "Ayni gorsel daha once yuklenmistir"
+                ]);
+            }
+
+
+            if (file_exists(public_path($category->image))) {
+
+                File::delete(public_path($category->image));
+            }
+
+            $category->image = $publicPath . "/" . $fileName;
+            $imageFile->storeAs($folder, $fileName, "public");
+        }
 
         $category->save();
 

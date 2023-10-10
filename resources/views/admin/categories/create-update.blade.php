@@ -24,14 +24,14 @@
                     @endif
                     <form
                         action="{{ isset($category) ? route('categories.edit', ['id' => $category->id]) : route('category.create') }}"
-                        method="POST">
+                        method="POST" enctype="multipart/form-data" id="categoryForm">
                         @csrf
                         <input type="text"
                             class="form-control form-control-solid-bordered m-b-sm
                             @if ($errors->has('name')) border-danger @endif
                             "
                             aria-describedby="solidBoderedInputExample" placeholder="Kategori Adi" name="name"
-                            value="{{ isset($category) ? $category->name : '' }}" required>
+                            id="name" value="{{ isset($category) ? $category->name : '' }}">
                         @if ($errors->has('name'))
                             {{-- <div class="alert alert-danger">{{ $errors->first("name") }}</div> --}}
                         @endif
@@ -56,6 +56,17 @@
                             id="seo_description" cols="30" rows="5" style="resize: none" placeholder="Seo Description">{{ isset($category) ? $category->seo_keywords : '' }}</textarea>
                         <textarea class="form-control form-control-solid-bordered m-b-sm" name="seo_description" id="seo_description"
                             cols="30" rows="5" style="resize: none" placeholder="Seo Description">{{ isset($category) ? $category->seo_description : '' }}</textarea>
+
+                        <label for="image" class="form-label">Kategori Gorseli</label>
+                        <input type="file" name="image" id="image" class="form-control"
+                            accept="image/png,image/jpeg,image/jpg">
+                        <div class="form-text m-b-sm">Kategori gorseli max 2 MB olmalidir.</div>
+
+                        @if (isset($category) && $category->image)
+                            <img src="{{ asset($category->image) }}" alt="" class="img-fluid"
+                                style="max-height: 200px;">
+                        @endif
+
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" value="1" name="status" id="status"
                                 {{ isset($category) && $category->status ? 'checked' : '' }}>
@@ -72,8 +83,8 @@
                         </div>
                         <hr>
                         <div class="col-6 mx-auto mt-5">
-                            <button type="submit"
-                                class="btn btn-success btn-rounded w-100">{{ isset($category) ? 'Guncelle' : 'Kaydet' }}
+                            <button type="button" class="btn btn-success btn-rounded w-100"
+                                id="btnSave">{{ isset($category) ? 'Guncelle' : 'Kaydet' }}
                             </button>
                         </div>
                     </form>
@@ -84,4 +95,21 @@
 @endsection
 
 @section('js')
+    <script>
+        let name = $('#name');
+        $(document).ready(function() {
+            $('#btnSave').click(function() {
+                if (name.val().trim() === "" || name.val().trim() == null) {
+                    Swal.fire({
+                        title: "Uyari",
+                        text: "Kategori adi bos birakilamaz!",
+                        confirmButtonText: "Tamam",
+                        icon: "info"
+                    });
+                } else {
+                    $('#categoryForm').submit();
+                }
+            });
+        });
+    </script>
 @endsection

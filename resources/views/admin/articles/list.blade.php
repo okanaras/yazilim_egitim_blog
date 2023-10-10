@@ -157,12 +157,11 @@
                                         <i class="material-icons ms-0">edit</i>
                                     </a>
                                     <a href="javascript:void(0)" class="btn btn-danger btn-sm btnDelete"
-                                        data-id="{{ $article->id }}" data-name="{{ $article->name }}">
+                                        data-id="{{ $article->id }}" data-name="{{ $article->title }}">
                                         <i class="material-icons ms-0">delete</i>
                                     </a>
                                 </div>
                             </td>
-
                         </tr>
                     @endforeach
                 </x-slot:rows>
@@ -240,10 +239,11 @@
 
         $('.btnDelete').click(function() {
             let articleID = $(this).data('id');
-            let categoryName = $(this).data('name');
+            let articleName = $(this).data('name');
+            // let articleName = "okan";
 
             Swal.fire({
-                title: categoryName + ' i Silmek istediğinize emin misiniz?',
+                title: articleName + "'i Silmek istediğinize emin misiniz?",
                 showDenyButton: true,
                 showCancelButton: true,
                 confirmButtonText: 'Evet',
