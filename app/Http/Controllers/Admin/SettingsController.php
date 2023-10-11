@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SettingsRequest;
 use App\Models\Settings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -16,12 +17,13 @@ class SettingsController extends Controller
         // dd($settings);
         return view('admin.settings.update', compact('settings'));
     }
-    public function update(Request $request)
+    public function update(SettingsRequest $request)
     {
         $settings = Settings::first();
-        $settings->logo = $request->logo;
+
         $settings->header_text = $request->header_text;
         $settings->footer_text = $request->footer_text;
+        $settings->telegram_link = $request->telegram_link;
 
         if ($request->feature_categories_is_active)
             $settings->feature_categories_is_active = 1;
@@ -38,6 +40,10 @@ class SettingsController extends Controller
         else
             $settings->author_is_active = 0;
 
+
+        $settings->logo = $request->logo;
+        $settings->category_default_image = $request->category_default_image;
+        $settings->article_default_image = $request->article_default_image;
 
 
         if (!is_null($request->logo)) {

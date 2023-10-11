@@ -23,6 +23,14 @@
                     @endif
                     <form action="{{ route('settings') }}" method="POST" enctype="multipart/form-data" id="settingsForm">
                         @csrf
+                        <label for="telegram_link" class="form-label">Telegram Linki</label>
+                        <input type="text" id="telegram_link"
+                            class="form-control form-control-solid-bordered m-b-sm
+                            @if ($errors->has('telegram_link')) border-danger @endif
+                            "
+                            placeholder="Telegram Linki" name="telegram_link"
+                            value="{{ isset($settings) ? $settings->telegram_link : '' }}">
+
                         <label for="header_text" class="form-label">Header Text</label>
                         <textarea
                             class="form-control form-control-solid-bordered m-b-sm
@@ -67,9 +75,8 @@
                                 style="max-height: 200px;">
                         @endif
 
-
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" value="1"
+                        <div class="form-check m-t-sm">
+                            <input type="checkbox" class="form-check-input " value="1"
                                 name="feature_categories_is_active" id="feature_categories_is_active"
                                 {{ isset($settings) && $settings->feature_categories_is_active ? 'checked' : '' }}>
                             <label for="feature_categories_is_active" class="form-check-label">
