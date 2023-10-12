@@ -26,6 +26,10 @@
                         action="{{ isset($category) ? route('categories.edit', ['id' => $category->id]) : route('category.create') }}"
                         method="POST" enctype="multipart/form-data" id="categoryForm">
                         @csrf
+                        <label for="color" class="form-label">Kategorinin Rengi</label>
+                        <input type="color" name="color" id="color" class="form-control m-b-sm"
+                            value="{{ isset($category) ? $category->color : '' }}">
+
                         <input type="text"
                             class="form-control form-control-solid-bordered m-b-sm
                             @if ($errors->has('name')) border-danger @endif

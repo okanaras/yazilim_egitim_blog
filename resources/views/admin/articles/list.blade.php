@@ -148,7 +148,8 @@
                             <td>{{ $article->view_count }}</td>
                             <td>{{ $article->like_count }}</td>
                             <td>{{ $article->category->name }}</td>
-                            <td>{{ Carbon\Carbon::parse($article->publish_date)->translatedFormat('d F Y H:i:s') }}</td>
+                            <td>{{ isset($article->publish_date) ? Carbon\Carbon::parse($article->publish_date)->translatedFormat('d F Y H:i:s') : 'Tarih Girilmedi' }}
+                            </td>
                             <td>{{ $article->user->name }}</td>
                             <td>
                                 <div class="d-flex">
