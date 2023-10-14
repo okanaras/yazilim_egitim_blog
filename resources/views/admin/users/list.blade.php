@@ -8,6 +8,9 @@
     <link href="{{ asset('assets/admin/plugins/select2/css/select2.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/admin/plugins/flatpickr/flatpickr.min.css') }}" rel="stylesheet">
 
+    <link href="{{ asset('assets/front/aos/aos.css') }}" rel="stylesheet">
+
+
     <style>
         .table-hover>tbody>tr:hover {
             --bs-table-hover-bg: transparent;
@@ -67,7 +70,8 @@
                         <tr id="row-{{ $user->id }}">
                             <td>
                                 @if (!empty($user->image))
-                                    <img src="{{ asset($user->image) }}" height="60">
+                                    <img src="{{ asset($user->image) }}" height="60" data-aos="zoom-in"
+                                        data-aos-duration="1500">
                                 @endif
                             </td>
                             <td>{{ $user->name }}</td>
@@ -84,13 +88,20 @@
                             </td>
                             <td>
                                 <div class="d-flex">
-                                    <a href="{{ route('user.edit', ['id' => $user->id]) }}" class="btn btn-warning btn-sm">
+                                    <a href="{{ route('user.edit', ['user' => $user->username]) }}"
+                                        class="btn btn-warning btn-sm">
                                         <i class="material-icons ms-0">edit</i>
                                     </a>
                                     <a href="javascript:void(0)" class="btn btn-danger btn-sm btnDelete"
-                                        data-id="{{ $user->id }}" data-name="{{ $user->title }}">
+                                        data-id="{{ $user->id }}" data-name="{{ $user->name }}">
                                         <i class="material-icons ms-0">delete</i>
                                     </a>
+                                    @if ($user->deleted_at)
+                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm btnRestore"
+                                            data-id="{{ $user->id }}" data-name="{{ $user->name }}">
+                                            <i class="material-icons ms-0">undo</i>
+                                        </a>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -111,8 +122,15 @@
     <script src="{{ asset('assets/admin/js/pages/datepickers.js') }}"></script>
     <script src="{{ asset('assets/admin/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('assets/admin/plugins/bootstrap/js/popper.min.js') }}"></script>
+    <script src="{{ asset('assets/front/aos/aos.js') }}"></script>
+
     <script>
         $(document).ready(function() {
+
+            // aos
+            AOS.init();
+
+            // ChangeStatus Ajax
             $('.btnChangeStatus').click(function() {
                 let userID = $(this).data('id');
                 let self = $(this);
@@ -131,7 +149,7 @@
                             method: "POST",
                             url: "{{ route('user.changeStatus') }}",
                             data: {
-                                userID: userID
+                                id: userID
                             },
                             async: false,
                             success: function(data) {
@@ -166,60 +184,110 @@
                     }
                 })
             });
+
+            // Delete Ajax
+            $('.btnDelete').click(function() {
+                let userID = $(this).data('id');
+                let userName = $(this).data('name');
+
+                Swal.fire({
+                    title: userName + "'i Silmek istediğinize emin misiniz?",
+                    showDenyButton: true,
+                    showCancelButton: true,
+                    confirmButtonText: 'Evet',
+                    denyButtonText: `Hayir`,
+                    cancelButtonText: "İptal"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            method: "POST",
+                            url: "{{ route('user.delete') }}",
+                            data: {
+                                "_method": "DELETE",
+                                id: userID
+                            },
+                            async: false,
+                            success: function(data) {
+
+                                $('#row-' + userID).remove();
+                                Swal.fire({
+                                    title: "Basarili",
+                                    text: "Kullanici Silindi",
+                                    confirmButtonText: 'Tamam',
+                                    icon: "success"
+                                });
+                            },
+                            error: function() {
+                                console.log("hata geldi");
+                            }
+                        })
+
+                    } else if (result.isDenied) {
+                        Swal.fire({
+                            title: "Bilgi",
+                            text: "Herhangi bir islem yapilmadi",
+                            confirmButtonText: 'Tamam',
+                            icon: "info"
+                        });
+                    }
+                })
+
+            });
+
+            // Restore Ajax
+            $('.btnRestore').click(function() {
+                let userID = $(this).data('id');
+                let userName = $(this).data('name');
+                let self = $(this);
+                Swal.fire({
+                    title: userName + "'i geri getirmek istediğinize emin misiniz?",
+                    showDenyButton: true,
+                    showCancelButton: true,
+                    confirmButtonText: 'Evet',
+                    denyButtonText: `Hayir`,
+                    cancelButtonText: "İptal"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            method: "POST",
+                            url: "{{ route('user.restore') }}",
+                            data: {
+                                id: userID
+                            },
+                            async: false,
+                            success: function(data) {
+
+                                self.remove();
+                                Swal.fire({
+                                    title: "Basarili",
+                                    text: "Kullanici geri getirildi!",
+                                    confirmButtonText: 'Tamam',
+                                    icon: "success"
+                                });
+                            },
+                            error: function() {
+                                console.log("hata geldi");
+                            }
+                        })
+
+                    } else if (result.isDenied) {
+                        Swal.fire({
+                            title: "Bilgi",
+                            text: "Herhangi bir islem yapilmadi",
+                            confirmButtonText: 'Tamam',
+                            icon: "info"
+                        });
+                    }
+                })
+
+            });
+
+            // 'Select' Parent Kategori
+            $('#selectParentCategory').select2();
         });
-
-        $('.btnDelete').click(function() {
-            let userID = $(this).data('id');
-            let userName = $(this).data('name');
-            // let userName = "okan";
-
-            Swal.fire({
-                title: userName + "'i Silmek istediğinize emin misiniz?",
-                showDenyButton: true,
-                showCancelButton: true,
-                confirmButtonText: 'Evet',
-                denyButtonText: `Hayir`,
-                cancelButtonText: "İptal"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        method: "POST",
-                        url: "{{ route('user.delete') }}",
-                        data: {
-                            "_method": "DELETE",
-                            userID: userID
-                        },
-                        async: false,
-                        success: function(data) {
-
-                            $('#row-' + userID).remove();
-                            Swal.fire({
-                                title: "Basarili",
-                                text: "Makale Silindi",
-                                confirmButtonText: 'Tamam',
-                                icon: "success"
-                            });
-                        },
-                        error: function() {
-                            console.log("hata geldi");
-                        }
-                    })
-
-                } else if (result.isDenied) {
-                    Swal.fire({
-                        title: "Bilgi",
-                        text: "Herhangi bir islem yapilmadi",
-                        confirmButtonText: 'Tamam',
-                        icon: "info"
-                    });
-                }
-            })
-
-        });
-
-        $('#selectParentCategory').select2();
     </script>
 
+    {{-- bunlara gerek yok sonra sil -s --}}
     <script>
         $("#publish_date").flatpickr({
             enableTime: true,
@@ -230,4 +298,5 @@
             container: 'body'
         })
     </script>
+    {{-- bunlara gerek yok sonra sil -e --}}
 @endsection

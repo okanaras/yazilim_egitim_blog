@@ -114,7 +114,7 @@
                         <ul class="list-group m-0">
                             @foreach ($categories as $category)
                                 <li class="px-3 py-3"><a
-                                        href="{{ route('front.category', ['slug' => $category->slug]) }}">{{ $category->name }}<span
+                                        href="{{ route('front.category', ['category' => $category->slug]) }}">{{ $category->name }}<span
                                             class="float-end me-3"
                                             style="color: {{ $category->color }}">&#x25CF;</span></a></li>
                             @endforeach

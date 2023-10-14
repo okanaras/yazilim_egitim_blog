@@ -24,6 +24,8 @@ Route::prefix("admin")->middleware("auth")->group(function () {
         return view('admin.index');
     })->name("admin.index");
 
+
+
     Route::get("articles", [ArticleController::class, "index"])->name("article.index");
     Route::get("articles/create", [ArticleController::class, "create"])->name("article.create");
     Route::post("articles/create", [ArticleController::class, "store"]);
@@ -31,6 +33,7 @@ Route::prefix("admin")->middleware("auth")->group(function () {
     Route::post("articles/{id}/edit", [ArticleController::class, "update"]);
     Route::post('article/change-status', [ArticleController::class, "changeStatus"])->name("article.changeStatus");
     Route::delete('article/delete', [ArticleController::class, "delete"])->name("article.delete");
+
 
     Route::get("categories", [CategoryController::class, "index"])->name("category.index");
     Route::get("categories/create", [CategoryController::class, "create"])->name("category.create");
@@ -41,16 +44,19 @@ Route::prefix("admin")->middleware("auth")->group(function () {
     Route::get('categories/{id}/edit', [CategoryController::class, "edit"])->name("categories.edit")->whereNumber("id");
     Route::post('categories/{id}/edit', [CategoryController::class, "update"])->whereNumber("id");
 
+
     Route::get('settings', [SettingsController::class, "show"])->name("settings");
     Route::post('settings', [SettingsController::class, "update"]);
+
 
     Route::get("users/create", [UserController::class, "create"])->name("user.create");
     Route::post("users/create", [UserController::class, "store"]);
     Route::get("users", [UserController::class, "index"])->name("user.index");
-    Route::post('categories/change-status', [UserController::class, "changeStatus"])->name("user.changeStatus");
-    Route::get('users/{id}/edit', [UserController::class, "edit"])->name("user.edit")->whereNumber("id");
-    Route::post('users/{id}/edit', [UserController::class, "update"])->whereNumber("id");
-    Route::post('categories/delete', [UserController::class, "delete"])->name("user.delete");
+    Route::post('users/change-status', [UserController::class, "changeStatus"])->name("user.changeStatus");
+    Route::get('users/{user:username}/edit', [UserController::class, "edit"])->name("user.edit")->whereNumber("id");
+    Route::post('users/{user:username}/edit', [UserController::class, "update"])->whereNumber("id");
+    Route::delete('users/delete', [UserController::class, "delete"])->name("user.delete");
+    Route::post('users/restore', [UserController::class, "restore"])->name("user.restore");
 
 
 
@@ -63,8 +69,8 @@ Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']
 
 
 Route::get('/', [FrontController::class, "home"])->name("home");
-Route::get('/kategoriler/{slug:categories}', [FrontController::class, "category"])->name("front.category");
-Route::get('/{username:users}/{slug:articles}', [FrontController::class, "articleDetail"])->name("front.articleDetail");
+Route::get('/kategoriler/{category:slug}', [FrontController::class, "category"])->name("front.category");
+Route::get('/{user:username}/{article:slug}', [FrontController::class, "articleDetail"])->name("front.articleDetail");
 
 
 

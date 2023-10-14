@@ -237,7 +237,7 @@ class ArticleController extends Controller
 
     public function delete(Request $request)
     {
-        $articleID = $request->articleID;
+        $articleID = $request->articleID; // requestteki id ajaxla gonderilen
 
         $article = Article::query()
             ->where("id", $articleID)
