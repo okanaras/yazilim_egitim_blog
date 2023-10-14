@@ -1,9 +1,6 @@
 AOS.init();
-
-/*
-// buralar dertte daha eklenmedi
 hljs.highlightAll();
-*/
+
 
 $('#searchIcon2').click(function () {
     $("#searchForm").hide();
@@ -83,13 +80,9 @@ $(document).ready(function () {
     });
 
 
-    /* benim ekledigim kodlar start */
-
     $('#btnArticleResponse').click(function () {
-        $('.article-responses').toggle();
+        $('.response-form').toggle();
     });
-
-    /* benim ekledigim kodlar end */
 
 });
 
