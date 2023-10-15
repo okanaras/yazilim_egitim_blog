@@ -14,8 +14,8 @@
     <style>
         .table-hover>tbody>tr:hover {
             --bs-table-hover-bg: transparent;
-            background: #363638;
-            color: #fff;
+            background: #445D48;
+            color: #D6CC99;
         }
 
         table td {

@@ -10,8 +10,13 @@
     <style>
         .table-hover>tbody>tr:hover {
             --bs-table-hover-bg: transparent;
-            background: #363638;
-            color: #fff;
+            background: #451952;
+            color: #F99417;
+        }
+
+        table td {
+            vertical-align: middle !important;
+            height: 60px;
         }
     </style>
 @endsection
@@ -103,7 +108,7 @@
                 <x-slot:rows>
                     @foreach ($list as $category)
                         <tr>
-                            <th>{{ $category->name }}</th>
+                            <td>{{ $category->name }}</td>
                             <td>{{ $category->slug }}</td>
                             <td>
                                 @if ($category->status)
@@ -131,7 +136,7 @@
                             <td>
                                 <div class="d-flex">
                                     <a href="{{ route('categories.edit', ['id' => $category->id]) }}"
-                                        class="btn btn-warning btn-sm">
+                                        class="btn btn-warning btn-sm me-1">
                                         <i class="material-icons ms-0">edit</i>
                                     </a>
                                     <a href="javascript:void(0)" class="btn btn-danger btn-sm btnDelete"
@@ -157,7 +162,7 @@
                 {{ $list->appends(request()->only("name"))->onEachside(1)->links() }} yalnizca name i gonder
                 {{ $list->appends($_GET)->onEachside(1)->links() }} hepsini gonder
                  --}}
-                {{ $list->appends(request()->all())->onEachside(1)->links() }} hepsini gonder
+                {{ $list->appends(request()->all())->onEachside(1)->links() }} {{--  hepsini gonder --}}
             </div>
         </x-slot:body>
     </x-bootstrap.card>

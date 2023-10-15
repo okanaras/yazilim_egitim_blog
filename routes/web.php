@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ArticalCommentController;
 use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\SettingsController;
@@ -33,6 +34,9 @@ Route::prefix("admin")->middleware("auth")->group(function () {
     Route::post("articles/{id}/edit", [ArticleController::class, "update"]);
     Route::post('article/change-status', [ArticleController::class, "changeStatus"])->name("article.changeStatus");
     Route::delete('article/delete', [ArticleController::class, "delete"])->name("article.delete");
+
+    Route::get("article/pending-approval", [ArticalCommentController::class, "approvalList"])->name("artical.pending-approval");
+    Route::post("article/pending-approval/change-status", [ArticalCommentController::class, "changeStatus"])->name("artical.pending-approval.changeStatus");
 
 
     Route::get("categories", [CategoryController::class, "index"])->name("category.index");
@@ -71,6 +75,7 @@ Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']
 Route::get('/', [FrontController::class, "home"])->name("home");
 Route::get('/kategoriler/{category:slug}', [FrontController::class, "category"])->name("front.category");
 Route::get('/{user:username}/{article:slug}', [FrontController::class, "articleDetail"])->name("front.articleDetail");
+Route::post("{article:id}/makale-yorum", [FrontController::class, "articleComment"])->name("article.comment");
 
 
 

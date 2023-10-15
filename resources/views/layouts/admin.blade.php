@@ -86,6 +86,7 @@
             });
         });
     </script>
+
     @include('sweetalert::alert')
 
     @yield('js')

@@ -53,20 +53,16 @@
                     </a>
                     <span class="fw-light">100</span>
                 </div>
-                <a href="javascript:void(0)" class="btn-response btnArticleResponse">Cevap Ver</a>
+                <a href="javascript:void(0)" class="btn-response" id="btnArticleResponse">Cevap Ver</a>
             </div>
 
             <!-- author info -->
             <div class="article-authors mt-5">
                 <div class="bg-white p-4 d-flex justify-content-between align-items-center shadow-sm">
-                    <img src="assets/front/image/profile1.png" alt="" width="75" height="75">
-                    <div class="px-5">
-                        <h4><a href="">Okan Aras</a></h4>
-                        <p class="text-secondary">
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga et, facilis,
-                            qui maxime id reiciendis nihil tenetur obcaecati minus quibusdam nostrum!
-                            Incidunt a odit omnis!
-                        </p>
+                    <img src="{{ asset($article->user->image) }}" alt="" width="75" height="75">
+                    <div class="px-5 me-auto">
+                        <h4 class="mt-3"><a href="">{{ $article->user->name }}</a></h4>
+                        {{ $article->user->about }}
                     </div>
                 </div>
             </div>
@@ -76,20 +72,21 @@
         <section class="article-responses mt-4">
             <!-- makale yorum formu -->
             <div class="response-form bg-white shadow-sm rounded-1 p-4" style="display: none;">
-                <form action="" method="post">
+                <form action="{{ route('article.comment', ['article' => $article->id]) }}" method="post">
+                    @csrf
                     <div class="row">
                         <div class="col-12">
                             <h5>Cevabiniz</h5>
                             <hr>
                         </div>
                         <div class="col-md-6">
-                            <input type="text" name="fullname" class="form-control" placeholder="Adiniz" required>
+                            <input type="text" name="name" class="form-control" placeholder="Adiniz" required>
                         </div>
                         <div class="col-md-6">
                             <input type="text" name="email" class="form-control" placeholder="Email Adresi" required>
                         </div>
                         <div class="col-12 mt-3">
-                            <textarea name="message" id="message" cols="30" rows="5" class="form-control" placeholder="Mesajiniz"></textarea>
+                            <textarea name="comment" id="comment" cols="30" rows="5" class="form-control" placeholder="Mesajiniz"></textarea>
                         </div>
                         <div class="col-md-4">
                             <button class="btn-response align-items-md-center d-flex mt-3">

@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('title')
-    Makale Listeleme
+    Onay Bekleyen Yorum Listesi
 @endsection
 
 @section('css')
@@ -25,23 +25,12 @@
 @section('content')
     <x-bootstrap.card>
         <x-slot:header>
-            <h2>Makale Listesi</h2>
+            <h2>Onay Bekleyen Yorum Listesi</h2>
         </x-slot:header>
 
         <x-slot:body>
-            <form action="" method="get">
+            <form action="{{ route('artical.pending-approval') }}" method="get">
                 <div class="row">
-                    <div class="col-3 my-2">
-                        <select class="js-states form-control" name="category_id" id="selectParentCategory" tabindex="-1"
-                            style="display: none; width: 100%">
-                            <option value="{{ null }}">Kategori Secin</option>
-                            @foreach ($categories as $parent)
-                                <option value="{{ $parent->id }}"
-                                    {{ request()->get('category_id') == $parent->id ? 'selected' : '' }}>{{ $parent->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
                     <div class="col-3 my-2">
                         <select class="js-states form-control" name="user_id" tabindex="-1"
                             style="display: none; width: 100%">
@@ -53,55 +42,28 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-3 my-2">
-                        <select class="form-select" name="status" aria-label="Default select example">
-                            <option value="{{ null }}">Status</option>
-                            <option value="0" {{ request()->get('status') === '0' ? 'selected' : '' }}>Pasif</option>
-                            <option value="1" {{ request()->get('status') === '1' ? 'selected' : '' }}>Aktif</option>
-                        </select>
-                    </div>
-                    <div class="col-3 my-2">
 
-                        <input class="form-control flatpickr2 m-b-sm" id="publish_date" type="text" name="publish_date"
-                            type="text" placeholder="Ne zaman yayinlansin?"
-                            value="{{ request()->get('publish_date') }}">
+                    @if ($page == 'commentList')
+                        <div class="col-3 my-2">
+                            <select class="form-select" name="status" aria-label="Default select example">
+                                <option value="{{ null }}">Status</option>
+                                <option value="0" {{ request()->get('status') === '0' ? 'selected' : '' }}>Pasif
+                                </option>
+                                <option value="1" {{ request()->get('status') === '1' ? 'selected' : '' }}>Aktif
+                                </option>
+                            </select>
+                        </div>
+                    @endif
+
+                    <div class="col-3 my-2">
+                        <input class="form-control flatpickr2 m-b-sm" id="created_at" type="text" name="created_at"
+                            type="text" placeholder="Yorum Tarihi" value="{{ request()->get('created_at') }}">
                     </div>
                     <div class="col-3 my-2">
                         <input type="text" class="form-control" value="{{ request()->get('search_text') }}"
-                            name="search_text" placeholder="Title, Slug, Body, Tags">
+                            name="search_text" placeholder="Comment, Name, Email">
                     </div>
-                    <div class="col-9 my-2">
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <input type="number" class="form-control"
-                                            value="{{ request()->get('min_view_count') }}" name="min_view_count"
-                                            placeholder="Min View Count">
-                                    </div>
-                                    <div class="col-6">
-                                        <input type="number" class="form-control"
-                                            value="{{ request()->get('max_view_count') }}" name="max_view_count"
-                                            placeholder="Max View Count">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <input type="number" class="form-control"
-                                            value="{{ request()->get('min_like_count') }}" name="min_like_count"
-                                            placeholder="Min Like Count">
-                                    </div>
-                                    <div class="col-6">
-                                        <input type="number" class="form-control"
-                                            value="{{ request()->get('max_like_count') }}" name="max_like_count"
-                                            placeholder="Max Like Count">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+
                     <hr>
                     <div class="col-6 mb-2 d-flex">
                         <button type="submit" class="btn btn-primary w-50 me-4">Filtrele</button>
@@ -112,59 +74,56 @@
             </form>
             <x-bootstrap.table :class="'table-striped table-hover'" :isResponsive="1">
                 <x-slot:columns>
-                    <th scope="col">Image</th>
-                    <th scope="col">Title</th>
-                    <th scope="col">Slug</th>
+                    <th scope="col">Makale Link</th>
+                    <th scope="col">User Name</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">IP</th>
                     <th scope="col">Status</th>
-                    <th scope="col">Body</th>
-                    <th scope="col">Tags</th>
-                    <th scope="col">View Count</th>
-                    <th scope="col">Like Count</th>
-                    <th scope="col">Category</th>
-                    <th scope="col">Publish Date</th>
-                    <th scope="col">User</th>
+                    <th scope="col">Comment</th>
+                    <th scope="col">Created Date</th>
                     <th scope="col">Actions</th>
                 </x-slot:columns>
 
                 <x-slot:rows>
-                    @foreach ($list as $article)
-                        <tr id="row-{{ $article->id }}">
+                    @foreach ($comments as $comment)
+                        <tr id="row-{{ $comment->id }}">
                             <td>
-                                @if (!empty($article->image))
-                                    <img src="{{ asset($article->image) }}" height="60" width="70">
-                                @endif
+                                <a target="_blank"
+                                    href="{{ route('front.articleDetail', ['user' => $comment->article->user->username, 'article' => $comment->article->slug]) }}">
+                                    <span class="material-icons-outlined">visibility</span>
+                                </a>
                             </td>
-                            <td>{{ $article->title }}</td>
-                            <td>{{ $article->slug }}</td>
+                            <td>{{ $comment->user?->name }}</td>
+                            <td>{{ $comment->name }}</td>
+                            <td>{{ $comment->email }}</td>
+                            <td>{{ $comment->ip }}</td>
                             <td>
-                                @if ($article->status)
-                                    <a href="javascript:void(0)" data-id="{{ $article->id }}"
+                                @if ($comment->status)
+                                    <a href="javascript:void(0)" data-id="{{ $comment->id }}"
                                         class="btn btn-success btn-sm btnChangeStatus">Aktif</a>
                                 @else
-                                    <a href="javascript:void(0)" data-id="{{ $article->id }}"
+                                    <a href="javascript:void(0)" data-id="{{ $comment->id }}"
                                         class="btn btn-danger btn-sm btnChangeStatus">Pasif</a>
                                 @endif
                             </td>
+
                             <td>
-                                <span data-bs-container="body" data-bs-toggle="tooltip" data-bs-placement="right"
-                                    data-bs-title="{{ substr($article->body, 0, 200) }}">{{ substr($article->body, 0, 20) }}</span>
+                                <span data-bs-container="body" data-bs-toggle="tooltip" data-bs-placement="top"
+                                    data-bs-title="{{ substr($comment->comment, 0, 200) }}">{{ substr($comment->comment, 0, 200) }}</span>
+                                <button type="button" class="btn btn-primary lookComment btn-sm p-0 px-2"
+                                    data-comment="{{ $comment->comment }}" data-bs-toggle="modal"
+                                    data-bs-target="#exampleModal">
+                                    <span class="material-icons-outlined"
+                                        style="line-height: unset; font-size: 20px;">visibility</span></button>
                             </td>
-                            <td>{{ $article->tags }}</td>
-                            <td>{{ $article->view_count }}</td>
-                            <td>{{ $article->like_count }}</td>
-                            <td>{{ $article->category?->name }}</td>
-                            {{-- burada egerki baglanti silinmis ise sadece olanlar gelir aynisini asagida da yaptim user icin --}}
-                            <td>{{ isset($article->publish_date) ? Carbon\Carbon::parse($article->publish_date)->translatedFormat('d F Y H:i:s') : 'Tarih Girilmedi' }}
+
+                            <td>{{ isset($comment->created_at) ? Carbon\Carbon::parse($comment->created_at)->translatedFormat('d F Y H:i:s') : 'Tarih Girilmedi' }}
                             </td>
-                            <td>{{ $article->user?->name }}</td>
                             <td>
                                 <div class="d-flex">
-                                    <a href="{{ route('article.edit', ['id' => $article->id]) }}"
-                                        class="btn btn-warning btn-sm">
-                                        <i class="material-icons ms-0">edit</i>
-                                    </a>
                                     <a href="javascript:void(0)" class="btn btn-danger btn-sm btnDelete"
-                                        data-id="{{ $article->id }}" data-name="{{ $article->title }}">
+                                        data-id="{{ $comment->id }}" data-name="{{ $comment->id }}">
                                         <i class="material-icons ms-0">delete</i>
                                     </a>
                                 </div>
@@ -174,10 +133,27 @@
                 </x-slot:rows>
             </x-bootstrap.table>
             <div class="d-flex justify-content-center">
-                {{ $list->appends(request()->all())->onEachside(1)->links() }}
+                {{ $comments->appends(request()->all())->onEachside(1)->links() }}
             </div>
         </x-slot:body>
     </x-bootstrap.card>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Yorum</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalBody">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('js')
@@ -190,7 +166,7 @@
     <script>
         $(document).ready(function() {
             $('.btnChangeStatus').click(function() {
-                let articleID = $(this).data('id');
+                let id = $(this).data('id');
                 let self = $(this);
 
                 Swal.fire({
@@ -205,25 +181,19 @@
                     if (result.isConfirmed) {
                         $.ajax({
                             method: "POST",
-                            url: "{{ route('article.changeStatus') }}",
+                            url: "{{ route('artical.pending-approval.changeStatus') }}",
                             data: {
-                                articleID: articleID
+                                id: id
                             },
                             async: false,
                             success: function(data) {
-                                if (data.article_status) {
-                                    self.removeClass("btn-danger");
-                                    self.addClass("btn-success");
-                                    self.text("Aktif");
+                                if (data.comment_status) {
+                                    $('#row-' + id).remove();
 
-                                } else {
-                                    self.removeClass("btn-success");
-                                    self.addClass("btn-danger");
-                                    self.text("Pasif");
                                 }
                                 Swal.fire({
                                     title: "Basarili",
-                                    text: "Status Guncellendi!",
+                                    text: "Yorum Onaylandi!",
                                     confirmButtonText: "Tamam",
                                     icon: "success"
                                 });
@@ -294,14 +264,19 @@
         });
 
         $('#selectParentCategory').select2();
+
+        $("#created_at").flatpickr({
+            enableTime: true,
+            dateFormat: "Y-m-d",
+        });
+
+        $(".lookComment").click(function() {
+            let comment = $(this).data("comment");
+            $('#modalBody').text(comment);
+        });
     </script>
 
     <script>
-        $("#publish_date").flatpickr({
-            enableTime: true,
-            dateFormat: "Y-m-d H:i",
-        });
-
         const popover = new bootstrap.Popover('.example-popover', {
             container: 'body'
         })
