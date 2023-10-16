@@ -26,7 +26,6 @@ Route::prefix("admin")->middleware("auth")->group(function () {
     })->name("admin.index");
 
 
-
     Route::get("articles", [ArticleController::class, "index"])->name("article.index");
     Route::get("articles/create", [ArticleController::class, "create"])->name("article.create");
     Route::post("articles/create", [ArticleController::class, "store"]);
@@ -36,7 +35,10 @@ Route::prefix("admin")->middleware("auth")->group(function () {
     Route::delete('article/delete', [ArticleController::class, "delete"])->name("article.delete");
 
     Route::get("article/pending-approval", [ArticalCommentController::class, "approvalList"])->name("artical.pending-approval");
+    Route::get("article/comment-list", [ArticalCommentController::class, "list"])->name("artical.comment.list");
     Route::post("article/pending-approval/change-status", [ArticalCommentController::class, "changeStatus"])->name("artical.pending-approval.changeStatus");
+    Route::delete("article/pending-approval/delete", [ArticalCommentController::class, "delete"])->name("artical.pending-approval.delete");
+    Route::post("article/comment-restore", [ArticalCommentController::class, "restore"])->name("artical.comment.restore");
 
 
     Route::get("categories", [CategoryController::class, "index"])->name("category.index");

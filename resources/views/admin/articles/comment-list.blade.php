@@ -1,7 +1,11 @@
 @extends('layouts.admin')
 
 @section('title')
-    Onay Bekleyen Yorum Listesi
+    @if ($page == 'commentList')
+        Yorum Listesi
+    @else
+        Onay Bekleyen Yorum Listesi
+    @endif
 @endsection
 
 @section('css')
@@ -25,11 +29,18 @@
 @section('content')
     <x-bootstrap.card>
         <x-slot:header>
-            <h2>Onay Bekleyen Yorum Listesi</h2>
+            <h2>
+                @if ($page == 'commentList')
+                    Yorum Listesi
+                @else
+                    Onay Bekleyen Yorum Listesi
+                @endif
+            </h2>
         </x-slot:header>
 
         <x-slot:body>
-            <form action="{{ route('artical.pending-approval') }}" method="get">
+            <form action="{{ $page == 'commentList' ? route('artical.comment.list') : route('artical.pending-approval') }}"
+                method="get">
                 <div class="row">
                     <div class="col-3 my-2">
                         <select class="js-states form-control" name="user_id" tabindex="-1"
@@ -126,6 +137,12 @@
                                         data-id="{{ $comment->id }}" data-name="{{ $comment->id }}">
                                         <i class="material-icons ms-0">delete</i>
                                     </a>
+                                    @if ($comment->deleted_at)
+                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm btnRestore"
+                                            data-id="{{ $comment->id }}" data-name="{{ $comment->id }}">
+                                            <i class="material-icons ms-0" title="Geri al">undo</i>
+                                        </a>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -165,6 +182,8 @@
     <script src="{{ asset('assets/admin/plugins/bootstrap/js/popper.min.js') }}"></script>
     <script>
         $(document).ready(function() {
+
+            // changeStatus jq-ajax
             $('.btnChangeStatus').click(function() {
                 let id = $(this).data('id');
                 let self = $(this);
@@ -212,67 +231,119 @@
                     }
                 })
             });
-        });
 
-        $('.btnDelete').click(function() {
-            let articleID = $(this).data('id');
-            let articleName = $(this).data('name');
-            // let articleName = "okan";
+            // delete jq-ajax
+            $('.btnDelete').click(function() {
+                let id = $(this).data('id');
+                let articleName = $(this).data('name');
 
-            Swal.fire({
-                title: articleName + "'i Silmek istediğinize emin misiniz?",
-                showDenyButton: true,
-                showCancelButton: true,
-                confirmButtonText: 'Evet',
-                denyButtonText: `Hayir`,
-                cancelButtonText: "İptal"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        method: "POST",
-                        url: "{{ route('article.delete') }}",
-                        data: {
-                            "_method": "DELETE",
-                            articleID: articleID
-                        },
-                        async: false,
-                        success: function(data) {
+                Swal.fire({
+                    title: articleName + "'i Silmek istediğinize emin misiniz?",
+                    showDenyButton: true,
+                    showCancelButton: true,
+                    confirmButtonText: 'Evet',
+                    denyButtonText: `Hayir`,
+                    cancelButtonText: "İptal"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            method: "POST",
+                            url: "{{ route('artical.pending-approval.delete') }}",
+                            data: {
+                                "_method": "DELETE",
+                                id: id
+                            },
+                            async: false,
+                            success: function(data) {
 
-                            $('#row-' + articleID).remove();
-                            Swal.fire({
-                                title: "Basarili",
-                                text: "Makale Silindi",
-                                confirmButtonText: 'Tamam',
-                                icon: "success"
-                            });
-                        },
-                        error: function() {
-                            console.log("hata geldi");
-                        }
-                    })
+                                $('#row-' + id).remove();
+                                Swal.fire({
+                                    title: "Basarili",
+                                    text: "Yorum Silindi",
+                                    confirmButtonText: 'Tamam',
+                                    icon: "success"
+                                });
+                            },
+                            error: function() {
+                                console.log("hata geldi");
+                            }
+                        })
 
-                } else if (result.isDenied) {
-                    Swal.fire({
-                        title: "Bilgi",
-                        text: "Herhangi bir islem yapilmadi",
-                        confirmButtonText: 'Tamam',
-                        icon: "info"
-                    });
-                }
-            })
+                    } else if (result.isDenied) {
+                        Swal.fire({
+                            title: "Bilgi",
+                            text: "Herhangi bir islem yapilmadi",
+                            confirmButtonText: 'Tamam',
+                            icon: "info"
+                        });
+                    }
+                })
 
-        });
+            });
 
-        $('#selectParentCategory').select2();
+            // restore jq-ajax
+            $('.btnRestore').click(function() {
+                let id = $(this).data('id');
+                let articleName = $(this).data('name');
 
-        $("#created_at").flatpickr({
-            enableTime: true,
-            dateFormat: "Y-m-d",
-        });
+                let self = $(this);
 
-        $(".lookComment").click(function() {
-            let comment = $(this).data("comment");
-            $('#modalBody').text(comment);
+                Swal.fire({
+                    title: articleName + "'i Geri almak istediğinize emin misiniz?",
+                    showDenyButton: true,
+                    showCancelButton: true,
+                    confirmButtonText: 'Evet',
+                    denyButtonText: `Hayir`,
+                    cancelButtonText: "İptal"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            method: "POST",
+                            url: "{{ route('artical.comment.restore') }}",
+                            data: {
+                                id: id
+                            },
+                            async: false,
+                            success: function(data) {
+
+                                self.remove();
+                                Swal.fire({
+                                    title: "Basarili",
+                                    text: "Yorum yayina geri alindi!",
+                                    confirmButtonText: 'Tamam',
+                                    icon: "success"
+                                });
+                            },
+                            error: function() {
+                                console.log("hata geldi");
+                            }
+                        })
+
+                    } else if (result.isDenied) {
+                        Swal.fire({
+                            title: "Bilgi",
+                            text: "Herhangi bir islem yapilmadi",
+                            confirmButtonText: 'Tamam',
+                            icon: "info"
+                        });
+                    }
+                })
+
+            });
+
+            // select icin
+            $('#selectParentCategory').select2();
+
+            // filtrede kullanilan date
+            $("#created_at").flatpickr({
+                dateFormat: "Y-m-d",
+            });
+
+            // yorum icerigini gosteren modal
+            $(".lookComment").click(function() {
+                let comment = $(this).data("comment");
+                $('#modalBody').text(comment);
+            });
         });
     </script>
 

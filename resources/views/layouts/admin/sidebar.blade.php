@@ -22,7 +22,13 @@
                     Dashboard
                 </a>
             </li>
-            <li class="{{ Route::is('article.index') || Route::is('article.create') ? 'open' : '' }}">
+            <li
+                class="{{ Route::is('article.index') ||
+                Route::is('article.create') ||
+                Route::is('artical.comment.list') ||
+                Route::is('artical.pending-approval')
+                    ? 'open'
+                    : '' }}">
                 <a href="#" class="">
                     <i class="material-icons">tune</i>
                     Makale Yonetimi
@@ -38,6 +44,11 @@
                         <a href="{{ route('article.index') }}"
                             class="{{ Route::is('article.index') ? 'active' : '' }}">Makale
                             Listesi</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('artical.comment.list') }}"
+                            class="{{ Route::is('artical.comment.list') ? 'active' : '' }}">
+                            Yorum Listesi</a>
                     </li>
                     <li>
                         <a href="{{ route('artical.pending-approval') }}"
