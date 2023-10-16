@@ -58,10 +58,10 @@ class ArticleComment extends Model
 
     public function parent(): HasOne
     {
-        return $this->hasOne(ArticleComment::class, "id", "article_id");
+        return $this->hasOne(ArticleComment::class, "id", "parent_id");
     }
     public function children(): HasMany
     {
-        return $this->HasMany(ArticleComment::class, "article_id", "id");
+        return $this->HasMany(ArticleComment::class, "parent_id", "id");
     }
 }

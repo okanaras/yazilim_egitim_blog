@@ -53,7 +53,7 @@
                     </a>
                     <span class="fw-light">100</span>
                 </div>
-                <a href="javascript:void(0)" class="btn-response" id="btnArticleResponse">Cevap Ver</a>
+                <a href="javascript:void(0)" class="btn-response btnArticleResponse">Cevap Ver</a>
             </div>
 
             <!-- author info -->
@@ -74,6 +74,7 @@
             <div class="response-form bg-white shadow-sm rounded-1 p-4" style="display: none;">
                 <form action="{{ route('article.comment', ['article' => $article->id]) }}" method="post">
                     @csrf
+                    <input type="hidden" name="parent_id" id="comment_parent_id" value="{{ null }}">
                     <div class="row">
                         <div class="col-12">
                             <h5>Cevabiniz</h5>
@@ -102,167 +103,112 @@
             <div class="response-body p-4">
                 <h3>Makaleye Verilen Yorumlar</h3>
                 <hr class="mb-4">
-                <!-- yorumlar -->
-                <div class="article-response-wrapper">
-                    <!-- yorum -->
-                    <div
-                        class="article-response bg-white mt-3 p-2 d-flex justify-content-between align-items-center shadow-sm">
-                        <img src="assets/front/image/profile1.png" alt="" width="75" height="75">
-                        <div class="px-3">
-                            <div class="comment-title-date d-flex justify-content-between">
-                                <h4><a href="">Okan Aras</a></h4>
-                                <time datetime="09-10-2023">09-10-2023</time>
-                            </div>
-                            <p class="text-secondary">
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga et,
-                                facilis,
-                                qui maxime id reiciendis nihil tenetur obcaecati minus quibusdam
-                                nostrum!
-                                Incidunt a odit omnis!
-                            </p>
-                            <div class="text-end d-flex align-items-center justify-content-between">
-                                <div>
-                                    <a href="javascript:void(0)" class="btn-response btnArticleResponse">Cevap Ver</a>
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <a href="javascript:void(0)" class="like-comment">
-                                        <span class="material-icons">thumb_up</span>
-                                    </a>
-                                    <a href="javascript:void(0)" class="like-comment">
-                                        <span class="material-icons-outlined">thumb_up_off_alt</span>
-                                    </a> 12
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- yorumlara yorum -->
-                    <div class="articles-response-comment-wrapper">
-                        <!-- yoruma yorum -->
-                        <div
-                            class="article-response-comment bg-white mt-3 p-2 d-flex justify-content-between align-items-center shadow-sm">
-                            <img src="assets/front/image/profile1.png" alt="" width="75" height="75">
-                            <div class="px-3">
-                                <div class="comment-title-date d-flex justify-content-between">
-                                    <h4><a href="">Okan Aras</a></h4>
-                                    <time datetime="09-10-2023">09-10-2023</time>
-                                </div>
-                                <p class="text-secondary">
-                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga et,
-                                    facilis,
-                                    qui maxime id reiciendis nihil tenetur obcaecati minus quibusdam
-                                    nostrum!
-                                    Incidunt a odit omnis!
-                                </p>
-                                <div class="text-end d-flex align-items-center justify-content-between">
-                                    <div>
-                                        <a href="javascript:void(0)" class="btn-response btnArticleResponse">Cevap
-                                            Ver</a>
-                                    </div>
-                                    <div class="d-flex align-items-center">
-                                        <a href="javascript:void(0)" class="like-comment">
-                                            <span class="material-icons">thumb_up</span>
-                                        </a>
-                                        <a href="javascript:void(0)" class="like-comment">
-                                            <span class="material-icons-outlined">thumb_up_off_alt</span>
-                                        </a> 12
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- yorumun yorumuna yorum -->
-                        <div
-                            class="article-response-comment-in bg-white mt-3 p-2 d-flex justify-content-between align-items-center shadow-sm">
-                            <img src="assets/front/image/profile1.png" alt="" width="75" height="75">
-                            <div class="px-3">
-                                <div class="comment-title-date d-flex justify-content-between">
-                                    <h4><a href="">Okan Aras</a></h4>
-                                    <time datetime="09-10-2023">09-10-2023</time>
-                                </div>
-                                <p class="text-secondary">
-                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga et,
-                                    facilis,
-                                    qui maxime id reiciendis nihil tenetur obcaecati minus quibusdam
-                                    nostrum!
-                                    Incidunt a odit omnis!
-                                </p>
-                                <div class="text-end d-flex align-items-center justify-content-between">
-                                    <div>
-                                        <a href="javascript:void(0)" class="btn-response btnArticleResponse">Cevap
-                                            Ver</a>
-                                    </div>
-                                    <div class="d-flex align-items-center">
-                                        <a href="javascript:void(0)" class="like-comment">
-                                            <span class="material-icons">thumb_up</span>
-                                        </a>
-                                        <a href="javascript:void(0)" class="like-comment">
-                                            <span class="material-icons-outlined">thumb_up_off_alt</span>
-                                        </a> 12
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- 2.yorum -->
-                <div class="article-response-wrapper">
-                    <!-- yorum -->
-                    <div
-                        class="article-response bg-white mt-3 p-2 d-flex justify-content-between align-items-center shadow-sm">
-                        <img src="assets/front/image/profile1.png" alt="" width="75" height="75">
-                        <div class="px-3">
-                            <div class="comment-title-date d-flex justify-content-between">
-                                <h4><a href="">Okan Aras</a></h4>
-                                <time datetime="09-10-2023">09-10-2023</time>
+                @foreach ($article->comments as $comment)
+                    <!-- yorumlar -->
+                    <div class="article-response-wrapper">
+                        <!-- yorum -->
+                        <div class="article-response bg-white mt-3 p-2 d-flex align-items-center shadow-sm">
+                            <div class="col-md-2">
+                                @php
+                                    if ($comment->user) {
+                                        $image = $comment->user->image;
+                                        $name = $comment->user->name;
+                                        if (!file_exists(public_path($image))) {
+                                            $image = $settings->default_comment_profile_image;
+                                        }
+                                    } else {
+                                        $image = $settings->default_comment_profile_image;
+                                        $name = $comment->name;
+                                    }
+                                @endphp
+                                <img src="{{ asset($image) }}" alt="" width="75" height="75">
                             </div>
-                            <p class="text-secondary">
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga et,
-                                facilis,
-                                qui maxime id reiciendis nihil tenetur obcaecati minus quibusdam
-                                nostrum!
-                                Incidunt a odit omnis!
-                            </p>
-                            <div class="text-end d-flex align-items-center justify-content-end">
-                                <a href="javascript:void(0)" class="like-comment">
-                                    <span class="material-icons">thumb_up</span>
-                                </a>
-                                <a href="javascript:void(0)" class="like-comment">
-                                    <span class="material-icons-outlined">thumb_up_off_alt</span>
-                                </a> 12
+                            <div class="col-md-10">
+                                <div class="px-3">
+                                    <div class="comment-title-date d-flex justify-content-between">
+                                        <h4 class="mt-3"><a href="">{{ $name }}</a></h4>
+                                        <time
+                                            datetime="{{ \Carbon\Carbon::parse($comment->created_at)->format('d-m-Y') }}">
+                                            {{ \Carbon\Carbon::parse($comment->created_at)->format('d-m-Y') }}
+                                        </time>
+                                    </div>
+                                    <p class="text-secondary">
+                                        {{ $comment->comment }}
+                                    </p>
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <a href="javascript:void(0)" class="btn-response btnArticleResponseComment"
+                                                data-id="{{ $comment->id }}">Cevap Ver</a>
+                                        </div>
+                                        <div class="d-flex align-items-center ">
+                                            <a href="javascript:void(0)" class="like-comment">
+                                                <span class="material-icons">thumb_up</span>
+                                            </a>
+                                            <a href="javascript:void(0)" class="like-comment">
+                                                <span class="material-icons-outlined">thumb_up_off_alt</span>
+                                            </a> 12
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <!-- 3.yorum -->
-                <div class="article-response-wrapper">
-                    <!-- yorum -->
-                    <div
-                        class="article-response bg-white mt-3 p-2 d-flex justify-content-between align-items-center shadow-sm">
-                        <img src="assets/front/image/profile1.png" alt="" width="75" height="75">
-                        <div class="px-3">
-                            <div class="comment-title-date d-flex justify-content-between">
-                                <h4><a href="">Okan Aras</a></h4>
-                                <time datetime="09-10-2023">09-10-2023</time>
+
+                        @if ($comment->children)
+                            <div class="articles-response-comment-wrapper">
+                                @foreach ($comment->children as $child)
+                                    @php
+                                        if ($child->user) {
+                                            $childImage = $child->user->image;
+                                            $childName = $child->user->name;
+                                            if (!file_exists(public_path($childImage))) {
+                                                $childImage = $settings->default_comment_profile_image;
+                                            }
+                                        } else {
+                                            $childImage = $settings->default_comment_profile_image;
+                                            $childName = $child->name;
+                                        }
+
+                                    @endphp
+                                    <!-- yoruma yorum -->
+                                    <div
+                                        class="article-comment bg-white p-2 mt-3 d-flex justify-content-between align-items-center shadow-sm">
+                                        <div class="col-md-2">
+                                            <img src="{{ asset($childImage) }}" alt="" width="75"
+                                                height="75">
+                                        </div>
+                                        <div class="col-md-10">
+                                            <div class="px-3">
+                                                <div class="comment-title-date d-flex justify-content-between">
+                                                    <h4 class="mt-3"><a href="">{{ $childName }}</a>
+                                                    </h4>
+                                                    <time
+                                                        datetime="{{ \Carbon\Carbon::parse($child->created_at)->format('d-m-Y') }}">
+                                                        {{ \Carbon\Carbon::parse($child->created_at)->format('d-m-Y') }}
+                                                    </time>
+                                                </div>
+                                                <p class="text-secondary">
+                                                    {{ $child->comment }}
+                                                </p>
+                                                <div class="d-flex align-items-center justify-content-between">
+                                                    <div class="d-flex align-items-center ">
+                                                        <a href="javascript:void(0)" class="like-comment">
+                                                            <span class="material-icons">thumb_up</span>
+                                                        </a>
+                                                        <a href="javascript:void(0)" class="like-comment">
+                                                            <span class="material-icons-outlined">thumb_up_off_alt</span>
+                                                        </a> 12
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
                             </div>
-                            <p class="text-secondary">
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga et,
-                                facilis,
-                                qui maxime id reiciendis nihil tenetur obcaecati minus quibusdam
-                                nostrum!
-                                Incidunt a odit omnis!
-                            </p>
-                            <div class="text-end d-flex align-items-center justify-content-end">
-                                <a href="javascript:void(0)" class="like-comment">
-                                    <span class="material-icons">thumb_up</span>
-                                </a>
-                                <a href="javascript:void(0)" class="like-comment">
-                                    <span class="material-icons-outlined">thumb_up_off_alt</span>
-                                </a> 12
-                            </div>
-                        </div>
+                        @endif
                     </div>
-                </div>
+                @endforeach
             </div>
         </section>
     </section>
