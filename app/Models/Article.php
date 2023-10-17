@@ -33,6 +33,11 @@ class Article extends Model
         return $this->HasMany(ArticleComment::class, "article_id", "id");
     }
 
+    public function articleLikes(): HasMany
+    {
+        return $this->hasMany(UserLikeArticle::class, "article_id", "id");
+    }
+
     public function scopeStatus($query, $status)
     {
         if (!is_null($status)) {

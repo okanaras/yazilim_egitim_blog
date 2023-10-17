@@ -47,23 +47,29 @@ class FrontController extends Controller
 
         $article = Article::query()
             ->with([
-                'user',
-                'comments' => function ($query) {
+                "user",
+                "user.articleLike",
+                "comments" => function ($query) {
                     $query->where("status", 1)
                         ->whereNull("parent_id");
                 },
-                'comments.user',
-                'comments.children' => function ($query) {
+                "comments.user",
+                "comments.children" => function ($query) {
                     $query->where("status", 1);
                 },
-                'comments.children.user'
+                "comments.children.user"
             ])
-            ->where('slug', $articleSlug)
+            ->where("slug", $articleSlug)
             ->first();
 
-        // dd($article);
 
-        return view('front.article-detail', compact("settings", "categories", "article"));
+        $userLike = $article->user->articleLike->where("article_id", $article->id)->first();
+
+        // view count arttirma
+        $article->increment("view_count");
+        $article->save();
+
+        return view('front.article-detail', compact("settings", "categories", "article", "userLike"));
     }
 
     public function articleComment(Request $request, Article $article)

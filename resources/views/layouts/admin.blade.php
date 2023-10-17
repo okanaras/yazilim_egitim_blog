@@ -8,8 +8,9 @@
     <meta name="description" content="Responsive Admin Dashboard Template">
     <meta name="keywords" content="admin,dashboard">
     <meta name="author" content="stacks">
+
+    {{-- ajax csrf token --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <!-- The above 6 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <!-- Title -->
     <title>@yield('title', 'Admin Panel')</title>
@@ -77,6 +78,8 @@
     <script src="{{ asset('assets/admin/js/main.min.js') }}"></script>
     <script src="{{ asset('assets/admin/js/custom.js') }}"></script>
     <script src="{{ asset('assets/admin/js/pages/dashboard.js') }}"></script>
+
+    {{-- ajax setup --}}
     <script>
         $(document).ready(function() {
             $.ajaxSetup({

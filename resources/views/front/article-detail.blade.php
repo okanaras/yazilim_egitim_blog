@@ -48,10 +48,11 @@
             <!-- like ve yorum button -->
             <div class="article-items d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center">
-                    <a href="javascript:void(0)" class="favorite-article me-2">
+                    <a href="javascript:void(0)" class="favorite-article me-2" id="favoriteArticle"
+                        data-id="{{ $article->id }}">
                         <span class="material-icons-outlined">favorite</span>
                     </a>
-                    <span class="fw-light">100</span>
+                    <span class="fw-light" id="favoriteCount">{{ $article->like_count }}</span>
                 </div>
                 <a href="javascript:void(0)" class="btn-response btnArticleResponse">Cevap Ver</a>
             </div>
@@ -215,4 +216,42 @@
 @endsection
 
 @section('js')
+    <script>
+        $(document).ready(function() {
+            $('#favoriteArticle').click(function() {
+                @if (Auth::check())
+                    let articleID = $(this).data('id');
+                    console.log(articleID);
+                    let self = $(this);
+
+                    $.ajax({
+                        method: "POST",
+                        url: "{{ route('article.favorite') }}",
+                        data: {
+                            id: articleID
+                        },
+                        async: false,
+                        success: function(data) {
+                            if (data.process) {
+                                self.css("color", "red")
+                            } else {
+                                self.css("color", "inherit")
+                            }
+                            $('#favoriteCount').text(data.like_count);
+                        },
+                        error: function() {
+                            console.log("hata geldi");
+                        }
+                    });
+                @else
+                    Swal.fire({
+                        title: "Bilgi",
+                        text: "Kullanici girisi yapmadan favorilerinize alamazsiniz!",
+                        confirmButtonText: "Tamam",
+                        icon: "info"
+                    });
+                @endif
+            });
+        });
+    </script>
 @endsection
