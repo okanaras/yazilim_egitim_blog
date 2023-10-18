@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ArticleComment;
 use App\Models\User;
+use App\Models\UserLikeArticle;
+use App\Models\UserLikeComment;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ArticalCommentController extends Controller
@@ -90,6 +93,45 @@ class ArticalCommentController extends Controller
                     "data" => $comment,
                 ]
             )
+            ->setStatusCode(200);
+    }
+
+    public function favorite(Request $request)
+    {
+        $comment = ArticleComment::query()
+            ->with([
+                "commentLikes" => function ($query) {
+                    $query->where('user_id', auth()->id());
+                }
+            ])
+            ->where("id", $request->id)
+            ->firstOrFail();
+
+
+
+        if ($comment->commentLikes->count()) {
+            $comment->commentLikes()->delete();
+            $comment->like_count--;
+            $process = 0;
+        } else {
+            UserLikeComment::create([
+                'user_id' => auth()->id(),
+                'comment_id' => $comment->id
+            ]);
+            $comment->like_count++;
+            $process = 1;
+        }
+
+        $comment->save();
+
+        return response()
+            ->json([
+                'status' => "success",
+                "message" => "basarili",
+                "like_count" => $comment->like_count,
+                "process" => $process
+
+            ])
             ->setStatusCode(200);
     }
 }

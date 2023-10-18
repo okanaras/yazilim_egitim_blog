@@ -189,6 +189,7 @@
     <script src="{{ asset('assets/admin/plugins/bootstrap/js/popper.min.js') }}"></script>
     <script>
         $(document).ready(function() {
+
             $('.btnChangeStatus').click(function() {
                 let articleID = $(this).data('id');
                 let self = $(this);
@@ -242,58 +243,59 @@
                     }
                 })
             });
+
+
+            $('.btnDelete').click(function() {
+                let articleID = $(this).data('id');
+                let articleName = $(this).data('name');
+                // let articleName = "okan";
+
+                Swal.fire({
+                    title: articleName + "'i Silmek istediğinize emin misiniz?",
+                    showDenyButton: true,
+                    showCancelButton: true,
+                    confirmButtonText: 'Evet',
+                    denyButtonText: `Hayir`,
+                    cancelButtonText: "İptal"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            method: "POST",
+                            url: "{{ route('article.delete') }}",
+                            data: {
+                                "_method": "DELETE",
+                                articleID: articleID
+                            },
+                            async: false,
+                            success: function(data) {
+
+                                $('#row-' + articleID).remove();
+                                Swal.fire({
+                                    title: "Basarili",
+                                    text: "Makale Silindi",
+                                    confirmButtonText: 'Tamam',
+                                    icon: "success"
+                                });
+                            },
+                            error: function() {
+                                console.log("hata geldi");
+                            }
+                        })
+
+                    } else if (result.isDenied) {
+                        Swal.fire({
+                            title: "Bilgi",
+                            text: "Herhangi bir islem yapilmadi",
+                            confirmButtonText: 'Tamam',
+                            icon: "info"
+                        });
+                    }
+                })
+
+            });
+
+            $('#selectParentCategory').select2();
         });
-
-        $('.btnDelete').click(function() {
-            let articleID = $(this).data('id');
-            let articleName = $(this).data('name');
-            // let articleName = "okan";
-
-            Swal.fire({
-                title: articleName + "'i Silmek istediğinize emin misiniz?",
-                showDenyButton: true,
-                showCancelButton: true,
-                confirmButtonText: 'Evet',
-                denyButtonText: `Hayir`,
-                cancelButtonText: "İptal"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        method: "POST",
-                        url: "{{ route('article.delete') }}",
-                        data: {
-                            "_method": "DELETE",
-                            articleID: articleID
-                        },
-                        async: false,
-                        success: function(data) {
-
-                            $('#row-' + articleID).remove();
-                            Swal.fire({
-                                title: "Basarili",
-                                text: "Makale Silindi",
-                                confirmButtonText: 'Tamam',
-                                icon: "success"
-                            });
-                        },
-                        error: function() {
-                            console.log("hata geldi");
-                        }
-                    })
-
-                } else if (result.isDenied) {
-                    Swal.fire({
-                        title: "Bilgi",
-                        text: "Herhangi bir islem yapilmadi",
-                        confirmButtonText: 'Tamam',
-                        icon: "info"
-                    });
-                }
-            })
-
-        });
-
-        $('#selectParentCategory').select2();
     </script>
 
     <script>

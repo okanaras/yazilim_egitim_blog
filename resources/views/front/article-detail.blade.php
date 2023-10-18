@@ -49,7 +49,7 @@
             <div class="article-items d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center">
                     <a href="javascript:void(0)" class="favorite-article me-2" id="favoriteArticle"
-                        data-id="{{ $article->id }}">
+                        data-id="{{ $article->id }}" @if (!is_null($userLike)) style="color: red" @endif>
                         <span class="material-icons-outlined">favorite</span>
                     </a>
                     <span class="fw-light" id="favoriteCount">{{ $article->like_count }}</span>
@@ -143,12 +143,19 @@
                                                 data-id="{{ $comment->id }}">Cevap Ver</a>
                                         </div>
                                         <div class="d-flex align-items-center ">
-                                            <a href="javascript:void(0)" class="like-comment">
+                                            @php
+                                                $commentLike = $comment->commentLikes
+                                                    ->where('user_id', auth()->id())
+                                                    ->where('comment_id', $comment->id)
+                                                    ->first();
+                                            @endphp
+                                            <a href="javascript:void(0)" class="like-comment me-1"
+                                                data-id="{{ $comment->id }}"
+                                                @if (!is_null($commentLike)) style="color:red" @endif>
                                                 <span class="material-icons">thumb_up</span>
                                             </a>
-                                            <a href="javascript:void(0)" class="like-comment">
-                                                <span class="material-icons-outlined">thumb_up_off_alt</span>
-                                            </a> 12
+                                            <span class="fw-light"
+                                                id="commentLikeCount-{{ $comment->id }}">{{ $comment->like_count }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -194,12 +201,19 @@
                                                 </p>
                                                 <div class="d-flex align-items-center justify-content-between">
                                                     <div class="d-flex align-items-center ">
-                                                        <a href="javascript:void(0)" class="like-comment">
+                                                        @php
+                                                            $commentLikeChild = $child->commentLikes
+                                                                ->where('user_id', auth()->id())
+                                                                ->where('comment_id', $child->id)
+                                                                ->first();
+                                                        @endphp
+                                                        <a href="javascript:void(0)" class="like-comment me-1"
+                                                            data-id="{{ $child->id }}"
+                                                            @if (!is_null($commentLikeChild)) style="color:red" @endif>
                                                             <span class="material-icons">thumb_up</span>
                                                         </a>
-                                                        <a href="javascript:void(0)" class="like-comment">
-                                                            <span class="material-icons-outlined">thumb_up_off_alt</span>
-                                                        </a> 12
+                                                        <span class="fw-light"
+                                                            id="commentLikeCount-{{ $child->id }}">{{ $child->like_count }}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -247,6 +261,40 @@
                     Swal.fire({
                         title: "Bilgi",
                         text: "Kullanici girisi yapmadan favorilerinize alamazsiniz!",
+                        confirmButtonText: "Tamam",
+                        icon: "info"
+                    });
+                @endif
+            });
+            $('.like-comment').click(function() {
+                @if (Auth::check())
+                    let id = $(this).data('id');
+                    console.log(id);
+                    let self = $(this);
+
+                    $.ajax({
+                        method: "POST",
+                        url: "{{ route('article.comment.favorite') }}",
+                        data: {
+                            id: id
+                        },
+                        async: false,
+                        success: function(data) {
+                            if (data.process) {
+                                self.css("color", "red")
+                            } else {
+                                self.css("color", "inherit")
+                            }
+                            $('#commentLikeCount-' + id).text(data.like_count);
+                        },
+                        error: function() {
+                            console.log("hata geldi");
+                        }
+                    });
+                @else
+                    Swal.fire({
+                        title: "Bilgi",
+                        text: "Kullanici girisi yapmadan yorumu begenemezsiniz!",
                         confirmButtonText: "Tamam",
                         icon: "info"
                     });

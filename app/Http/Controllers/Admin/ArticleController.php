@@ -267,7 +267,7 @@ class ArticleController extends Controller
             ->firstOrFail();
 
 
-        if ($article->articleLikes()->count()) {
+        if ($article->articleLikes->count()) {
             $article->articleLikes()->delete();
             $article->like_count--;
             $process = 0;
