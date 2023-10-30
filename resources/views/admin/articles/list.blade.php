@@ -152,10 +152,12 @@
                             <td>{{ $article->tags }}</td>
                             <td>{{ $article->view_count }}</td>
                             <td>{{ $article->like_count }}</td>
+                            {{-- <td>{{ $article->category->name }}</td> --}}
                             <td>{{ $article->category?->name }}</td>
-                            {{-- burada egerki baglanti silinmis ise sadece olanlar gelir aynisini asagida da yaptim user icin --}}
+                            {{-- burada egerki baglanti silinmis ise sadece olanlar gelir aynisini asagida da yaptim user icin ama kullanma hatani gormek icin acik birak daha once yasadigim gibi --}}
                             <td>{{ isset($article->publish_date) ? Carbon\Carbon::parse($article->publish_date)->translatedFormat('d F Y H:i:s') : 'Tarih Girilmedi' }}
                             </td>
+                            {{-- <td>{{ $article->user->name }}</td> --}}
                             <td>{{ $article->user?->name }}</td>
                             <td>
                                 <div class="d-flex">

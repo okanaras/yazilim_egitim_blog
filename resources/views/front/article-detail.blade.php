@@ -18,7 +18,10 @@
                             $publishDate = \Illuminate\Support\Carbon::parse($article->publish_date)->format('d-m-Y');
                         @endphp
                         <time datetime="{{ $publishDate }}">{{ $publishDate }}</time>
-                        @foreach ($article->getAttribute('tags') as $tag)
+                        @php
+                            $tags = explode(',', $article->tags);
+                        @endphp
+                        @foreach ($article->getAttribute('tagsToArray') as $tag)
                             @php
                                 $class = ['text-danger', 'text-primary', 'text-warning', 'text-info', 'text-secondary', 'text-succes', 'text-dark'];
                                 $randomClass = $class[random_int(0, 6)];

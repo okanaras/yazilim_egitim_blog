@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Attribute;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,10 +15,15 @@ class Article extends Model
     protected $guarded = ['id', 'created_at', 'updated_at'];
     // protected $fillable=['name','status']; bu sekilde cok uzun suruyor
 
-    public function getTagsAttribute(): array|false
+    public function getTagsToArrayAttribute(): array|false
     {
         return explode(",", $this->attributes['tags']);
     }
+
+    // protected function getTagsToStringAttribute(): string
+    // {
+    //     return is_array($this->tags) ? implode(',', $this->tags) : '';
+    // }
 
     public function category(): HasOne
     {

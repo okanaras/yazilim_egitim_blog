@@ -21,6 +21,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::prefix("admin")->middleware("auth")->group(function () {
+
+    Route::group(['prefix' => 'filemanager'], function () {
+        \UniSharp\LaravelFilemanager\Lfm::routes();
+    });
+
     Route::get('/', function () {
         return view('admin.index');
     })->name("admin.index");
@@ -71,23 +76,17 @@ Route::prefix("admin")->middleware("auth")->group(function () {
 
 });
 
-Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function () {
-    \UniSharp\LaravelFilemanager\Lfm::routes();
-});
-
-
-
+// front
 Route::get('/', [FrontController::class, "home"])->name("home");
 Route::get('/kategoriler/{category:slug}', [FrontController::class, "category"])->name("front.category");
-Route::get('/{user:username}/{article:slug}', [FrontController::class, "articleDetail"])->name("front.articleDetail");
+Route::get('/@{user:username}/{article:slug}', [FrontController::class, "articleDetail"])->name("front.articleDetail");
 Route::post("{article:id}/makale-yorum", [FrontController::class, "articleComment"])->name("article.comment");
 
-
-
-
+// login
 Route::get("/login", [LoginController::class, "showLogin"])->name("login");
 Route::post("/login", [LoginController::class, "login"]);
 Route::post("/logout", [LoginController::class, "logout"])->name("logout");
 
+// register
 Route::get("/register", [LoginController::class, "showRegister"])->name("register");
 Route::post("/register", [LoginController::class, "register"]);
