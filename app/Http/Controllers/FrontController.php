@@ -9,21 +9,35 @@ use App\Models\Settings;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
 
 class FrontController extends Controller
 {
+
+    /*
+        view share burada construct icine yazildigi icin her yerde direkt calisacak mesela articleCommentte olmadigi halde calisacak bu yuzden duruma gore composer(appprovider) veya share kullanilmali
+
+        public function __construct()
+        {
+            $settings = Settings::first();
+            $categories = Category::query()->where("status", 1)->get();
+
+            View::share(["categories" => $categories, "settings" => $settings]);
+        }
+    */
+
     public function home()
     {
-        $settings = Settings::first();
-        $categories = Category::query()->where("status", 1)->get();
+        // $settings = Settings::first();
+        // $categories = Category::query()->where("status", 1)->get();
 
-        return view("front.index", compact("settings", "categories"));
+        return view("front.index");
     }
 
     public function category(Request $request, string $slug)
     {
-        $settings = Settings::first();
-        $categories = Category::query()->where("status", 1)->get();
+        // $settings = Settings::first();
+        // $categories = Category::query()->where("status", 1)->get();
 
 
         $category = Category::query()->with("articlesActive")->where("slug", $slug)->first();
@@ -37,13 +51,13 @@ class FrontController extends Controller
             })
             ->paginate(3);
 
-        return view("front.article-list", compact("category", "settings", "categories", "articles"));
+        return view("front.article-list", compact("category", "articles"));
     }
 
     public function articleDetail(Request $request, string $username, string $articleSlug)
     {
-        $settings = Settings::first();
-        $categories = Category::query()->where("status", 1)->get();
+        // $settings = Settings::first();
+        // $categories = Category::query()->where("status", 1)->get();
 
         $article = Article::query()
             ->with([
@@ -75,7 +89,7 @@ class FrontController extends Controller
         $article->increment("view_count");
         $article->save();
 
-        return view('front.article-detail', compact("settings", "categories", "article", "userLike"));
+        return view('front.article-detail', compact("article", "userLike"));
     }
 
     public function articleComment(Request $request, Article $article)
