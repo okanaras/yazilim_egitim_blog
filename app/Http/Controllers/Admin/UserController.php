@@ -15,6 +15,7 @@ class UserController extends Controller
             ->withTrashed()
             ->status($request->status)
             ->searchText($request->search_text)
+            ->isAdmin($request->is_admin)
             ->paginate(10);
         return view("admin.users.list", compact("list"));
     }
@@ -99,6 +100,24 @@ class UserController extends Controller
             $user->save();
             return response()
                 ->json(['status' => "success", "message" => "basarili", "data" => $user, "user_status" => $user->status])
+                ->setStatusCode(200);
+        }
+        return response()
+            ->json(['status' => "error", "message" => "makale bulunamadi"])
+            ->setStatusCode(404);
+    }
+
+    public function changeIsAdmin(Request $request): JsonResponse
+    {
+        $user = User::query()
+            ->where("id", $request->id)
+            ->first();
+
+        if ($user) {
+            $user->is_admin = $user->is_admin ? 0 : 1;
+            $user->save();
+            return response()
+                ->json(['is_admin' => "success", "message" => "basarili", "data" => $user, "is_admin" => $user->is_admin])
                 ->setStatusCode(200);
         }
         return response()

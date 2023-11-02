@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\UserStoreRequest;
 use App\Models\User;
+use App\Models\UserVerify;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
@@ -107,6 +110,56 @@ class LoginController extends Controller
 
         $user->status = 0;
         $user->save();
+
+        $token = Str::random("60");
+
+        // kayit sirasinda maili dogrulamak icin token olusturup userVerify'a ekliyoruz. daha sonra mail gondertiyoruz
+        UserVerify::create([
+            'user_id' => $user->id,
+            'token' => $token
+        ]);
+        Mail::send("email.verify", compact('token'), function ($mail) use ($user) {
+            $mail->to($user->email);
+            $mail->subject('Dogrulama Emaili');
+            //mail->from()
+        });
+
+        alert()
+            ->success('Basarili', "Mail onayi icin adresinize link gonderildi. Posta kutunuzu kontrol ediniz!")
+            ->showConfirmButton('Tamam', '#3085d6')
+            ->autoClose(5000);
+
+        return redirect()->back();
+    }
+
+
+    public function verify(Request $request, $token)
+    {
+        $verifyQuery = UserVerify::query()->where('token', $token);
+        $find = $verifyQuery->first();
+
+        if (!is_null($find)) {
+            $user = $find->user;
+
+            if (is_null($user->email_verified_at)) {
+                $user->email_verified_at = now();
+                $user->status = 1;
+                $user->save();
+                $verifyQuery->delete();
+                $message = 'Emailiniz dogrulandi';
+            } else {
+                $message = 'Emailiniz zaten dogrulanmis! Giris yapabilirsiniz.';
+            }
+
+            alert()
+                ->success('Basarili', $message)
+                ->showConfirmButton('Tamam', '#3085d6')
+                ->autoClose(5000);
+            return redirect()->route('login');
+
+        } else {
+            abort(404);
+        }
     }
 
 }

@@ -94,21 +94,44 @@
                             </li>
                         </ul>
 
-                        {{-- Giris Kayit butonlari --}}
-                        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                            <li class="nav-item">
-                                <a class="nav-link d-flex me-1 text-orange" href="#">
-                                    <span class="material-icons">app_registration</span>
-                                    Kayit
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link d-flex me-1 text-orange" href="#">
-                                    <span class="material-icons">how_to_reg</span>
-                                    Giris
-                                </a>
-                            </li>
-                        </ul>
+                        {{-- kullanici auth kontrol --}}
+                        @auth
+                            {{-- Giris Kayit butonlari --}}
+                            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                                <li class="nav-item">
+                                    <a class="nav-link d-flex me-1 text-orange" href="#">
+                                        <i class="fa fa-user me-1 d-flex align-items-center "></i>
+                                        {{ auth()->user()->username }} denem
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link d-flex me-1 text-orange" href="#"
+                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                        <i class="fa fa-close me-1 d-flex align-items-center "></i>
+                                        Cikis Yap</a>
+                                    <form action="{{ route('logout') }}" method="POST" id="logout-form">
+                                        @csrf
+                                    </form>
+                                </li>
+                            </ul>
+                        @else
+                            {{-- Giris Kayit butonlari --}}
+                            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                                <li class="nav-item">
+                                    <a class="nav-link d-flex me-1 text-orange" href="#">
+                                        <span class="material-icons">app_registration</span>
+                                        Kayit
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link d-flex me-1 text-orange" href="#">
+                                        <span class="material-icons">how_to_reg</span>
+                                        Giris
+                                    </a>
+                                </li>
+                            </ul>
+                        @endauth
+
                     </div>
                 </nav>
             </div>

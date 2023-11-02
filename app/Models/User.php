@@ -25,7 +25,13 @@ class User extends Authenticatable
         'password',
         'username',
         'about',
-        'image',
+        'google_id',
+        'facebook_id',
+        'twitter_id',
+        'github_id',
+        'status',
+        'email_verified_at',
+        'is_admin'
     ];
 
     /**
@@ -64,6 +70,14 @@ class User extends Authenticatable
             });
         }
     }
+
+    public function scopeIsAdmin($query, $is_admin)
+    {
+        if (!is_null($is_admin)) {
+            return $query->where("is_admin", $is_admin);
+        }
+    }
+
 
     public function articles(): HasMany
     {

@@ -69,6 +69,13 @@
                         </div>
 
                         <div class="form-check m-t-md">
+                            <input type="checkbox" class="form-check-input" value="1" name="is_admin" id="is_admin"
+                                {{ isset($user) && $user->is_admin ? 'checked' : '' }}>
+                            <label for="is_admin" class="form-check-label">
+                                Kullanici admin mi?
+                            </label>
+                        </div>
+                        <div class="form-check m-t-md">
                             <input type="checkbox" class="form-check-input" value="1" name="status" id="status"
                                 {{ isset($user) && $user->status ? 'checked' : '' }}>
                             <label for="status" class="form-check-label">

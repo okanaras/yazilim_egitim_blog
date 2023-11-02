@@ -20,59 +20,59 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix("admin")->middleware("auth")->group(function () {
+Route::prefix("admin")->middleware(["auth", "verified"])->group(function () {
+    // admin role
+    Route::middleware("isAdmin")->group(function () {
+        Route::group(['prefix' => 'filemanager'], function () {
+            \UniSharp\LaravelFilemanager\Lfm::routes();
+        });
 
-    Route::group(['prefix' => 'filemanager'], function () {
-        \UniSharp\LaravelFilemanager\Lfm::routes();
+        Route::get('/', function () {
+            return view('admin.index');
+        })->name("admin.index");
+
+        Route::get("articles", [ArticleController::class, "index"])->name("article.index");
+        Route::get("articles/create", [ArticleController::class, "create"])->name("article.create");
+        Route::post("articles/create", [ArticleController::class, "store"]);
+        Route::get("articles/{id}/edit", [ArticleController::class, "edit"])->name("article.edit");
+        Route::post("articles/{id}/edit", [ArticleController::class, "update"]);
+        Route::post('article/change-status', [ArticleController::class, "changeStatus"])->name("article.changeStatus");
+        Route::delete('article/delete', [ArticleController::class, "delete"])->name("article.delete");
+
+        Route::get("article/pending-approval", [ArticalCommentController::class, "approvalList"])->name("artical.pending-approval");
+        Route::get("article/comment-list", [ArticalCommentController::class, "list"])->name("artical.comment.list");
+        Route::post("article/pending-approval/change-status", [ArticalCommentController::class, "changeStatus"])->name("artical.pending-approval.changeStatus");
+        Route::delete("article/pending-approval/delete", [ArticalCommentController::class, "delete"])->name("artical.pending-approval.delete");
+        Route::post("article/comment-restore", [ArticalCommentController::class, "restore"])->name("artical.comment.restore");
+
+        Route::get("categories", [CategoryController::class, "index"])->name("category.index");
+        Route::get("categories/create", [CategoryController::class, "create"])->name("category.create");
+        Route::post("categories/create", [CategoryController::class, "store"]);
+        Route::post('categories/change-status', [CategoryController::class, "changeStatus"])->name("categories.changeStatus");
+        Route::post('categories/change-feature-status', [CategoryController::class, "changeFeatureStatus"])->name("categories.changeFeatureStatus");
+        Route::post('categories/delete', [CategoryController::class, "delete"])->name("categories.delete");
+        Route::get('categories/{id}/edit', [CategoryController::class, "edit"])->name("categories.edit")->whereNumber("id");
+        Route::post('categories/{id}/edit', [CategoryController::class, "update"])->whereNumber("id");
+
+
+        Route::get('settings', [SettingsController::class, "show"])->name("settings");
+        Route::post('settings', [SettingsController::class, "update"]);
+
+
+        Route::get("users/create", [UserController::class, "create"])->name("user.create");
+        Route::post("users/create", [UserController::class, "store"]);
+        Route::get("users", [UserController::class, "index"])->name("user.index");
+        Route::post('users/change-status', [UserController::class, "changeStatus"])->name("user.changeStatus");
+        Route::post('users/change-is-admin', [UserController::class, "changeIsAdmin"])->name("user.changeIsAdmin");
+        Route::get('users/{user:username}/edit', [UserController::class, "edit"])->name("user.edit")->whereNumber("id");
+        Route::post('users/{user:username}/edit', [UserController::class, "update"])->whereNumber("id");
+        Route::delete('users/delete', [UserController::class, "delete"])->name("user.delete");
+        Route::post('users/restore', [UserController::class, "restore"])->name("user.restore");
     });
 
-    Route::get('/', function () {
-        return view('admin.index');
-    })->name("admin.index");
-
-
-    Route::get("articles", [ArticleController::class, "index"])->name("article.index");
-    Route::get("articles/create", [ArticleController::class, "create"])->name("article.create");
-    Route::post("articles/create", [ArticleController::class, "store"]);
-    Route::get("articles/{id}/edit", [ArticleController::class, "edit"])->name("article.edit");
-    Route::post("articles/{id}/edit", [ArticleController::class, "update"]);
-    Route::post('article/change-status', [ArticleController::class, "changeStatus"])->name("article.changeStatus");
-    Route::delete('article/delete', [ArticleController::class, "delete"])->name("article.delete");
+    // user role
     Route::post('article/favorite', [ArticleController::class, "favorite"])->name("article.favorite");
-
     Route::post('article/comment-favorite', [ArticalCommentController::class, "favorite"])->name("article.comment.favorite");
-
-    Route::get("article/pending-approval", [ArticalCommentController::class, "approvalList"])->name("artical.pending-approval");
-    Route::get("article/comment-list", [ArticalCommentController::class, "list"])->name("artical.comment.list");
-    Route::post("article/pending-approval/change-status", [ArticalCommentController::class, "changeStatus"])->name("artical.pending-approval.changeStatus");
-    Route::delete("article/pending-approval/delete", [ArticalCommentController::class, "delete"])->name("artical.pending-approval.delete");
-    Route::post("article/comment-restore", [ArticalCommentController::class, "restore"])->name("artical.comment.restore");
-
-
-    Route::get("categories", [CategoryController::class, "index"])->name("category.index");
-    Route::get("categories/create", [CategoryController::class, "create"])->name("category.create");
-    Route::post("categories/create", [CategoryController::class, "store"]);
-    Route::post('categories/change-status', [CategoryController::class, "changeStatus"])->name("categories.changeStatus");
-    Route::post('categories/change-feature-status', [CategoryController::class, "changeFeatureStatus"])->name("categories.changeFeatureStatus");
-    Route::post('categories/delete', [CategoryController::class, "delete"])->name("categories.delete");
-    Route::get('categories/{id}/edit', [CategoryController::class, "edit"])->name("categories.edit")->whereNumber("id");
-    Route::post('categories/{id}/edit', [CategoryController::class, "update"])->whereNumber("id");
-
-
-    Route::get('settings', [SettingsController::class, "show"])->name("settings");
-    Route::post('settings', [SettingsController::class, "update"]);
-
-
-    Route::get("users/create", [UserController::class, "create"])->name("user.create");
-    Route::post("users/create", [UserController::class, "store"]);
-    Route::get("users", [UserController::class, "index"])->name("user.index");
-    Route::post('users/change-status', [UserController::class, "changeStatus"])->name("user.changeStatus");
-    Route::get('users/{user:username}/edit', [UserController::class, "edit"])->name("user.edit")->whereNumber("id");
-    Route::post('users/{user:username}/edit', [UserController::class, "update"])->whereNumber("id");
-    Route::delete('users/delete', [UserController::class, "delete"])->name("user.delete");
-    Route::post('users/restore', [UserController::class, "restore"])->name("user.restore");
-
-
 
 });
 
@@ -93,3 +93,6 @@ Route::post("/logout", [LoginController::class, "logout"])->name("logout");
 // register
 Route::get("/register", [LoginController::class, "showRegister"])->name("register");
 Route::post("/register", [LoginController::class, "register"]);
+
+// mail
+Route::get("/auth/verify/{token}", [LoginController::class, "verify"])->name("verify-token");

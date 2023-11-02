@@ -41,8 +41,15 @@
                             <option value="1" {{ request()->get('status') === '1' ? 'selected' : '' }}>Aktif</option>
                         </select>
                     </div>
-
                     <div class="col-3 my-2">
+                        <select class="form-select" name="is_admin" aria-label="Default select example">
+                            <option value="{{ null }}">Is Admin</option>
+                            <option value="0" {{ request()->get('is_admin') === '0' ? 'selected' : '' }}>User</option>
+                            <option value="1" {{ request()->get('is_admin') === '1' ? 'selected' : '' }}>Admin</option>
+                        </select>
+                    </div>
+
+                    <div class="col-6 my-2">
                         <input type="text" class="form-control" value="{{ request()->get('search_text') }}"
                             name="search_text" placeholder="Name, Username, Email">
                     </div>
@@ -62,6 +69,7 @@
                     <th scope="col">Username</th>
                     <th scope="col">Email</th>
                     <th scope="col">Status</th>
+                    <th scope="col">Is Admin</th>
                     <th scope="col">Actions</th>
                 </x-slot:columns>
 
@@ -84,6 +92,15 @@
                                 @else
                                     <a href="javascript:void(0)" data-id="{{ $user->id }}"
                                         class="btn btn-danger btn-sm btnChangeStatus">Pasif</a>
+                                @endif
+                            </td>
+                            <td>
+                                @if ($user->is_admin)
+                                    <a href="javascript:void(0)" data-id="{{ $user->id }}"
+                                        class="btn btn-primary btn-sm btnChangeIsAdmin">Admin</a>
+                                @else
+                                    <a href="javascript:void(0)" data-id="{{ $user->id }}"
+                                        class="btn btn-secondary btn-sm btnChangeIsAdmin">User</a>
                                 @endif
                             </td>
                             <td>
@@ -162,6 +179,61 @@
                                     self.removeClass("btn-success");
                                     self.addClass("btn-danger");
                                     self.text("Pasif");
+                                }
+                                Swal.fire({
+                                    title: "Basarili",
+                                    text: "Status Guncellendi!",
+                                    confirmButtonText: "Tamam",
+                                    icon: "success"
+                                });
+                            },
+                            error: function() {
+                                console.log("hata geldi");
+                            }
+                        });
+                    } else if (result.isDenied) {
+                        Swal.fire({
+                            title: "Bilgi",
+                            text: "Herhangi bir islem yapilmadi!",
+                            confirmButtonText: "Tamam",
+                            icon: "info"
+                        });
+                    }
+                })
+            });
+
+            // ChangeIsAdmin Ajax
+            $('.btnChangeIsAdmin').click(function() {
+                let userID = $(this).data('id');
+                let self = $(this);
+
+                Swal.fire({
+                    title: 'Admin durumunu degistirmek istediginize emin misiniz?',
+                    showDenyButton: true,
+                    showCancelButton: true,
+                    confirmButtonText: 'Evet',
+                    denyButtonText: `Hayir`,
+                    cancelButtonText: "Iptal"
+                }).then((result) => {
+                    /* Read more about isConfirmed, isDenied below */
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            method: "POST",
+                            url: "{{ route('user.changeIsAdmin') }}",
+                            data: {
+                                id: userID
+                            },
+                            async: false,
+                            success: function(data) {
+                                if (data.is_admin) {
+                                    self.removeClass("btn-secondary");
+                                    self.addClass("btn-primary");
+                                    self.text("Admin");
+
+                                } else {
+                                    self.removeClass("btn-primary");
+                                    self.addClass("btn-secondary");
+                                    self.text("User");
                                 }
                                 Swal.fire({
                                     title: "Basarili",
