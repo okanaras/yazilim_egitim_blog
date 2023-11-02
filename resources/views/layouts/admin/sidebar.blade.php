@@ -74,12 +74,32 @@
                     </li>
                 </ul>
             </li>
+
+            <li class="{{ Route::is('user.index') || Route::is('user.create') ? 'open' : '' }}">
+                <a href="#" class="">
+                    <i class="material-icons">person</i>
+                    Kullanici Yonetimi
+                    <i class="material-icons has-sub-menu">keyboard_arrow_right</i>
+                </a>
+                <ul class="sub-menu" style="">
+                    <li>
+                        <a href="{{ route('user.create') }}"
+                            class="{{ Route::is('user.create') ? 'active' : '' }}">Kullanici Ekle</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('user.index') }}"
+                            class="{{ Route::is('user.index') ? 'active' : '' }}">Kullanici Listesi</a>
+                    </li>
+                </ul>
+            </li>
+
             <li class="{{ Route::is('settings') ? 'open' : '' }}">
                 <a href="{{ route('settings') }}" class="">
                     <i class="material-icons-two-tone">settings</i>
                     Ayarlar
                 </a>
             </li>
+
         </ul>
     </div>
 </div>

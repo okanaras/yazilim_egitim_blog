@@ -76,6 +76,10 @@ Route::prefix("admin")->middleware("auth")->group(function () {
 
 });
 
+Route::get("admin/login", [LoginController::class, "showLogin"])->name("login");
+Route::post("admin/login", [LoginController::class, "login"]);
+
+
 // front
 Route::get('/', [FrontController::class, "home"])->name("home");
 Route::get('/kategoriler/{category:slug}', [FrontController::class, "category"])->name("front.category");
@@ -83,8 +87,7 @@ Route::get('/@{user:username}/{article:slug}', [FrontController::class, "article
 Route::post("{article:id}/makale-yorum", [FrontController::class, "articleComment"])->name("article.comment");
 
 // login
-Route::get("/login", [LoginController::class, "showLogin"])->name("login");
-Route::post("/login", [LoginController::class, "login"]);
+
 Route::post("/logout", [LoginController::class, "logout"])->name("logout");
 
 // register

@@ -19,6 +19,7 @@
         rel="stylesheet">
 
     <link href="{{ asset('assets/front/material-icons/iconfont/material-icons.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/front/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
 
     <link rel="stylesheet" href="{{ asset('assets/front/swiper/swiper-bundle.min.css') }}">
 
@@ -90,6 +91,22 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+                            </li>
+                        </ul>
+
+                        {{-- Giris Kayit butonlari --}}
+                        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                <a class="nav-link d-flex me-1 text-orange" href="#">
+                                    <span class="material-icons">app_registration</span>
+                                    Kayit
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link d-flex me-1 text-orange" href="#">
+                                    <span class="material-icons">how_to_reg</span>
+                                    Giris
+                                </a>
                             </li>
                         </ul>
                     </div>
