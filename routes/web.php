@@ -94,5 +94,8 @@ Route::post("/logout", [LoginController::class, "logout"])->name("logout");
 Route::get("/register", [LoginController::class, "showRegister"])->name("register");
 Route::post("/register", [LoginController::class, "register"]);
 
+Route::get("/login", [LoginController::class, "showLoginUser"])->name("user.login");
+Route::post("/login", [LoginController::class, "loginUser"]);
+
 // mail
 Route::get("/auth/verify/{token}", [LoginController::class, "verify"])->name("verify-token");

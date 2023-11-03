@@ -20,6 +20,11 @@ class LoginController extends Controller
         return view("auth.login");
     }
 
+    public function showLoginUser()
+    {
+        return view("front.auth.login");
+    }
+
     public function showRegister()
     {
         return view("front.auth.register");
@@ -36,6 +41,11 @@ class LoginController extends Controller
 
         if ($user && Hash::check($password, $user->password)) {
             Auth::login($user, $remember);
+            $userIsAdmin = Auth::user()->is_admin;
+
+            if (!$userIsAdmin) {
+                return redirect()->route("home");
+            }
             // Auth::loginUsingId($user->id);
             return redirect()->route("admin.index");
         } else {
@@ -91,10 +101,15 @@ class LoginController extends Controller
     public function logout(Request $request)
     {
         if (Auth::check()) {
+            $is_admin = Auth::user()->is_admin;
             Auth::logout();
 
             $request->session()->invalidate();
             $request->session()->regenerateToken();
+
+            if (!$is_admin) {
+                return redirect()->route("home");
+            }
 
             return redirect()->route("login");
         }

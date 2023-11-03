@@ -99,13 +99,13 @@
                             {{-- Giris Kayit butonlari --}}
                             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                                 <li class="nav-item">
-                                    <a class="nav-link d-flex me-1 text-orange" href="#">
+                                    <a class="nav-link d-flex me-1 text-orange" href="javascript:void(0)">
                                         <i class="fa fa-user me-1 d-flex align-items-center "></i>
-                                        {{ auth()->user()->username }} denem
+                                        {{ auth()->user()->username }}
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link d-flex me-1 text-orange" href="#"
+                                    <a class="nav-link d-flex me-1 text-orange" href="javascript:void(0)"
                                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                         <i class="fa fa-close me-1 d-flex align-items-center "></i>
                                         Cikis Yap</a>
@@ -118,13 +118,13 @@
                             {{-- Giris Kayit butonlari --}}
                             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                                 <li class="nav-item">
-                                    <a class="nav-link d-flex me-1 text-orange" href="#">
+                                    <a class="nav-link d-flex me-1 text-orange" href="{{ route('register') }}">
                                         <span class="material-icons">app_registration</span>
                                         Kayit
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link d-flex me-1 text-orange" href="#">
+                                    <a class="nav-link d-flex me-1 text-orange" href="{{ route('user.login') }}">
                                         <span class="material-icons">how_to_reg</span>
                                         Giris
                                     </a>
