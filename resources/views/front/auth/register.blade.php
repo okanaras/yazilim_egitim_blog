@@ -43,7 +43,7 @@
 
                             <div class="col-md-12 social-media-register">
                                 <div class="d-flex justify-content-center">
-                                    <a href="">
+                                    <a href="{{ route('socialLogin', ['driver' => 'google']) }}">
                                         <i class="fa fa-google fa-2x me-3"></i>
                                     </a>
 

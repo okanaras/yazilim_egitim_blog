@@ -7,11 +7,15 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\UserStoreRequest;
 use App\Models\User;
 use App\Models\UserVerify;
+use Illuminate\Hashing\BcryptHasher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Laravel\Socialite\Facades\Socialite;
+
+use function PHPUnit\Framework\isNull;
 
 class LoginController extends Controller
 {
@@ -57,7 +61,7 @@ class LoginController extends Controller
                 ->onlyInput("email", "remember");
         }
 
-        dd($request->all());
+        // dd($request->all());
     }
     public function login2(LoginRequest $request)
     {
@@ -177,4 +181,41 @@ class LoginController extends Controller
         }
     }
 
+
+    public function socialLogin($driver)
+    {
+        return Socialite::driver($driver)->redirect();
+    }
+
+    public function socialVerify($driver)
+    {
+        $user = Socialite::driver($driver)->user();
+        // user varsa login et kayderme
+        $userCheck = User::where('email', $user->getEmail())->first();
+        if (!is_null($userCheck)) {
+            Auth::login($userCheck);
+            return redirect()->route('home');
+        }
+
+        // user yoksa
+        $username = Str::slug($user->getName());
+        $userCreate = User::create([
+            'name' => $user->getName(),
+            'email' => $user->getEmail(),
+            'password' => bcrypt(''),
+            'username' => is_null($this->checkUsername($username)) ? $username : $username . uniqid(),
+            'status' => 1,
+            'email_verified_at' => now(),
+            $driver . '_id' => $user->getId(),
+        ]);
+
+        // kaydi yapip user girisi yaptirdik ve home yonlendirdik
+        Auth::login($userCreate);
+        return redirect()->route('home');
+    }
+
+    public function checkUsername(string $username): null|object
+    {
+        return User::query()->where('username', $username)->first();
+    }
 }

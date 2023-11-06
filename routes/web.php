@@ -99,3 +99,6 @@ Route::post("/login", [LoginController::class, "loginUser"]);
 
 // mail
 Route::get("/auth/verify/{token}", [LoginController::class, "verify"])->name("verify-token");
+// google
+Route::get('auth/{driver}/callback', [LoginController::class, "socialVerify"])->name("socialVerify");
+Route::get('auth/{driver}', [LoginController::class, "socialLogin"])->name("socialLogin");
