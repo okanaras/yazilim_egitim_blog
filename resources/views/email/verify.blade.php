@@ -5,10 +5,13 @@
 
 <h1>Dogrulama Emaili</h1>
 
-<span>
+<p>
+    Merhaba {{ $user->name }}, hosgeldiniz.
+</p>
+
+<p>
     Lutfen asagidaki linkten email adresinizi dogrulayiniz.
-</span>
+</p>
 
 <br>
-
 <a href="{{ route('verify-token', ['token' => $token]) }}">Mailimi dogrula</a>

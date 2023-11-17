@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Events\UserRegistered;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\UserStoreRequest;
@@ -130,18 +131,20 @@ class LoginController extends Controller
         $user->status = 0;
         $user->save();
 
-        $token = Str::random("60");
+        event(new UserRegistered($user));
 
-        // kayit sirasinda maili dogrulamak icin token olusturup userVerify'a ekliyoruz. daha sonra mail gondertiyoruz
-        UserVerify::create([
-            'user_id' => $user->id,
-            'token' => $token
-        ]);
-        Mail::send("email.verify", compact('token'), function ($mail) use ($user) {
-            $mail->to($user->email);
-            $mail->subject('Dogrulama Emaili');
-            //mail->from()
-        });
+        // $token = Str::random("60");
+        // // kayit sirasinda maili dogrulamak icin token olusturup userVerify'a ekliyoruz. daha sonra mail gondertiyoruz
+        // UserVerify::create([
+        //     'user_id' => $user->id,
+        //     'token' => $token
+        // ]);
+
+        // Mail::send("email.verify", compact('token'), function ($mail) use ($user) {
+        //     $mail->to($user->email);
+        //     $mail->subject('Dogrulama Emaili');
+        //     //mail->from()
+        // });
 
         alert()
             ->success('Basarili', "Mail onayi icin adresinize link gonderildi. Posta kutunuzu kontrol ediniz!")

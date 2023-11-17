@@ -35,13 +35,11 @@ class AppServiceProvider extends ServiceProvider
         Carbon::setLocale(config("app.locale"));
 
         // frontController da tekrarlanan kodlarin onune gecmek icin view share & view composer kullanimi
-        View::composer("front.*", function ($view) {
+        View::composer(["front.*", "mail::header"], function ($view) {
             $settings = Settings::first();
             $categories = Category::query()->where("status", 1)->get();
 
             $view->with("categories", $categories)->with("settings", $settings);
         });
-
-
     }
 }
