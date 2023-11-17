@@ -2,12 +2,14 @@
 
 namespace App\Providers;
 
+use App\Models\User;
 use App\Events\UserRegistered;
 use App\Listeners\SendVerifyEmail;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Auth\Events\Registered;
+use App\Observers\UserRegisteredObserver;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -20,9 +22,13 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
-        UserRegistered::class => [
-            SendVerifyEmail::class,
-        ],
+        // UserRegistered::class => [
+        //     SendVerifyEmail::class,
+        // ],
+    ];
+
+    protected $observers = [
+        User::class => UserRegisteredObserver::class
     ];
 
     /**
@@ -32,7 +38,7 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        // User::observe(UserRegisteredObserver::class); ya da yukardaki kullanilabilir.
     }
 
     /**

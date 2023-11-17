@@ -15,9 +15,10 @@ return [
     |--------------------------------------------------------------------------
      */
 
-    'use_package_routes' => true,
+    'use_package_routes' => false,
     // optimize komutunu calistirdigimizzada verdigi hatayi cozmek icin burada lfm nin kullandigi routelari true'dan false'a cevirdim
     // not 2 sercan hoca ile beraber tekrardan true ya cevirdim
+    // not 3 sercan hoca bunu tekrardan duzeltmis ben de duzelettim!
 
     /*
     |--------------------------------------------------------------------------
