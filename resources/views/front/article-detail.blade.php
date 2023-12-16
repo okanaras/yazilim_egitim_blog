@@ -7,9 +7,9 @@
 @endsection
 
 @section('content')
-    <!-- makale detail -->
+    {{-- makale detail --}}
     <section class="row">
-        <!-- makale content -->
+        {{-- makale content --}}
         <div class="col-12 bg-white rounded-1 shadow-sm">
             <div class="article-wrapper">
                 <div class="article-header font-lato d-flex justify-content-between pb-4">
@@ -46,9 +46,9 @@
                 </div>
             </div>
         </div>
-        <!-- authors, reply and like button -->
+        {{-- authors, reply and like button --}}
         <section class="col-12 mt-4">
-            <!-- like ve yorum button -->
+            {{-- like ve yorum button --}}
             <div class="article-items d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center">
                     <a href="javascript:void(0)" class="favorite-article me-2" id="favoriteArticle"
@@ -60,7 +60,7 @@
                 <a href="javascript:void(0)" class="btn-response btnArticleResponse">Cevap Ver</a>
             </div>
 
-            <!-- author info -->
+            {{-- author info --}}
             <div class="article-authors mt-5">
                 <div class="bg-white p-4 d-flex justify-content-between align-items-center shadow-sm">
                     <img src="{{ asset($article->user->image) }}" alt="" width="75" height="75">
@@ -70,11 +70,56 @@
                     </div>
                 </div>
             </div>
+
+            {{-- suggest article --}}
+            @if (isset($suggestArticles) && count($suggestArticles))
+            <div class="mt-5">
+                <div class="swiper-most-popular mt-3">
+                    <div class="swiper-wrapper ">
+
+                        <!-- Slides -->
+                        @foreach ($suggestArticles as $article)
+                            @php
+                                $image = $article->image;
+                                $publishDate= \Carbon\Carbon::parse($article->publish_date)->format("d-m-Y");
+                                    if (!file_exists(public_path($image))) {
+                                        $image = $settings->article_default_image;
+                                    }
+                            @endphp
+                            <div class="swiper-slide">
+                                <a href="{{ route('front.articleDetail', [
+                                    'user' => $article->user,
+                                    'article' => $article->slug
+                                ]) }}">
+                                    <img src="{{ asset($image)  }}" class="img-fluid">
+                                </a>
+                                <div class="most-popular-body mt-2">
+                                    <div class="most-popular-author most-popular-author d-flex justify-content-between">
+                                        <div>Yazar: <a href="#">{{ $article->user->name }}</a></div>
+                                        <div class="text-end">Kategori: <a href="{{ route('front.category', ['category' => $article->category->slug] ) }}">{{ $article->category->name }}</a></div>
+                                    </div>
+                                    <div class="most-popular-title">
+                                        <h4 class="text-black">
+                                            <a href="#">{{$article->title}}</a>
+                                        </h4>
+                                    </div>
+                                    <div class="most-popular-date">
+                                        <span>{{ $publishDate }}</span> &#x25CF; <span>10 dk</span>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+            @endif
+
+
         </section>
 
-        <!-- makale formu ve yorumlar  -->
+        {{-- makale formu ve yorumlar  --}}
         <section class="article-responses mt-4">
-            <!-- makale yorum formu -->
+            {{-- makale yorum formu --}}
             <div class="response-form bg-white shadow-sm rounded-1 p-4" style="display: none;">
                 <form action="{{ route('article.comment', ['article' => $article->id]) }}" method="post">
                     @csrf
@@ -103,15 +148,15 @@
                 </form>
             </div>
 
-            <!-- makale yorumlar -->
+            {{-- makale yorumlar --}}
             <div class="response-body p-4">
                 <h3>Makaleye Verilen Yorumlar</h3>
                 <hr class="mb-4">
 
                 @foreach ($article->comments as $comment)
-                    <!-- yorumlar -->
+                    {{-- yorumlar --}}
                     <div class="article-response-wrapper">
-                        <!-- yorum -->
+                        {{-- yorum --}}
                         <div class="article-response bg-white mt-3 p-2 d-flex align-items-center shadow-sm">
                             <div class="col-md-2">
                                 @php
@@ -182,7 +227,7 @@
                                         }
 
                                     @endphp
-                                    <!-- yoruma yorum -->
+                                    {{-- yoruma yorum --}}
                                     <div
                                         class="article-comment bg-white p-2 mt-3 d-flex justify-content-between align-items-center shadow-sm">
                                         <div class="col-md-2">

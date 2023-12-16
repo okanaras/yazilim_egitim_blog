@@ -83,7 +83,7 @@ Route::post("admin/login", [LoginController::class, "login"]);
 // front
 Route::get('/', [FrontController::class, "home"])->name("home");
 Route::get('/kategoriler/{category:slug}', [FrontController::class, "category"])->name("front.category");
-Route::get('/@{user:username}/{article:slug}', [FrontController::class, "articleDetail"])->name("front.articleDetail");
+Route::get('/@{user:username}/{article:slug}', [FrontController::class, "articleDetail"])->name("front.articleDetail")->middleware("visitedArticle");
 Route::post("{article:id}/makale-yorum", [FrontController::class, "articleComment"])->name("article.comment");
 
 // login
@@ -99,6 +99,7 @@ Route::post("/login", [LoginController::class, "loginUser"]);
 
 // mail
 Route::get("/auth/verify/{token}", [LoginController::class, "verify"])->name("verify-token");
+
 // google
 Route::get('auth/{driver}/callback', [LoginController::class, "socialVerify"])->name("socialVerify");
 Route::get('auth/{driver}', [LoginController::class, "socialLogin"])->name("socialLogin");
