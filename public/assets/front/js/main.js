@@ -43,8 +43,6 @@ $(document).ready(function () {
         slidesPerView: 3,
     });
 
-    // burasi derste daha eklenmedi
-    /*
     const suggest = new Swiper('.swiper-suggest-article', {
         loop: true,
         navigation: {
@@ -59,7 +57,7 @@ $(document).ready(function () {
         spaceBetween: 30,
         slidesPerView: 3,
     });
-    */
+
     const youtube = new Swiper('.swiper-youtube', {
         loop: true,
         speed: 1000,

@@ -27,11 +27,16 @@
                                 $randomClass = $class[random_int(0, 6)];
 
                             @endphp
-                            <span class="{{ $randomClass }}">{{ $tag }}</span>
+                            <a href="{{ route('front.search', ['q' => $tag]) }}">
+                                <span class="{{ $randomClass }}">{{ $tag }}</span>
+                            </a>
                         @endforeach
                     </div>
                     <div class="article-header-author">
-                        Yazar: <a href="#"><strong>{{ $article->user->name }}</strong></a>
+                        Yazar: <a href="#"><strong>{{ $article->user->name }}</strong></a><br>
+                        Kategori: <a href="" class="category-link">
+                            {{ $article->category->name }}
+                        </a>
                     </div>
 
                 </div>
@@ -74,6 +79,10 @@
             {{-- suggest article --}}
             @if (isset($suggestArticles) && count($suggestArticles))
             <div class="mt-5">
+                {{--
+                    * Ders 83 te buradaki classi suggest article yapmistim ama calismamisti
+                    * <div class="swiper-suggest-article"></div>
+                --}}
                 <div class="swiper-most-popular mt-3">
                     <div class="swiper-wrapper ">
 
@@ -82,7 +91,7 @@
                             @php
                                 $image = $article->image;
                                 $publishDate= \Carbon\Carbon::parse($article->publish_date)->format("d-m-Y");
-                                    if (!file_exists(public_path($image))) {
+                                    if (!file_exists(public_path($image)) || is_null($image)) {
                                         $image = $settings->article_default_image;
                                     }
                             @endphp
@@ -96,7 +105,7 @@
                                 <div class="most-popular-body mt-2">
                                     <div class="most-popular-author most-popular-author d-flex justify-content-between">
                                         <div>Yazar: <a href="#">{{ $article->user->name }}</a></div>
-                                        <div class="text-end">Kategori: <a href="{{ route('front.category', ['category' => $article->category->slug] ) }}">{{ $article->category->name }}</a></div>
+                                        <div class="text-end">Kategori: <a href="{{ route('front.categoryArticles', ['category' => $article->category->slug] ) }}">{{ $article->category->name }}</a></div>
                                     </div>
                                     <div class="most-popular-title">
                                         <h4 class="text-black">
