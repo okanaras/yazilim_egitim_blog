@@ -17,24 +17,31 @@
                         @php
                             $publishDate = \Illuminate\Support\Carbon::parse($article->publish_date)->format('d-m-Y');
                         @endphp
-                        <time datetime="{{ $publishDate }}">{{ $publishDate }}</time>
-                        @php
-                            $tags = explode(',', $article->tags);
-                        @endphp
-                        @foreach ($article->getAttribute('tagsToArray') as $tag)
-                            @php
-                                $class = ['text-danger', 'text-primary', 'text-warning', 'text-info', 'text-secondary', 'text-succes', 'text-dark'];
-                                $randomClass = $class[random_int(0, 6)];
 
-                            @endphp
-                            <a href="{{ route('front.search', ['q' => $tag]) }}">
-                                <span class="{{ $randomClass }}">{{ $tag }}</span>
-                            </a>
-                        @endforeach
+                        <time datetime="{{ $publishDate }}">{{ $publishDate }}</time>
+
+                        @php
+                            $tags = $article->getAttribute('tagsToArray');
+                            // $tags = explode(',', $article->tags);
+                        @endphp
+
+                        @if (!is_null($tags) && count($tags))
+                            @foreach ($article->getAttribute('tagsToArray') as $tag)
+                                @php
+                                    $class = ['text-danger', 'text-primary', 'text-warning', 'text-info', 'text-secondary', 'text-succes', 'text-dark'];
+                                    $randomClass = $class[random_int(0, 6)];
+
+                                @endphp
+                                <a href="{{ route('front.search', ['q' => $tag]) }}">
+                                    <span class="{{ $randomClass }}">{{ $tag }}</span>
+                                </a>
+                            @endforeach
+                        @endif
+
                     </div>
                     <div class="article-header-author">
                         Yazar: <a href="#"><strong>{{ $article->user->name }}</strong></a><br>
-                        Kategori: <a href="" class="category-link">
+                        Kategori: <a href="{{ route('front.categoryArticles', ['category' => $article->category->slug] ) }}" class="category-link">
                             {{ $article->category->name }}
                         </a>
                     </div>
@@ -43,7 +50,13 @@
                 <div class="article-content mt-4">
                     <h1 class="fw-bold mb-4">{{ $article->title }}</h1>
                     <div class="d-flex justify-content-center">
-                        <img src="{{ asset($article->image) }}" class="w-75 img-fluid rounded-1">
+                        @php
+                            $articleImage = $article->image;
+                                if (!file_exists(public_path($articleImage)) || is_null($articleImage)) {
+                                    $articleImage = $settings->article_default_image;
+                                }
+                        @endphp
+                        <img src="{{ asset($articleImage) }}" class="w-75 img-fluid rounded-1">
                     </div>
                     <div class="text-secondary mt-5">
                         {!! $article->body !!}
@@ -68,7 +81,13 @@
             {{-- author info --}}
             <div class="article-authors mt-5">
                 <div class="bg-white p-4 d-flex justify-content-between align-items-center shadow-sm">
-                    <img src="{{ asset($article->user->image) }}" alt="" width="75" height="75">
+                    @php
+                        $authorImage = $article->user->image;
+                            if (!file_exists(public_path($authorImage)) || is_null($authorImage)) {
+                                $authorImage = $settings->default_comment_profile_image;
+                            }
+                    @endphp
+                    <img src="{{ asset($authorImage) }}" alt="" width="75" height="75">
                     <div class="px-5 me-auto">
                         <h4 class="mt-3"><a href="">{{ $article->user->name }}</a></h4>
                         {{ $article->user->about }}
@@ -79,13 +98,8 @@
             {{-- suggest article --}}
             @if (isset($suggestArticles) && count($suggestArticles))
             <div class="mt-5">
-                {{--
-                    * Ders 83 te buradaki classi suggest article yapmistim ama calismamisti
-                    * <div class="swiper-suggest-article"></div>
-                --}}
-                <div class="swiper-most-popular mt-3">
+                <div class="swiper-suggest-article mt-3">
                     <div class="swiper-wrapper ">
-
                         <!-- Slides -->
                         @foreach ($suggestArticles as $article)
                             @php

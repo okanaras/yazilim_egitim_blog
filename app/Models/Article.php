@@ -15,9 +15,11 @@ class Article extends Model
     protected $guarded = ['id', 'created_at', 'updated_at'];
     // protected $fillable=['name','status']; bu sekilde cok uzun suruyor
 
-    public function getTagsToArrayAttribute(): array|false
+    public function getTagsToArrayAttribute(): array|false|null
     {
-        return explode(",", $this->attributes['tags']);
+        if(!is_null($this->attributes['tags']))
+            return explode(",", $this->attributes['tags']);
+        return $this->attributes['tags'];
     }
 
     // protected function getTagsToStringAttribute(): string
