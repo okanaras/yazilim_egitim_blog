@@ -28,10 +28,23 @@ class FrontController extends Controller
 
     public function home()
     {
-        // $settings = Settings::first();
-        // $categories = Category::query()->where("status", 1)->get();
+        $mostPopularArticles = Article::query()
+        ->with('user', 'category')
+        ->whereHas("user")
+        ->whereHas("category")
+        ->orderBy("view_count", "DESC")
+        ->limit(6)
+        ->get();
 
-        return view("front.index");
+        $lastPublishedArticles = Article::query()
+        ->with('user', 'category')
+        ->whereHas("user")
+        ->whereHas("category")
+        ->orderBy("publish_date", "DESC")
+        ->limit(6)
+        ->get();
+
+        return view("front.index", compact("mostPopularArticles" , "lastPublishedArticles"));
     }
 
     public function category(Request $request, string $slug)

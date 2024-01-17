@@ -13,7 +13,6 @@ class Article extends Model
 {
     use HasFactory;
     protected $guarded = ['id', 'created_at', 'updated_at'];
-    // protected $fillable=['name','status']; bu sekilde cok uzun suruyor
 
     public function getTagsToArrayAttribute(): array|false|null
     {
@@ -21,11 +20,11 @@ class Article extends Model
             return explode(",", $this->attributes['tags']);
         return $this->attributes['tags'];
     }
+    public function getFormatPublishDateAttribute(): string
+    {
 
-    // protected function getTagsToStringAttribute(): string
-    // {
-    //     return is_array($this->tags) ? implode(',', $this->tags) : '';
-    // }
+        return Carbon::parse($this->attributes['publish_date'])->format("d-m-Y H:i");
+    }
 
     public function category(): HasOne
     {

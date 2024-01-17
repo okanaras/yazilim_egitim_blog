@@ -50,13 +50,7 @@
                 <div class="article-content mt-4">
                     <h1 class="fw-bold mb-4">{{ $article->title }}</h1>
                     <div class="d-flex justify-content-center">
-                        @php
-                            $articleImage = $article->image;
-                                if (!file_exists(public_path($articleImage)) || is_null($articleImage)) {
-                                    $articleImage = $settings->article_default_image;
-                                }
-                        @endphp
-                        <img src="{{ asset($articleImage) }}" class="w-75 img-fluid rounded-1">
+                        <img src="{{ imageExist($article->image, $settings->article_default_image) }}" class="w-75 img-fluid rounded-1">
                     </div>
                     <div class="text-secondary mt-5">
                         {!! $article->body !!}
@@ -81,13 +75,7 @@
             {{-- author info --}}
             <div class="article-authors mt-5">
                 <div class="bg-white p-4 d-flex justify-content-between align-items-center shadow-sm">
-                    @php
-                        $authorImage = $article->user->image;
-                            if (!file_exists(public_path($authorImage)) || is_null($authorImage)) {
-                                $authorImage = $settings->default_comment_profile_image;
-                            }
-                    @endphp
-                    <img src="{{ asset($authorImage) }}" alt="" width="75" height="75">
+                    <img src="{{ imageExist($article->user->image, $settings->default_comment_profile_image) }}" alt="" width="75" height="75">
                     <div class="px-5 me-auto">
                         <h4 class="mt-3"><a href="">{{ $article->user->name }}</a></h4>
                         {{ $article->user->about }}
@@ -102,19 +90,12 @@
                     <div class="swiper-wrapper ">
                         <!-- Slides -->
                         @foreach ($suggestArticles as $article)
-                            @php
-                                $image = $article->image;
-                                $publishDate= \Carbon\Carbon::parse($article->publish_date)->format("d-m-Y");
-                                    if (!file_exists(public_path($image)) || is_null($image)) {
-                                        $image = $settings->article_default_image;
-                                    }
-                            @endphp
                             <div class="swiper-slide">
                                 <a href="{{ route('front.articleDetail', [
                                     'user' => $article->user,
                                     'article' => $article->slug
                                 ]) }}">
-                                    <img src="{{ asset($image)  }}" class="img-fluid">
+                                    <img src="{{ imageExist($article->image, $settings->article_default_image)  }}" class="img-fluid">
                                 </a>
                                 <div class="most-popular-body mt-2">
                                     <div class="most-popular-author most-popular-author d-flex justify-content-between">
@@ -127,7 +108,7 @@
                                         </h4>
                                     </div>
                                     <div class="most-popular-date">
-                                        <span>{{ $publishDate }}</span> &#x25CF; <span>10 dk</span>
+                                        <span>{{ $article->format_publish_date }}</span> &#x25CF; <span>10 dk</span>
                                     </div>
                                 </div>
                             </div>
@@ -184,17 +165,12 @@
                             <div class="col-md-2">
                                 @php
                                     if ($comment->user) {
-                                        $image = $comment->user->image;
                                         $name = $comment->user->name;
-                                        if (!file_exists(public_path($image))) {
-                                            $image = $settings->default_comment_profile_image;
-                                        }
                                     } else {
-                                        $image = $settings->default_comment_profile_image;
                                         $name = $comment->name;
                                     }
                                 @endphp
-                                <img src="{{ asset($image) }}" alt="" width="75" height="75">
+                                <img src="{{ imageExist($comment->user->image, $settings->default_comment_profile_image) }}" alt="" width="75" height="75">
                             </div>
                             <div class="col-md-10">
                                 <div class="px-3">
@@ -239,13 +215,8 @@
                                 @foreach ($comment->children as $child)
                                     @php
                                         if ($child->user) {
-                                            $childImage = $child->user->image;
                                             $childName = $child->user->name;
-                                            if (!file_exists(public_path($childImage))) {
-                                                $childImage = $settings->default_comment_profile_image;
-                                            }
                                         } else {
-                                            $childImage = $settings->default_comment_profile_image;
                                             $childName = $child->name;
                                         }
 
@@ -254,7 +225,7 @@
                                     <div
                                         class="article-comment bg-white p-2 mt-3 d-flex justify-content-between align-items-center shadow-sm">
                                         <div class="col-md-2">
-                                            <img src="{{ asset($childImage) }}" alt="" width="75"
+                                            <img src="{{ imageExist($child->user->image, $settings->default_comment_profile_image) }}" alt="" width="75"
                                                 height="75">
                                         </div>
                                         <div class="col-md-10">
