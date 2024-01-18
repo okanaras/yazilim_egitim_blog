@@ -28,23 +28,28 @@ class FrontController extends Controller
 
     public function home()
     {
+        \Log::debug("TEST LOGU");
+        \Log::info("TEST LOGU");
+        \Log::error("TEST LOGU");
+        \Log::warning("TEST LOGU");
+
         $mostPopularArticles = Article::query()
-        ->with('user', 'category')
-        ->whereHas("user")
-        ->whereHas("category")
-        ->orderBy("view_count", "DESC")
-        ->limit(6)
-        ->get();
+            ->with('user', 'category')
+            ->whereHas("user")
+            ->whereHas("category")
+            ->orderBy("view_count", "DESC")
+            ->limit(6)
+            ->get();
 
         $lastPublishedArticles = Article::query()
-        ->with('user', 'category')
-        ->whereHas("user")
-        ->whereHas("category")
-        ->orderBy("publish_date", "DESC")
-        ->limit(6)
-        ->get();
+            ->with('user', 'category')
+            ->whereHas("user")
+            ->whereHas("category")
+            ->orderBy("publish_date", "DESC")
+            ->limit(6)
+            ->get();
 
-        return view("front.index", compact("mostPopularArticles" , "lastPublishedArticles"));
+        return view("front.index", compact("mostPopularArticles", "lastPublishedArticles"));
     }
 
     public function category(Request $request, string $slug)
