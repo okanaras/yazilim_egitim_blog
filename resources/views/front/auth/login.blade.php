@@ -12,7 +12,7 @@
             <x-bootstrap.card>
 
                 <x-slot:header>
-                    GIRSI YAP
+                    GIRIS YAP
                 </x-slot:header>
 
                 <x-slot:body>
@@ -49,12 +49,14 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-12">
-                                <hr class="my-4">
+                            <div class="col-md-12 mt-4">
+                                <div class="d-flex justify-content-end">
+                                    <small>
+                                        <a class="btn-password-reset" href="{{ route('passwordReset') }}">Parolami Unuttum</a>
+                                    </small>
+                                </div>
+                                <hr class="m-0 mb-4">
 
-                            </div>
-
-                            <div class="col-md-12">
                                 <button class="btn btn-success w-100">GIRIS YAP</button>
                             </div>
                         </div>

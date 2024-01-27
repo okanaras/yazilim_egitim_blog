@@ -2,21 +2,24 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Events\UserRegistered;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\LoginRequest;
-use App\Http\Requests\UserStoreRequest;
 use App\Models\User;
 use App\Models\UserVerify;
-use Illuminate\Hashing\BcryptHasher;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Events\UserRegistered;
+use App\Mail\ResetPasswordMail;
+use Illuminate\Support\Facades\DB;
+use App\Http\Requests\LoginRequest;
+use App\Http\Controllers\Controller;
+use Illuminate\Hashing\BcryptHasher;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
-use Laravel\Socialite\Facades\Socialite;
-
 use function PHPUnit\Framework\isNull;
+use App\Http\Requests\UserStoreRequest;
+
+use Laravel\Socialite\Facades\Socialite;
+use App\Http\Requests\PasswordResetRequest;
 
 class LoginController extends Controller
 {
@@ -28,6 +31,24 @@ class LoginController extends Controller
     public function showLoginUser()
     {
         return view("front.auth.login");
+    }
+
+    public function showPasswordReset()
+    {
+        return view("front.auth.reset-password");
+    }
+
+    public function showPasswordResetConfirm(Request $request)
+    {
+        $token = $request->token;
+
+        $tokenExist = DB::table('password_resets')->where('token', $token)->first();
+
+        if (!$tokenExist) {
+            abort(404);
+        }
+
+        return view("front.auth.reset-password", compact('token'));
     }
 
     public function showRegister()
@@ -120,7 +141,6 @@ class LoginController extends Controller
         }
     }
 
-
     public function register(UserStoreRequest $request)
     {
         $user = new User();
@@ -154,7 +174,6 @@ class LoginController extends Controller
         return redirect()->back();
     }
 
-
     public function verify(Request $request, $token)
     {
         $verifyQuery = UserVerify::query()->where('token', $token);
@@ -183,7 +202,6 @@ class LoginController extends Controller
             abort(404);
         }
     }
-
 
     public function socialLogin($driver)
     {
@@ -220,5 +238,71 @@ class LoginController extends Controller
     public function checkUsername(string $username): null|object
     {
         return User::query()->where('username', $username)->first();
+    }
+
+    public function sendPasswordReset(Request $request)
+    {
+        $email = $request->email;
+        $find = User::query()->where("email", $email)->firstOrFail();
+
+        $token = Str::random(60);
+
+        $tokenFind = DB::table('password_resets')->where('email', $email)->first();
+
+        if ($tokenFind) {
+            $token = $tokenFind->token;
+        } else {
+            $token = Str::random(60);
+            // db query istekler daha hizli ama modelin ozelliklerinden faydalanmaz
+            DB::table('password_resets')->insert([
+                'email' => $email,
+                'token' => $token,
+                'created_at' => now()
+            ]);
+        }
+
+        if ($tokenFind && now()->diffInHours($tokenFind->created_at) < 5) {
+            alert()
+                ->info('Basarili', "Parola sifirlama maili daha once mailinize gonderilmistir. Birkac saat sonra tekrar deneyiniz!")
+                ->showConfirmButton('Tamam', '#3085d6')
+                ->autoClose(5000);
+
+            return redirect()->back();
+        }
+
+        Mail::to($find->email)->send(new ResetPasswordMail($find, $token));
+        $tokenFind->update(['created_at' => now()]);
+
+        alert()
+            ->success('Basarili', "Parola sifirlama maili gonderilmistir. Posta kutunuzu kontrol ediniz!")
+            ->showConfirmButton('Tamam', '#3085d6')
+            ->autoClose(5000);
+
+        return redirect()->back();
+    }
+
+    public function passwordReset(PasswordResetRequest $request)
+    {
+        $tokenQuery = DB::table('password_resets')->where('token', $request->token);
+        $tokenExist = $tokenQuery->first();
+        if (!$tokenExist) {
+            abort(404);
+        }
+
+        $userExist = User::query()->where('email', $tokenExist->email)->first();
+        if (!$userExist) {
+            abort(400, 'Adminle iletisime geciniz');
+        }
+
+        $userExist->update(['password' => Hash::make($request->getPassword)]);
+
+        $tokenQuery->delete();
+
+        alert()
+            ->success('Basarili', "Parolaniz sifirlanmistir. Giris yapabilirsiniz.")
+            ->showConfirmButton('Tamam', '#3085d6')
+            ->autoClose(5000);
+
+        return redirect()->route('user.login');
     }
 }

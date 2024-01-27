@@ -102,6 +102,15 @@ Route::post("/register", [LoginController::class, "register"]);
 Route::get("/login", [LoginController::class, "showLoginUser"])->name("user.login");
 Route::post("/login", [LoginController::class, "loginUser"]);
 
+Route::post("/iletisim", [LoginController::class, ""])->name("contact");
+
+// password reset
+Route::get("/parola-sifirla", [LoginController::class, "showPasswordReset"])->name("passwordReset");
+Route::post("/parola-sifirla", [LoginController::class, "sendPasswordReset"]);
+Route::get("/parola-sifirla/{token}", [LoginController::class, "showPasswordResetConfirm"])->name("passwordResetToken");
+Route::post("/parola-sifirla/{token}", [LoginController::class, "passwordReset"]);
+
+
 // mail
 Route::get("/auth/verify/{token}", [LoginController::class, "verify"])->name("verify-token");
 
