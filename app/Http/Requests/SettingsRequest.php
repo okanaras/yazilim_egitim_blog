@@ -26,7 +26,8 @@ class SettingsRequest extends FormRequest
         return [
             "logo" => ['nullable', 'image', 'mimes:jpeg,png', "max:2048"],
             "category_default_image" => ['nullable', 'image', 'mimes:jpeg,png', "max:2048"],
-            "article_default_image" => ['nullable', 'image', 'mimes:jpeg,png', "max:2048"]
+            "article_default_image" => ['nullable', 'image', 'mimes:jpeg,png', "max:2048"],
+            "reset_password_image" => ['nullable', 'image', 'mimes:jpeg,png', "max:2048"]
         ];
     }
 }

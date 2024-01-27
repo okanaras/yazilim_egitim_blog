@@ -85,6 +85,7 @@ class LoginController extends Controller
 
         // dd($request->all());
     }
+
     public function login2(LoginRequest $request)
     {
         $email = $request->email;
@@ -104,6 +105,7 @@ class LoginController extends Controller
                 ->onlyInput("email", "remember");
         }
     }
+
     public function login3(LoginRequest $request)
     {
         $email = $request->email;
@@ -271,7 +273,6 @@ class LoginController extends Controller
         }
 
         Mail::to($find->email)->send(new ResetPasswordMail($find, $token));
-        $tokenFind->update(['created_at' => now()]);
 
         alert()
             ->success('Basarili', "Parola sifirlama maili gonderilmistir. Posta kutunuzu kontrol ediniz!")
