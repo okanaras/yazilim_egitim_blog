@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
 use App\Models\UserVerify;
+use App\Traits\Loggable;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Events\UserRegistered;
@@ -23,6 +24,7 @@ use App\Http\Requests\PasswordResetRequest;
 
 class LoginController extends Controller
 {
+    use Loggable;
     public function showLogin()
     {
         return view("auth.login");
@@ -67,12 +69,15 @@ class LoginController extends Controller
 
         if ($user && Hash::check($password, $user->password)) {
             Auth::login($user, $remember);
+
+            $this->log('login', $user->id, $user->toArray(), User::class);
+
             $userIsAdmin = Auth::user()->is_admin;
 
             if (!$userIsAdmin) {
                 return redirect()->route("home");
             }
-            // Auth::loginUsingId($user->id);
+
             return redirect()->route("admin.index");
         } else {
             return redirect()
@@ -130,6 +135,9 @@ class LoginController extends Controller
     {
         if (Auth::check()) {
             $is_admin = Auth::user()->is_admin;
+
+            $this->log('logout', \auth()->id(), \auth()->user()->toArray(), User::class);
+
             Auth::logout();
 
             $request->session()->invalidate();
@@ -155,19 +163,6 @@ class LoginController extends Controller
 
         event(new UserRegistered($user));
 
-        // $token = Str::random("60");
-        // // kayit sirasinda maili dogrulamak icin token olusturup userVerify'a ekliyoruz. daha sonra mail gondertiyoruz
-        // UserVerify::create([
-        //     'user_id' => $user->id,
-        //     'token' => $token
-        // ]);
-
-        // Mail::send("email.verify", compact('token'), function ($mail) use ($user) {
-        //     $mail->to($user->email);
-        //     $mail->subject('Dogrulama Emaili');
-        //     //mail->from()
-        // });
-
         alert()
             ->success('Basarili', "Mail onayi icin adresinize link gonderildi. Posta kutunuzu kontrol ediniz!")
             ->showConfirmButton('Tamam', '#3085d6')
@@ -178,7 +173,7 @@ class LoginController extends Controller
 
     public function verify(Request $request, $token)
     {
-        $verifyQuery = UserVerify::query()->where('token', $token);
+        $verifyQuery = UserVerify::query()->with('user')->where('token', $token);
         $find = $verifyQuery->first();
 
         if (!is_null($find)) {
@@ -188,6 +183,9 @@ class LoginController extends Controller
                 $user->email_verified_at = now();
                 $user->status = 1;
                 $user->save();
+
+                $this->log('verify user', $user->id, $user->toArray(), User::class);
+
                 $verifyQuery->delete();
                 $message = 'Emailiniz dogrulandi';
             } else {
@@ -217,6 +215,10 @@ class LoginController extends Controller
         $userCheck = User::where('email', $user->getEmail())->first();
         if (!is_null($userCheck)) {
             Auth::login($userCheck);
+
+            $this->log('verify user', \auth()->id, \auth()->user()->toArray(), User::class);
+
+
             return redirect()->route('home');
         }
 
@@ -273,6 +275,9 @@ class LoginController extends Controller
         }
 
         Mail::to($find->email)->send(new ResetPasswordMail($find, $token));
+
+        $this->log('password reset mail send', $find->id, $find->toArray(), User::class);
+
 
         alert()
             ->success('Basarili', "Parola sifirlama maili gonderilmistir. Posta kutunuzu kontrol ediniz!")

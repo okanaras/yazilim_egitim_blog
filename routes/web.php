@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\FrontController;
+use App\Http\Controllers\Admin\LogController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,6 +29,9 @@ Route::prefix("admin")->middleware(["auth", "verified"])->group(function () {
         });
         Route::get('logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index']);
         Route::get('logs2', [\Arcanedev\LogViewer\Http\Controllers\LogViewerController::class, 'index']);
+
+        Route::get('logs-db', [LogController::class, 'index'])->name('dbLogs');
+        Route::get('logs-db/{id}', [LogController::class, 'getLog'])->name('dblogs.getLog')->whereNumber("id");
 
         Route::get('/', function () {
             return view('admin.index');

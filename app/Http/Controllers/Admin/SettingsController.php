@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SettingsRequest;
 use App\Models\Settings;
+use App\Traits\Loggable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class SettingsController extends Controller
 {
+    use Loggable;
     public function show()
     {
         $settings = Settings::first();
@@ -40,11 +42,6 @@ class SettingsController extends Controller
         else
             $settings->author_is_active = 0;
 
-
-        // $settings->logo = $request->logo;
-        // $settings->category_default_image = $request->category_default_image;
-        // $settings->article_default_image = $request->article_default_image;
-
         if (!is_null($request->logo)) {
             $settings->logo = $this->imageUpload($request, "logo", $settings->logo);
         }
@@ -58,7 +55,10 @@ class SettingsController extends Controller
             $settings->reset_password_image = $this->imageUpload($request, "reset_password_image", $settings->reset_password_image);
         }
 
+        $this->updateLog($settings, Settings::class);
+
         $settings->save();
+
 
         alert()
             ->success('Basarili', 'Ayarlar Guncellendi!')

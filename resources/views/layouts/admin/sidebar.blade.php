@@ -100,6 +100,13 @@
                 </a>
             </li>
 
+            <li class="{{ Route::is('dbLogs') ? 'open' : '' }}">
+                <a href="{{ route('dbLogs') }}" class="">
+                    <i class="material-icons-two-tone">settings</i>
+                    Log Yonetimi
+                </a>
+            </li>
+
         </ul>
     </div>
 </div>
