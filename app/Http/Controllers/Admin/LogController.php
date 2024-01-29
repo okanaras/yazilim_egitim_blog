@@ -18,12 +18,21 @@ class LogController extends Controller
     public function getLog(Request $request)
     {
         $id = $request->id;
+        $dataType = $request->data_type;
+
         $log = Log::query()->with('loggable')->findOrFail($id);
 
         $logtype = $log->loggable_type;
 
-        $data = $log->loggable;
+        $data = json_decode($log->data);
+        $data = ($log->data);
 
-        return view('admin.logs.log-view', compact('data', 'logtype'));
+        if ($dataType == 'data') {
+            return view('admin.logs.data-log-view', compact('data', 'logtype'));
+        }
+
+        dd('dur');
+        $data = $log->loggable;
+        return view('admin.logs.model-log-view', compact('data', 'logtype'));
     }
 }

@@ -37,6 +37,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/admin/images/neptune.png') }}" />
 
     @yield('css')
+    @stack('style')
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -94,6 +95,7 @@
     @include('sweetalert::alert')
 
     @yield('js')
+    @stack('javascript')
 </body>
 
 </html>

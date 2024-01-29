@@ -60,14 +60,14 @@
                             <td>{{ $log->action }}</td>
                             <td>{{ $log->loggable_type }}</td>
                             <td>
-                                <a href="javascript:void(0)" class="btn btn-info btn-sm btnLogDetail" data-bs-toggle="modal" data-bs-target="#contentViewModal" data-id="{{ $log->id }}"
+                                <a href="javascript:void(0)" class="btn btn-info btn-sm btnModelLogDetail" data-bs-toggle="modal" data-bs-target="#contentViewModal" data-id="{{ $log->id }}"
                                 >
                                         <i class="material-icons ms-0">visibility</i>
                                     </a>
                             </td>
                             <td>{{ $log->user->name }}</td>
                             <td>
-                                <a href="javascript:void(0)" class="btn btn-primary btn-sm" data-bs-target="#test"
+                                <a href="javascript:void(0)" class="btn btn-primary btn-sm btnDataLogDetail" data-bs-toggle="modal" data-bs-target="#contentViewModal" data-id="{{ $log->id }}"
                                 >
                                         <i class="material-icons ms-0">visibility</i>
                                     </a>
@@ -92,6 +92,9 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body" id="modalBody">
+                        {{-- <pre><code class="language-json" id="jsonData"></code></pre> --}}
+                        <pre><code class="language-javascript" data-jsonp="" id="jsonData"></code></pre>
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
@@ -111,61 +114,7 @@
     <script>
         $(document).ready(function() {
 
-            $('.btnChangeStatus').click(function() {
-                let articleID = $(this).data('id');
-                let self = $(this);
-
-                Swal.fire({
-                    title: 'Status degistirmek istediginize emin misiniz?',
-                    showDenyButton: true,
-                    showCancelButton: true,
-                    confirmButtonText: 'Evet',
-                    denyButtonText: `Hayir`,
-                    cancelButtonText: "Iptal"
-                }).then((result) => {
-                    /* Read more about isConfirmed, isDenied below */
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            method: "POST",
-                            url: "{{ route('article.changeStatus') }}",
-                            data: {
-                                articleID: articleID
-                            },
-                            async: false,
-                            success: function(data) {
-                                if (data.article_status) {
-                                    self.removeClass("btn-danger");
-                                    self.addClass("btn-success");
-                                    self.text("Aktif");
-
-                                } else {
-                                    self.removeClass("btn-success");
-                                    self.addClass("btn-danger");
-                                    self.text("Pasif");
-                                }
-                                Swal.fire({
-                                    title: "Basarili",
-                                    text: "Status Guncellendi!",
-                                    confirmButtonText: "Tamam",
-                                    icon: "success"
-                                });
-                            },
-                            error: function() {
-                                console.log("hata geldi");
-                            }
-                        });
-                    } else if (result.isDenied) {
-                        Swal.fire({
-                            title: "Bilgi",
-                            text: "Herhangi bir islem yapilmadi!",
-                            confirmButtonText: "Tamam",
-                            icon: "info"
-                        });
-                    }
-                })
-            });
-
-            $('.btnLogDetail').click(function() {
+            $('.btnModelLogDetail').click(function() {
                 let logID = $(this).data('id');
                 let self = $(this);
                 let route = "{{ route('dblogs.getLog', ['id'=> ':id']) }}";
@@ -185,54 +134,28 @@
                 });
             });
 
+            $('.btnDataLogDetail').click(function() {
+                let logID = $(this).data('id');
+                let self = $(this);
+                let route = "{{ route('dblogs.getLog', ['id'=> ':id']) }}";
+                route = route.replace(":id", logID);
+                console.log(route);
 
-            $('.btnDelete').click(function() {
-                let articleID = $(this).data('id');
-                let articleName = $(this).data('name');
-                // let articleName = "okan";
-
-                Swal.fire({
-                    title: articleName + "'i Silmek istediğinize emin misiniz?",
-                    showDenyButton: true,
-                    showCancelButton: true,
-                    confirmButtonText: 'Evet',
-                    denyButtonText: `Hayir`,
-                    cancelButtonText: "İptal"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            method: "POST",
-                            url: "{{ route('article.delete') }}",
-                            data: {
-                                "_method": "DELETE",
-                                articleID: articleID
-                            },
-                            async: false,
-                            success: function(data) {
-
-                                $('#row-' + articleID).remove();
-                                Swal.fire({
-                                    title: "Basarili",
-                                    text: "Makale Silindi",
-                                    confirmButtonText: 'Tamam',
-                                    icon: "success"
-                                });
-                            },
-                            error: function() {
-                                console.log("hata geldi");
-                            }
-                        })
-
-                    } else if (result.isDenied) {
-                        Swal.fire({
-                            title: "Bilgi",
-                            text: "Herhangi bir islem yapilmadi",
-                            confirmButtonText: 'Tamam',
-                            icon: "info"
-                        });
+                $.ajax({
+                    method: "get",
+                    url: route,
+                    async: false,
+                    data: {
+                        data_type: 'data'
+                    },
+                    success: function(data) {
+                        // $('#jsonData').html(data);
+                        $('#jsonData').attr("data-json", data);
+                    },
+                    error: function() {
+                        console.log("hata geldi");
                     }
-                })
-
+                });
             });
 
             $('#selectParentCategory').select2();
@@ -250,3 +173,13 @@
         })
     </script>
 @endsection
+
+@push('javascript')
+    <script src="{{ asset('assets/front/js/highlight.min.js') }}"></script>
+    <script src="{{ asset('assets/prism/prism.js') }}"></script>
+@endpush
+
+@push('style')
+    <link rel="stylesheet" href="{{ asset('assets/front/css/highlighter-default.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/prism/prism.css') }}">
+@endpush
