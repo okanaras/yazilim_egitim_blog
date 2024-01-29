@@ -8,11 +8,51 @@ use Illuminate\Http\Request;
 
 class LogController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $logs = Log::with(['loggable', 'user'])->paginate(20);
+        $searchText = $request->search_text;
+        $userSearchText = $request->user_search_text;
+        $model = $request->model;
+        $action = $request->action;
 
-        return view('admin.logs.list', ['list' => $logs]);
+        $logs = Log::with([
+            'loggable',
+            'user'
+        ])
+            ->where(function ($query) use ($model, $action, $searchText) {
+
+                if (!is_null($model)) {
+                    $query->where("loggable_type", $model);
+                }
+                if (!is_null($action)) {
+                    $query->where("action", $action);
+                }
+                if (!is_null($searchText)) {
+                    $query->where(function ($q) use ($searchText) {
+                        $q->orWhere("data", "LIKE", "%" . $searchText . "%")
+                            ->orWhere("created_at", "LIKE", "%" . $searchText . "%");
+                    });
+                }
+            })
+            ->whereHas('loggable')
+            ->whereHas('user', function ($query) use ($userSearchText) {
+                $query->where("name", "LIKE", "%" . $userSearchText . "%")
+                    ->orWhere("email", "LIKE", "%" . $userSearchText . "%")
+                    ->orWhere("username", "LIKE", "%" . $userSearchText . "%");
+            })
+
+            ->orderBy('id', 'DESC')
+            ->paginate(20);
+
+        $actions = Log::ACTIONS;
+        $models = Log::MODELS;
+
+        return view('admin.logs.list', [
+            'list' => $logs,
+            'models' => $models,
+            'actions' => $actions,
+
+        ]);
     }
 
     public function getLog(Request $request)
@@ -25,13 +65,10 @@ class LogController extends Controller
         $logtype = $log->loggable_type;
 
         $data = json_decode($log->data);
-        $data = ($log->data);
-
         if ($dataType == 'data') {
-            return view('admin.logs.data-log-view', compact('data', 'logtype'));
+            return response()->json()->setData($data)->setStatusCode(200);
         }
 
-        dd('dur');
         $data = $log->loggable;
         return view('admin.logs.model-log-view', compact('data', 'logtype'));
     }

@@ -108,7 +108,12 @@ class ArticleController extends Controller
         $data["user_id"] = Auth::->user()->id;
         */
 
-        // dd($data);
+        $status = 0;
+        if (isset($data['status'])) {
+            $status = 1;
+        }
+        $data['status'] = $status;
+
         Article::create($data);
         if (!is_null($request->image)) {
             $imageFile->storeAs($folder, $fileName, "public"); // public in altina articles klasorune verdigimiz ad'daki sekilde atar ve local yerine public ozelliklerini kullanir
@@ -150,23 +155,43 @@ class ArticleController extends Controller
 
     public function update(Request $request)
     {
+        $articleQuery = Article::query()
+            ->where("id", $request->id);
+
+        $articleFind = $articleQuery->first();
+
         $data = $request->except("_token"); // requestten gelen token disindaki verileri al
-        $slug = $data['slug'] ?? $data['title']; // slug kontrolu
+        $slug = $articleFind->title != $data['title'] ? $data['title'] : ($data['slug'] ?? $data['title']); // slug kontrolu
         $slug = Str::slug($slug); // sluglama islemi
         $slugTitle = Str::slug($data["title"]);
 
-        $checkSlug = $this->slugCheck($slug);
 
-        if (!is_null($checkSlug)) {
-            $checkTitleSlug = $this->slugCheck($slugTitle);
-            if (!is_null($checkTitleSlug)) {
-                $slug = Str::slug($slug . time());
-            } else {
-                $slug = $slugTitle;
+
+        if ($articleFind->slug != $slug) {
+
+            $checkSlug = $this->slugCheck($slug);
+
+            if (!is_null($checkSlug)) {
+                $checkTitleSlug = $this->slugCheck($slugTitle);
+                if (!is_null($checkTitleSlug)) {
+                    $slug = Str::slug($slug . time());
+                } else {
+                    $slug = $slugTitle;
+                }
             }
-        }
+            $data["slug"] = $slug;
+        } else
 
-        $data["slug"] = $slug;
+        // bu kosul unutlamsin diye biraktim bu else li kodu
+        // if (empty($data['slug']) && !is_null($articleFind->slug))
+        {
+            unset($data['slug']);
+        }
+        // else {
+        //     unset($data['slug']);
+        // }
+
+
         if (!is_null($request->image)) {
             $imageFile = $request->file("image"); // alacagim dosya inputtaki name
             $originalName = $imageFile->getClientOriginalName(); // original name
@@ -189,10 +214,11 @@ class ArticleController extends Controller
         }
         $data["user_id"] = auth()->id();
 
-        $articleQuery = Article::query()
-            ->where("id", $request->id);
-
-        $articleFind = $articleQuery->first();
+        $status = 0;
+        if (isset($data['status'])) {
+            $status = 1;
+        }
+        $data['status'] = $status;
 
         $articleQuery->first()->update($data);
 

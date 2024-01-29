@@ -33,7 +33,27 @@
                 <div class="row">
                     <div class="col-3 my-2">
                         <input type="text" class="form-control" value="{{ request()->get('search_text') }}"
-                            name="search_text" placeholder="Title, Slug, Body, Tags">
+                            name="search_text" placeholder="Data, Created Date">
+                    </div>
+                    <div class="col-3 my-2">
+                        <input type="text" class="form-control" value="{{ request()->get('user_search_text') }}"
+                            name="user_search_text" placeholder="User: Name, Username, Email">
+                    </div>
+                    <div class="col-3 my-2">
+                        <select name="model" id="models" class="js-states form-control w-100 d-none">
+                            <option value="{{ null }}">Model Secebilirsiniz</option>
+                            @foreach ($models as $model)
+                                <option {{ request()->get('model') == $model ? 'selected' : ''}}>{{ $model }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-3 my-2">
+                        <select name="action" id="actions" class="js-states form-control w-100 d-none">
+                            <option value="{{ null }}">Action Secebilirsiniz</option>
+                            @foreach ($actions as $model)
+                                <option {{ request()->get('action') == $model ? 'selected' : ''}}>{{ $model }}</option>
+                            @endforeach
+                        </select>
                     </div>
 
                     <hr>
@@ -67,7 +87,7 @@
                             </td>
                             <td>{{ $log->user->name }}</td>
                             <td>
-                                <a href="javascript:void(0)" class="btn btn-primary btn-sm btnDataLogDetail" data-bs-toggle="modal" data-bs-target="#contentViewModal" data-id="{{ $log->id }}"
+                                <a href="javascript:void(0)" class="btn btn-primary btn-sm btnDataDetail" data-bs-toggle="modal" data-bs-target="#contentViewModal" data-id="{{ $log->id }}"
                                 >
                                         <i class="material-icons ms-0">visibility</i>
                                     </a>
@@ -92,9 +112,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body" id="modalBody">
-                        {{-- <pre><code class="language-json" id="jsonData"></code></pre> --}}
-                        <pre><code class="language-javascript" data-jsonp="" id="jsonData"></code></pre>
-
+                        <pre><code class="language-json" id="jsonData"></code></pre>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
@@ -134,7 +152,7 @@
                 });
             });
 
-            $('.btnDataLogDetail').click(function() {
+            $('.btnDataDetail').click(function() {
                 let logID = $(this).data('id');
                 let self = $(this);
                 let route = "{{ route('dblogs.getLog', ['id'=> ':id']) }}";
@@ -149,8 +167,10 @@
                         data_type: 'data'
                     },
                     success: function(data) {
-                        // $('#jsonData').html(data);
-                        $('#jsonData').attr("data-json", data);
+                        $('#jsonData').html(JSON.stringify(data, null, 2));
+                        document.querySelectorAll('#jsonData').forEach(block => {
+                            hljs.highlightElement(block);
+                        });
                     },
                     error: function() {
                         console.log("hata geldi");
@@ -158,7 +178,8 @@
                 });
             });
 
-            $('#selectParentCategory').select2();
+            $('#models').select2();
+            $('#actions').select2();
         });
     </script>
 
@@ -176,10 +197,11 @@
 
 @push('javascript')
     <script src="{{ asset('assets/front/js/highlight.min.js') }}"></script>
-    <script src="{{ asset('assets/prism/prism.js') }}"></script>
+    <script>
+        hljs.highlightAll();
+    </script>
 @endpush
 
 @push('style')
     <link rel="stylesheet" href="{{ asset('assets/front/css/highlighter-default.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/prism/prism.css') }}">
 @endpush

@@ -14,6 +14,25 @@ class Log extends Model
         'data' => 'array'
     ];
 
+    public const ACTIONS = [
+        'create',
+        'update',
+        'delete',
+        'force delete',
+        'restore',
+        'login',
+        'logout',
+        'verify user',
+        'reset password mail send'
+    ];
+
+    public const MODELS = [
+        Article::class,
+        User::class,
+        Category::class,
+        Settings::class
+    ];
+
     protected $dateFormat = "Y-m-d H:i:s";
 
     public function loggable(): MorphTo
