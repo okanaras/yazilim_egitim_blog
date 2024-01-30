@@ -13,9 +13,12 @@ class Category extends Model
     use HasFactory;
     protected $guarded = ['id', 'created_at', 'updated_at'];
 
-    protected $casts = ['order' => 'string'];
+    protected $casts = ['created_at' => 'datetime'];
 
-    protected $hidden = ['created_at'];
+    public function getCreatedAtAttribute($value): string
+    {
+        return date("Y-m-d H:i", strtotime($value));
+    }
 
     /* Scope Start */
     public function scopeName($query, $name)
