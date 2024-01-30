@@ -71,12 +71,11 @@ class Article extends Model
         }
     }
 
-    public function scopepublishDate($query, $publish_date)
+    public function scopePublishDate($query, $publish_date)
     {
         if (!is_null($publish_date)) {
             $publish_date = Carbon::parse("publish_date")->format("Y-m-d H:i:s"); // tarihi formatladik
             $query->where("publish_date", $publish_date);
-            // $query->where("publish_date", ">", $publish_date); burada 2. par olarak esitlik kucukluk buyukluk kontrolu de yapilabilinir
         }
     }
 }

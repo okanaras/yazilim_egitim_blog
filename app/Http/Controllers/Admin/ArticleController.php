@@ -22,6 +22,7 @@ class ArticleController extends Controller
     {
         $categories = Category::all();
         $users = User::all();
+
         $list = Article::query()
             ->with(["category", "user"])
             ->where(function ($query) use ($request) {

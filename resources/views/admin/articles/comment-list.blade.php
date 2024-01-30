@@ -40,7 +40,7 @@
 
         <x-slot:body>
             <form action="{{ $page == 'commentList' ? route('artical.comment.list') : route('artical.pending-approval') }}"
-                method="get">
+                method="get" id="formFilter">
                 <div class="row">
                     <div class="col-3 my-2">
                         <select class="js-states form-control" name="user_id" tabindex="-1"
@@ -78,7 +78,7 @@
                     <hr>
                     <div class="col-6 mb-2 d-flex">
                         <button type="submit" class="btn btn-primary w-50 me-4">Filtrele</button>
-                        <button type="button" class="btn btn-warning w-50">Filtreyi Temizle</button>
+                        <button type="button" class="btn btn-warning w-50" id="btnClearFilter">Filtreyi Temizle</button>
                     </div>
                     <hr>
                 </div>
@@ -100,11 +100,14 @@
                     @foreach ($comments as $comment)
                         <tr id="row-{{ $comment->id }}">
                             <td>
-                                <a target="_blank"
-                                    href="{{ route('front.articleDetail', ['user' => $comment->article->user->username, 'article' => $comment->article->slug]) }}">
+                                <a href="{{ route("front.articleDetail", [
+                                'user' => $comment->article->user->username,
+                                'article' => $comment->article->slug
+                                ]) }}" target="_blank">
                                     <span class="material-icons-outlined">visibility</span>
                                 </a>
                             </td>
+
                             <td>{{ $comment->user?->name }}</td>
                             <td>{{ $comment->name }}</td>
                             <td>{{ $comment->email }}</td>
