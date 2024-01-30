@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use \Illuminate\Support\Facades\File;
 use \Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File as FacadesFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -162,11 +163,10 @@ class ArticleController extends Controller
         $articleFind = $articleQuery->first();
 
         $data = $request->except("_token"); // requestten gelen token disindaki verileri al
+
         $slug = $articleFind->title != $data['title'] ? $data['title'] : ($data['slug'] ?? $data['title']); // slug kontrolu
         $slug = Str::slug($slug); // sluglama islemi
         $slugTitle = Str::slug($data["title"]);
-
-
 
         if ($articleFind->slug != $slug) {
 
@@ -192,6 +192,19 @@ class ArticleController extends Controller
         //     unset($data['slug']);
         // }
 
+        //egerki title ve slug gelenlere esit degilse veriyi guncelleyip cachlicek ya da cache temizleyip kullanicaz
+        if ($articleFind->title != $data['title'] || $articleFind->slug != $data['slug']) {
+
+            if (Cache::has("most_popular_articles")) {
+                $mpA = Cache::get("most_popular_articles");
+                $mpA->where("title", $articleFind->title)->first()->update([
+                    'title' => $data['title'],
+                    'slug' => $slug
+                ]);
+                Cache::put("most_popular_articles", $mpA, 3600);
+            }
+            // Cache::forget("most_popular_articles");
+        }
 
         if (!is_null($request->image)) {
             $imageFile = $request->file("image"); // alacagim dosya inputtaki name

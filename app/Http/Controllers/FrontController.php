@@ -9,6 +9,7 @@ use App\Models\Settings;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\View;
 
 class FrontController extends Controller
@@ -28,31 +29,63 @@ class FrontController extends Controller
 
     public function home()
     {
-        $mostPopularCategories = Article::query()
-            ->select("id", "category_id")
-            ->with('category:id,name,slug,description,created_at,image,color')
-            ->whereHas("category", function ($query) {
-                $query->where("status", 1)
-                    ->where("feature_status", 1);
-            })
-            ->orderBy("view_count", 'DESC')
-            ->groupBy("category_id")
-            ->get();
+        // cache 1. metot
+        // $categoryNames = Cache::get("most_popular_categories");
+        // if (!Cache::has("most_popular_categories")) {
 
-        $categoryNames = [];
-        $mostPopularCategories->map(function ($item) use (&$categoryNames) {
-            if (count($categoryNames) < 4) {
-                $categoryNames[] = $item->category;
-            }
+        //     $mostPopularCategories = Article::query()
+        //         ->select("id", "category_id")
+        //         ->with('category:id,name,slug,description,created_at,image,color')
+        //         ->whereHas("category", function ($query) {
+        //             $query->where("status", 1)
+        //                 ->where("feature_status", 1);
+        //         })
+        //         ->orderBy("view_count", 'DESC')
+        //         ->groupBy("category_id")
+        //         ->get();
+
+        //     $categoryNames = [];
+        //     $mostPopularCategories->map(function ($item) use (&$categoryNames) {
+        //         if (count($categoryNames) < 4) {
+        //             $categoryNames[] = $item->category;
+        //         }
+        //     });
+
+        //     Cache::put("most_popular_categories", $categoryNames, 3600);
+        // }
+
+        //cache 2. metot
+        $categoryNames = Cache::remember("most_popular_categories", 3600, function () {
+            $mostPopularCategories = Article::query()
+                ->select("id", "category_id")
+                ->with('category:id,name,slug,description,created_at,image,color')
+                ->whereHas("category", function ($query) {
+                    $query->where("status", 1)
+                        ->where("feature_status", 1);
+                })
+                ->orderBy("view_count", 'DESC')
+                ->groupBy("category_id")
+                ->get();
+
+            $categoryNames = [];
+            $mostPopularCategories->map(function ($item) use (&$categoryNames) {
+                if (count($categoryNames) < 4) {
+                    $categoryNames[] = $item->category;
+                }
+            });
+            return $categoryNames;
         });
 
-        $mostPopularArticles = Article::query()
-            ->with('user', 'category')
-            ->whereHas("user")
-            ->whereHas("category")
-            ->orderBy("view_count", "DESC")
-            ->limit(6)
-            ->get();
+        $mostPopularArticles = Cache::remember("most_popular_articles", 60, function () {
+            return $mostPopularArticles = Article::query()
+                ->with('user', 'category')
+                ->status(1)
+                ->whereHas("user")
+                ->whereHas("category")
+                ->orderBy("view_count", "DESC")
+                ->limit(6)
+                ->get();
+        });
 
         $lastPublishedArticles = Article::query()
             ->with('user', 'category')
