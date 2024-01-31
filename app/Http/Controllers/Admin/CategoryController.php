@@ -9,6 +9,7 @@ use App\Models\User;
 use \Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\File as FacadesFile;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use RealRashid\SweetAlert\Facades\Alert;
 
@@ -226,6 +227,8 @@ class CategoryController extends Controller
         $category->seo_description = $request->seo_description;
         // $category->user_id = random_int(1, 10);
         $category->order = $request->order;
+
+        Cache::forget("most_popular_categories");
 
         if (!is_null($request->image)) {
             $imageFile = $request->file("image"); // alacagim dosya inputtaki name
