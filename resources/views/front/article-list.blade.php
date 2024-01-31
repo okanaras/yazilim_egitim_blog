@@ -23,14 +23,14 @@
             @endphp
 
             <div class="col-md-4 mt-4">
-                <a href="{{ route('front.articleDetail', ['user' => $item->user->username, 'article' => $item->slug]) }}">
+                <a href="{{ route("front.articleDetail", ['user' => $item->user->username, "article" => $item->slug]) }}">
                     <img src="{{ asset($image) }}" class="img-fluid">
                 </a>
                 <div class="most-popular-body mt-2">
                     <div class="most-popular-author most-popular-author d-flex justify-content-between">
                         <div>Yazar: <a href="{{ route('front.authorArticles', ['user' => $item->user->username ]) }}">{{ $item->user->name }}</a></div>
                         <div class="text-end">Kategori:
-                            <a href="{{ route('front.categoryArticles', ['category' => $item->category->slug] ) }}">
+                            <a href="{{ route('front.categoryArticles', ['category' => $item->category->slug]) }}">
                                 {{ $item->category->name }}
                             </a>
                         </div>
@@ -48,9 +48,16 @@
             </div>
         @endforeach
 
-        <!-- makale pagination -->
         <hr style="border: 1px solid #a9abad;" class="mt-5">
-        <div class="col-8 mx-auto mt-5">
+
+        @if ($articles->count() < 1)
+            <div class="alert alert-info">
+                Icerik bulunamamistir.
+            </div>
+        @endif
+
+        <!-- makale pagination -->
+        <div class="col-12 d-flex justify-content-center mx-auto mt-5">
             {{ $articles->links() }}
         </div>
     </section>

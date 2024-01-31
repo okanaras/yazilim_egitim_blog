@@ -140,7 +140,6 @@ class FrontController extends Controller
             $visitedArticlesCategoryIds[] = $item->category_id;
             $visitedArticleAuthorIds[] = $item->user_id;
         }
-        // dd($visitedArticlesCategoryIds, $visitedArticleAuthorIds);
 
         // oneride bulunan article whereNotIn=without visitedArticles!
         $suggestArticles = Article::query()
@@ -230,7 +229,7 @@ class FrontController extends Controller
 
     public function articleList()
     {
-        $articles = Article::query()->orderBy('publish_date', 'DESC')->paginate(21);
+        $articles = Article::query()->orderBy('publish_date', 'DESC')->paginate(9);
 
         return view("front.article-list", compact("articles"));
     }

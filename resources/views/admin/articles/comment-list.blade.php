@@ -90,7 +90,11 @@
                     <th scope="col">Name</th>
                     <th scope="col">Email</th>
                     <th scope="col">IP</th>
-                    <th scope="col">Status</th>
+                    @if (isset($page))
+                        <th scope="col">Approve Status</th>
+                    @else
+                        <th scope="col">Status</th>
+                    @endif
                     <th scope="col">Comment</th>
                     <th scope="col">Created Date</th>
                     <th scope="col">Actions</th>
@@ -113,12 +117,22 @@
                             <td>{{ $comment->email }}</td>
                             <td>{{ $comment->ip }}</td>
                             <td>
-                                @if ($comment->status)
-                                    <a href="javascript:void(0)" data-id="{{ $comment->id }}"
-                                        class="btn btn-success btn-sm btnChangeStatus">Aktif</a>
+                                @if (isset($page))
+                                    @if ($comment->approve_status)
+                                        <a href="javascript:void(0)" data-id="{{ $comment->id }}"
+                                            class="btn btn-success btn-sm btnChangeStatus">Aktif</a>
+                                    @else
+                                        <a href="javascript:void(0)" data-id="{{ $comment->id }}"
+                                            class="btn btn-danger btn-sm btnChangeStatus">Pasif</a>
+                                    @endif
                                 @else
-                                    <a href="javascript:void(0)" data-id="{{ $comment->id }}"
-                                        class="btn btn-danger btn-sm btnChangeStatus">Pasif</a>
+                                    @if ($comment->status)
+                                        <a href="javascript:void(0)" data-id="{{ $comment->id }}"
+                                            class="btn btn-success btn-sm btnChangeStatus">Aktif</a>
+                                    @else
+                                        <a href="javascript:void(0)" data-id="{{ $comment->id }}"
+                                            class="btn btn-danger btn-sm btnChangeStatus">Pasif</a>
+                                    @endif
                                 @endif
                             </td>
 
@@ -186,54 +200,119 @@
     <script>
         $(document).ready(function() {
 
-            // changeStatus jq-ajax
-            $('.btnChangeStatus').click(function() {
-                let id = $(this).data('id');
-                let self = $(this);
+            @if (isset($page))
+                // approveChangeStatus jq-ajax
+                $('.btnChangeStatus').click(function() {
+                    let id = $(this).data('id');
+                    let self = $(this);
 
-                Swal.fire({
-                    title: 'Status degistirmek istediginize emin misiniz?',
-                    showDenyButton: true,
-                    showCancelButton: true,
-                    confirmButtonText: 'Evet',
-                    denyButtonText: `Hayir`,
-                    cancelButtonText: "Iptal"
-                }).then((result) => {
-                    /* Read more about isConfirmed, isDenied below */
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            method: "POST",
-                            url: "{{ route('artical.pending-approval.changeStatus') }}",
-                            data: {
-                                id: id
-                            },
-                            async: false,
-                            success: function(data) {
-                                if (data.comment_status) {
+                    Swal.fire({
+                        title: 'Onaylamak istediginize emin misiniz?',
+                        showDenyButton: true,
+                        showCancelButton: true,
+                        confirmButtonText: 'Evet',
+                        denyButtonText: `Hayir`,
+                        cancelButtonText: "Iptal"
+                    }).then((result) => {
+                        /* Read more about isConfirmed, isDenied below */
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                method: "POST",
+                                url: "{{ route('artical.pending-approval.changeStatus') }}",
+                                data: {
+                                    id: id,
+                                    page: "{{ $page }}"
+                                },
+                                async: false,
+                                success: function(data) {
                                     $('#row-' + id).remove();
 
+                                    Swal.fire({
+                                        title: "Basarili",
+                                        text: "Onaylanmistir!",
+                                        confirmButtonText: "Tamam",
+                                        icon: "success"
+                                    });
+
+                                },
+                                error: function() {
+                                    console.log("hata geldi");
                                 }
-                                Swal.fire({
-                                    title: "Basarili",
-                                    text: "Yorum Onaylandi!",
-                                    confirmButtonText: "Tamam",
-                                    icon: "success"
-                                });
-                            },
-                            error: function() {
-                                console.log("hata geldi");
-                            }
-                        });
-                    } else if (result.isDenied) {
-                        Swal.fire({
-                            title: "Bilgi",
-                            text: "Herhangi bir islem yapilmadi!",
-                            confirmButtonText: "Tamam",
-                            icon: "info"
-                        });
-                    }
-                })
-            });
+                            });
+                        } else if (result.isDenied) {
+                            Swal.fire({
+                                title: "Bilgi",
+                                text: "Herhangi bir islem yapilmadi!",
+                                confirmButtonText: "Tamam",
+                                icon: "info"
+                            });
+                        }
+                    })
+                });
+            @else
+                // changeStatus jq-ajax
+                $('.btnChangeStatus').click(function() {
+                    let id = $(this).data('id');
+                    let self = $(this);
+
+                    Swal.fire({
+                        title: 'Status degistirmek istediginize emin misiniz?',
+                        showDenyButton: true,
+                        showCancelButton: true,
+                        confirmButtonText: 'Evet',
+                        denyButtonText: `Hayir`,
+                        cancelButtonText: "Iptal"
+                    }).then((result) => {
+                        /* Read more about isConfirmed, isDenied below */
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                method: "POST",
+                                url: "{{ route('artical.pending-approval.changeStatus') }}",
+                                data: {
+                                    id: id
+                                },
+                                async: false,
+                                success: function(data) {
+                                    if (data.comment_status) {
+                                        self.removeClass('btn-danger');
+                                        self.addClass('btn-success');
+                                        self.text('Aktif');
+
+                                        Swal.fire({
+                                            title: "Basarili",
+                                            text: "Yorum aktif olarak guncellendi!",
+                                            confirmButtonText: "Tamam",
+                                            icon: "success"
+                                        });
+                                    }
+                                    else {
+                                        self.removeClass('btn-success');
+                                        self.addClass('btn-danger');
+                                        self.text('Pasif');
+
+                                        Swal.fire({
+                                            title: "Basarili",
+                                            text: "Yorum pasif olarak guncellendi!",
+                                            confirmButtonText: "Tamam",
+                                            icon: "success"
+                                        });
+                                    }
+                                },
+                                error: function() {
+                                    console.log("hata geldi");
+                                }
+                            });
+                        } else if (result.isDenied) {
+                            Swal.fire({
+                                title: "Bilgi",
+                                text: "Herhangi bir islem yapilmadi!",
+                                confirmButtonText: "Tamam",
+                                icon: "info"
+                            });
+                        }
+                    })
+                });
+            @endif
 
             // delete jq-ajax
             $('.btnDelete').click(function() {

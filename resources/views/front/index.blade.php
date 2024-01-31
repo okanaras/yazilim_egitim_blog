@@ -102,7 +102,7 @@
         </div>
         @foreach ($lastPublishedArticles as $article)
             <div class="col-md-4 mt-4">
-                <a href="#">
+                <a href="{{ route('front.articleDetail', ['user' => $article->user->username, 'article' => $article->slug]) }}">
                     <img src="{{ imageExist($article->image, $settings->article_default_image) }}" class="img-fluid">
                 </a>
                 <div class="most-popular-body mt-2">

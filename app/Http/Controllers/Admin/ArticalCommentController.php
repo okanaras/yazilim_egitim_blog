@@ -48,7 +48,15 @@ class ArticalCommentController extends Controller
     public function changeStatus(Request $request)
     {
         $comment = ArticleComment::findOrFail($request->id);
+
         $comment->status = $comment->status ? 0 : 1;
+
+        $page = $request->page;
+
+        if ($page == "approval") {
+            $comment->approve_status = 1;
+        }
+
         $comment->save();
 
         return response()
