@@ -40,6 +40,22 @@
                             <div class="alert alert-danger">{{ $errors->first('title') }}</div>
                         @endif
 
+                        <label for="seo_keywords_home" class="form-label m-t-sm">Seo Anahtar Kelimeler Anasayfa</label>
+                        <textarea class="form-control form-control-solid-bordered  m-b-sm" name="seo_keywords_home" id="seo_keywords_home" cols="30"
+                            rows="5" style="resize: none" placeholder="Seo Keywords Anasayfa">{{ isset($settings) ? $settings->seo_keywords_home : '' }}</textarea>
+
+                        <label for="seo_description_home" class="form-label">Seo Description Anasayfa</label>
+                        <textarea class="form-control form-control-solid-bordered m-b-sm" name="seo_description_home" id="seo_description_home"
+                            cols="30" rows="5" style="resize: none" placeholder="Seo Description Anasayfa">{{ isset($settings) ? $settings->seo_description_home : '' }}</textarea>
+
+                        <label for="seo_keywords_articles" class="form-label m-t-sm">Seo Anahtar Kelimeler Makale</label>
+                        <textarea class="form-control form-control-solid-bordered  m-b-sm" name="seo_keywords_articles" id="seo_keywords_articles" cols="30"
+                            rows="5" style="resize: none" placeholder="Seo Keywords Makale">{{ isset($settings) ? $settings->seo_keywords_articles : '' }}</textarea>
+
+                        <label for="seo_description_articles" class="form-label">Seo Description Makale</label>
+                        <textarea class="form-control form-control-solid-bordered m-b-sm" name="seo_description_articles" id="seo_description_articles"
+                            cols="30" rows="5" style="resize: none" placeholder="Seo Description Makale">{{ isset($settings) ? $settings->seo_description_articles : '' }}</textarea>
+
                         <label for="footer_text" class="form-label m-t-sm">Footer Text</label>
                         <textarea class="form-control form-control-solid-bordered  m-b-sm" name="footer_text" id="footer_text" cols="30"
                             rows="5" placeholder="Footer Aciklama">{!! isset($settings) ? $settings->footer_text : '' !!}</textarea>

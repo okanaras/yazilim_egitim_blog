@@ -125,5 +125,11 @@
     </section>
 @endsection
 
+@push('meta')
+    <meta name="keyword" content="{{ $settings->seo_keywords_home }}">
+    <meta name="description" content="{{ $settings->seo_description_home }}">
+    <meta name="author" content="Yazilim Egitim">
+@endpush
+
 @section('js')
 @endsection

@@ -8,6 +8,8 @@
     {{-- ajax csrf token --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    @stack("meta")
+
     <title>@yield('title', 'Yazilim Egitim Blog')</title>
 
     <link rel="stylesheet" href="{{ asset('assets/front/css/bootstrap.min.css') }}">

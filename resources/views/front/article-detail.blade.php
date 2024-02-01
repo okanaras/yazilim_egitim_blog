@@ -388,3 +388,9 @@
         });
     </script>
 @endsection
+
+@push('meta')
+<meta name="keyword" content="{{ $article->seo_keywords }}">
+<meta name="description" content="{{ $article->seo_description }}">
+<meta name="author" content="{{ $article->user->name }}">
+@endpush

@@ -104,23 +104,15 @@ class FrontController extends Controller
 
     public function category(Request $request, string $slug)
     {
-        /*
-
-        ders 83 te silinmisti.
-
-        $category = Category::query()->with("articlesActive")->where("slug", $slug)->first();
-        $articles = $category->articlesActive()->paginate(2);
-        */
-
         $articles = Article::query()
             ->with(['category:id,name,slug', 'user:id,name,username'])
             ->whereHas("category", function ($query) use ($slug) {
                 $query->where("slug", $slug);
             })
             ->paginate(21);
-
-        $title = Category::query()->where("slug", $slug)->first()->name . " Kategorisine Ait Makaleler";
-        return view("front.article-list", compact("articles", "title"));
+        $category = Category::query()->where("slug", $slug)->first();
+        $title = $category->name . " Kategorisine Ait Makaleler";
+        return view("front.article-list", compact("articles", "title", "category"));
     }
 
     public function articleDetail(Request $request, string $username, string $articleSlug)
