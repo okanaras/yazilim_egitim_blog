@@ -12,9 +12,7 @@ $('#searchIcon1').click(function () {
     $('#search_text').focus();
 });
 
-/*
-// buralar derste daha eklenmedi
-
+// 150px asagi kaydirildiginda css acip kapatma komutu
 $(window).scroll(function () {
     if ($(window).scrollTop() > 150) {
         $(".scroll-to-top").css("display", "block");
@@ -23,12 +21,14 @@ $(window).scroll(function () {
         $(".scroll-to-top").css("display", "none");
     }
 });
+
+// tiklama islemi gerceklestiginde yukari kayacak kod
 $(".scroll-to-top").click(function () {
     $("html,body").animate({
         scrollTop: $("body").offset().top
     }, 50);
 });
-*/
+
 
 
 $(document).ready(function () {
