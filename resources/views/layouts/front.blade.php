@@ -144,12 +144,35 @@
                     <!-- kategoriler -->
                     <section class="categories bg-white shadow-sm">
                         <h4 class="bg-light text-secondary p-3 border-bottom border-1 border-light">Kategoriler</h4>
-                        <ul class="list-group m-0">
+
+                        <ul class="list-group m-0" id="categoryCollapse">
                             @foreach ($categories as $category)
-                                <li class="px-3 py-3"><a
-                                        href="{{ route('front.categoryArticles', ['category' => $category->slug]) }}">{{ $category->name }}<span
-                                            class="float-end me-3"
-                                            style="color: {{ $category->color }}">&#x25CF;</span></a></li>
+                                @if($category->childCategories->count())
+                                    <li class="px-3 py-3">
+                                        <a href="javascript:void(0)" class="btn-category-accordion" data-bs-toggle="collapse" data-bs-target="#collapse-{{ $category->id }}">
+                                            {{ $category->name }}
+                                            <span class="float-end me-3"><i class="fa fa-chevron-down"></i></span>
+                                        </a>
+                                    </li>
+
+                                    <div id="collapse-{{ $category->id}}" data-bs-parent="#categoryCollapse" class="accordion-collapse collapse">
+                                        @foreach ($category->childCategories as $childCategory)
+                                            <li class="px-3 py-3 bg-sub-category">
+                                                <a href="{{ route('front.categoryArticles', ['category' => $childCategory->slug]) }}">
+                                                    {{ $childCategory->name }}
+                                                    <span class="float-end me-3" style="color: {{ $childCategory->color }}">&#x25CF;</span>
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </div>
+                                    @else
+                                        <li class="px-3 py-3">
+                                            <a href="{{ route('front.categoryArticles', ['category' => $category->slug]) }}">
+                                                {{ $category->name }}
+                                                <span class="float-end me-3" style="color: {{ $category->color }}">&#x25CF;</span>
+                                            </a>
+                                        </li>
+                                    @endif
                             @endforeach
                         </ul>
                     </section>
@@ -279,6 +302,18 @@
                     "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
                 }
             });
+        });
+
+        // accordion collapse show oldugundaki action
+        $('.accordion-collapse').on('show.bs.collapse', function () {
+            $(this).prev().find('.fa-chevron-down').addClass('fa-cehvron-up');
+            $(this).prev().find('.fa-chevron-down').removeClass('fa-cehvron-down');
+        });
+
+        // accordion collapse hide oldugundaki action
+        $('.accordion-collapse').on('hide.bs.collapse', function () {
+            $(this).prev().find('.fa-chevron-up').addClass('fa-cehvron-down');
+            $(this).prev().find('.fa-chevron-up').removeClass('fa-cehvron-up');
         });
     </script>
 
