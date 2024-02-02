@@ -192,8 +192,8 @@ class ArticleController extends Controller
         //     unset($data['slug']);
         // }
 
-        //egerki title ve slug gelenlere esit degilse veriyi guncelleyip cachlicek ya da cache temizleyip kullanicaz
-        if ($articleFind->title != $data['title'] || $articleFind->slug != $data['slug']) {
+        //egerki title guncellendiyse veya data slug varsa ve guncellendiyse veriyi guncelleyip cachlicek ya da cache temizleyip kullanicaz
+        if ($articleFind->title != $data['title'] || (isset($data['slug']) && $articleFind->slug != $data['slug'])) {
 
             if (Cache::has("most_popular_articles")) {
                 $mpA = Cache::get("most_popular_articles");

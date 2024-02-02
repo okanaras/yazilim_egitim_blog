@@ -90,10 +90,10 @@
                     <th scope="col">Name</th>
                     <th scope="col">Email</th>
                     <th scope="col">IP</th>
-                    @if (isset($page))
-                        <th scope="col">Approve Status</th>
-                    @else
+                    @if (isset($page) && $page == "commentList")
                         <th scope="col">Status</th>
+                    @else
+                        <th scope="col">Approve Status</th>
                     @endif
                     <th scope="col">Comment</th>
                     <th scope="col">Created Date</th>
@@ -137,8 +137,6 @@
                             </td>
 
                             <td>
-                                <span data-bs-container="body" data-bs-toggle="tooltip" data-bs-placement="top"
-                                    data-bs-title="{{ substr($comment->comment, 0, 200) }}">{{ substr($comment->comment, 0, 200) }}</span>
                                 <button type="button" class="btn btn-primary lookComment btn-sm p-0 px-2"
                                     data-comment="{{ $comment->comment }}" data-bs-toggle="modal"
                                     data-bs-target="#exampleModal">
@@ -149,15 +147,15 @@
                             <td>{{ isset($comment->created_at) ? Carbon\Carbon::parse($comment->created_at)->translatedFormat('d F Y H:i:s') : 'Tarih Girilmedi' }}
                             </td>
                             <td>
-                                <div class="d-flex">
+                                <div class="d-flex actions-{{ $comment->id }}">
                                     <a href="javascript:void(0)" class="btn btn-danger btn-sm btnDelete"
                                         data-id="{{ $comment->id }}" data-name="{{ $comment->id }}">
                                         <i class="material-icons ms-0">delete</i>
                                     </a>
                                     @if ($comment->deleted_at)
                                         <a href="javascript:void(0)" class="btn btn-primary btn-sm btnRestore"
-                                            data-id="{{ $comment->id }}" data-name="{{ $comment->id }}">
-                                            <i class="material-icons ms-0" title="Geri al">undo</i>
+                                            data-id="{{ $comment->id }}" data-name="{{ $comment->id }}"  title="Geri al">
+                                            <i class="material-icons ms-0">undo</i>
                                         </a>
                                     @endif
                                 </div>
@@ -200,7 +198,7 @@
     <script>
         $(document).ready(function() {
 
-            @if (isset($page))
+            @if (isset($page) && $page != "commentList")
                 // approveChangeStatus jq-ajax
                 $('.btnChangeStatus').click(function() {
                     let id = $(this).data('id');
@@ -337,8 +335,22 @@
                             },
                             async: false,
                             success: function(data) {
+                                let aElement = document.createElement("a");
+                                aElement.className="btn btn-primary btn-sm btnRestore";
+                                aElement.setAttribute("data-id", id);
+                                aElement.setAttribute("data-name", id);
+                                aElement.setAttribute("title", "Geri Al");
+                                aElement.href="javascript:void(0)";
 
-                                $('#row-' + id).remove();
+                                let iElement = document.createElement("i");
+                                iElement.className="material-icons ms-0";
+                                iElement.innerText="undo";
+
+                                aElement.append(iElement);
+
+                                let actions = document.getElementsByClassName('actions-' + id);
+                                actions[0].appendChild(aElement);
+
                                 Swal.fire({
                                     title: "Basarili",
                                     text: "Yorum Silindi",
@@ -364,7 +376,8 @@
             });
 
             // restore jq-ajax
-            $('.btnRestore').click(function() {
+            $(document).on('click', 'body .btnRestore', function () {
+
                 let id = $(this).data('id');
                 let articleName = $(this).data('name');
 
