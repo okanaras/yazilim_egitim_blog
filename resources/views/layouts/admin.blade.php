@@ -79,7 +79,7 @@
     <script src="{{ asset('assets/admin/js/main.min.js') }}"></script>
     <script src="{{ asset('assets/admin/js/custom.js') }}"></script>
     {{-- <script src="{{ asset('assets/admin/js/pages/dashboard.js') }}"></script> --}}
-    <script src="{{ asset('assets/front/js/main.js') }}"></script>
+    {{-- ders 105 : 1:15 te sercan hoaca yok diye kapattim <script src="{{ asset('assets/front/js/main.js') }}"></script> --}}
 
     {{-- ajax setup --}}
     <script>
