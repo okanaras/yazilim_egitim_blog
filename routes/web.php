@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\ArticalCommentController;
 use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\EmailController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\LoginController;
@@ -73,6 +74,11 @@ Route::prefix("admin")->middleware(["auth", "verified"])->group(function () {
         Route::post('users/{user:username}/edit', [UserController::class, "update"])->whereNumber("id");
         Route::delete('users/delete', [UserController::class, "delete"])->name("user.delete");
         Route::post('users/restore', [UserController::class, "restore"])->name("user.restore");
+
+        Route::get("email/verify", [EmailController::class, "verifyShow"])->name("admin.email.verify");
+        Route::post("email/verify", [EmailController::class, "verify"]);
+
+
     });
 
     // user role

@@ -6,15 +6,18 @@
     </div>
     <div class="app-menu">
         <ul class="accordion-menu">
+
             <li class="sidebar-title">
                 Yazilim Egitim
             </li>
+
             <li>
                 <a href="{{ route('admin.index') }}" class="{{ Route::is('admin.index') ? 'active' : '' }}">
                     <i class="material-icons-two-tone">dashboard</i>
                     Dashboard
                 </a>
             </li>
+
             <li
                 class="{{ Route::is('article.index') ||
                 Route::is('article.create') ||
@@ -50,6 +53,7 @@
                     </li>
                 </ul>
             </li>
+
             <li class="{{ Route::is('category.index') || Route::is('category.create') ? 'open' : '' }}">
                 <a href="#" class="">
                     <i class="material-icons">tune</i>
@@ -82,6 +86,22 @@
                     <li>
                         <a href="{{ route('user.index') }}"
                             class="{{ Route::is('user.index') ? 'active' : '' }}">Kullanici Listesi</a>
+                    </li>
+                </ul>
+            </li>
+
+            <li
+                class="{{ $settings ? 'open'
+                    : '' }}">
+                <a href="#" class="">
+                    <i class="material-icons">tune</i>
+                    Email Yonetimi
+                    <i class="material-icons has-sub-menu">keyboard_arrow_right</i>
+                </a>
+                <ul class="sub-menu" style="">
+                    <li>
+                        <a href="{{ route('admin.email.verify') }}"
+                            class="{{ Route::is('admin.email.verify') ? 'active' : '' }}">Dogrulama Emaili</a>
                     </li>
                 </ul>
             </li>
