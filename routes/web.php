@@ -75,8 +75,12 @@ Route::prefix("admin")->middleware(["auth", "verified"])->group(function () {
         Route::delete('users/delete', [UserController::class, "delete"])->name("user.delete");
         Route::post('users/restore', [UserController::class, "restore"])->name("user.restore");
 
-        Route::get("email/verify", [EmailController::class, "verifyShow"])->name("admin.email.verify");
-        Route::post("email/verify", [EmailController::class, "verify"]);
+        Route::get("email-themes/create", [EmailController::class, "create"])->name("admin.email-themes.create");
+        Route::post("email-themes/create", [EmailController::class, "store"]);
+        Route::get("email-themes/edit", [EmailController::class, "edit"])->name("admin.email-themes.edit");
+        Route::post("email-themes/edit", [EmailController::class, "update"]);
+
+        Route::get("email-themes", [EmailController::class, "themes"])->name("admin.email-themes");
 
 
     });

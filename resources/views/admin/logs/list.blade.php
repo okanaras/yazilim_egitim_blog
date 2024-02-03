@@ -203,6 +203,5 @@
 @endpush
 
 @push('style')
-    {{-- <link rel="stylesheet" href="{{ asset('assets/front/css/highlighter-default.min.css') }}"> --}}
     <link rel="stylesheet" href="{{ asset('assets/plugins/highlight/styles/androidstudio.css') }}">
 @endpush

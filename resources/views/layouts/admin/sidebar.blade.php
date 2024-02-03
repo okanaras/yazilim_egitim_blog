@@ -100,8 +100,8 @@
                 </a>
                 <ul class="sub-menu" style="">
                     <li>
-                        <a href="{{ route('admin.email.verify') }}"
-                            class="{{ Route::is('admin.email.verify') ? 'active' : '' }}">Dogrulama Emaili</a>
+                        <a href="{{ route('admin.email-themes.create') }}"
+                            class="{{ Route::is('admin.email-themes.create') ? 'active' : '' }}">Dogrulama Emaili</a>
                     </li>
                 </ul>
             </li>

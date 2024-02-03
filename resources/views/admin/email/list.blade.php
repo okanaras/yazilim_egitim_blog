@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('title')
-    Makale Listeleme
+    Email Tema Listeleme
 @endsection
 
 @section('css')
@@ -25,83 +25,41 @@
 @section('content')
     <x-bootstrap.card>
         <x-slot:header>
-            <h2>Makale Listesi</h2>
+            <h2>Email Tema Listesi</h2>
         </x-slot:header>
 
         <x-slot:body>
-            <form action="{{ route("article.index") }}" method="get" id="formFilter">
+            <form action="" method="get" id="formFilter">
                 <div class="row">
-                    <div class="col-3 my-2">
-                        <select class="js-states form-control" name="category_id" id="selectParentCategory" tabindex="-1"
-                            style="display: none; width: 100%">
-                            <option value="{{ null }}">Kategori Secin</option>
-                            @foreach ($categories as $parent)
-                                <option value="{{ $parent->id }}"
-                                    {{ request()->get('category_id') == $parent->id ? 'selected' : '' }}>{{ $parent->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-3 my-2">
-                        <select class="js-states form-control" name="user_id" tabindex="-1"
-                            style="display: none; width: 100%">
-                            <option value="{{ null }}">User</option>
-                            @foreach ($users as $user)
-                                <option value="{{ $user->id }}"
-                                    {{ request()->get('user_id') == $user->id ? 'selected' : '' }}>{{ $user->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-3 my-2">
-                        <select class="form-select" name="status" aria-label="Default select example">
-                            <option value="{{ null }}">Status</option>
-                            <option value="0" {{ request()->get('status') === '0' ? 'selected' : '' }}>Pasif</option>
-                            <option value="1" {{ request()->get('status') === '1' ? 'selected' : '' }}>Aktif</option>
-                        </select>
-                    </div>
-                    <div class="col-3 my-2">
 
-                        <input class="form-control flatpickr2 m-b-sm" id="publish_date" type="text" name="publish_date"
-                            type="text" placeholder="Ne zaman yayinlansin?"
-                            value="{{ request()->get('publish_date') }}">
+                    <div class="col-3 my-2">
+                        <select class="js-states form-control" name="theme_type" id="theme_type" tabindex="-1"
+                            style="display: none; width: 100%">
+                            <option value="{{ null }}">Tema Turu Secin</option>
+                                <option value="1" {{ request()->get('theme_type') == "1" ? 'selected' : '' }}>Kendim Icerik Olusturmak Istiyorum</option>
+                                <option value="2" {{ request()->get('theme_type') == "2" ? 'selected' : '' }}>Parola Sifirlama Maili</option>
+
+                        </select>
                     </div>
+
+
+                    <div class="col-3 my-2">
+                        <select class="js-states form-control" name="process" id="process" tabindex="-1"
+                            style="display: none; width: 100%">
+                            <option value="{{ null }}">Islem Seciniz</option>
+                            <option value="1" {{ request()->get('process') == "1" ? 'selected' : '' }}>Email Dogrulama Mail Icerigi</option>
+                            <option value="2" {{ request()->get('process') == "2" ? 'selected' : '' }}>Parola Sifirlama Mail Icerigi</option>
+                            <option value="3" {{ request()->get('process') == "3" ? 'selected' : '' }}>Parola Sifirlama Islem Tamamlandiginda Gonderilecek Mail Icerigi</option>
+
+                        </select>
+                    </div>
+
+
                     <div class="col-3 my-2">
                         <input type="text" class="form-control" value="{{ request()->get('search_text') }}"
-                            name="search_text" placeholder="Title, Slug, Body, Tags">
+                            name="search_text" placeholder="Mail Icerigi">
                     </div>
-                    <div class="col-9 my-2">
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <input type="number" class="form-control"
-                                            value="{{ request()->get('min_view_count') }}" name="min_view_count"
-                                            placeholder="Min View Count">
-                                    </div>
-                                    <div class="col-6">
-                                        <input type="number" class="form-control"
-                                            value="{{ request()->get('max_view_count') }}" name="max_view_count"
-                                            placeholder="Max View Count">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <input type="number" class="form-control"
-                                            value="{{ request()->get('min_like_count') }}" name="min_like_count"
-                                            placeholder="Min Like Count">
-                                    </div>
-                                    <div class="col-6">
-                                        <input type="number" class="form-control"
-                                            value="{{ request()->get('max_like_count') }}" name="max_like_count"
-                                            placeholder="Max Like Count">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+
                     <hr>
                     <div class="col-6 mb-2 d-flex">
                         <button type="submit" class="btn btn-primary w-50 me-4">Filtrele</button>
@@ -112,61 +70,46 @@
             </form>
             <x-bootstrap.table :class="'table-striped table-hover'" :isResponsive="1">
                 <x-slot:columns>
-                    <th scope="col">Image</th>
-                    <th scope="col">Title</th>
-                    <th scope="col">Slug</th>
+                    <th scope="col">Tema Turu</th>
+                    <th scope="col">Islem</th>
+                    <th scope="col">Icerik</th>
                     <th scope="col">Status</th>
-                    <th scope="col">Body</th>
-                    <th scope="col">Tags</th>
-                    <th scope="col">View Count</th>
-                    <th scope="col">Like Count</th>
-                    <th scope="col">Category</th>
-                    <th scope="col">Publish Date</th>
-                    <th scope="col">User</th>
+                    <th scope="col">Olusturan</th>
+                    <th scope="col">Created Date</th>
                     <th scope="col">Actions</th>
                 </x-slot:columns>
 
                 <x-slot:rows>
-                    @foreach ($list as $article)
-                        <tr id="row-{{ $article->id }}">
+                    @foreach ($list as $email)
+                        <tr id="row-{{ $email->id }}">
+                            <td>{{ $email->theme_type }}</td>
+                            <td>{{ $email->process }}</td>
                             <td>
-                                @if (!empty($article->image))
-                                    <img src="{{ asset($article->image) }}" height="60" width="70">
-                                @endif
+                                <a href="javascript:void(0)" class="btn btn-info btn-sm btnModelThemeDetail" data-bs-toggle="modal" data-bs-target="#contentViewModal" data-id="{{ $email->id }}" data-content="{{ $email->body }}" data-theme-type="{{ $email->getRawOriginal('theme_type') }}"
+                                    >
+                                            <i class="material-icons ms-0">visibility</i>
+                                        </a>
                             </td>
-                            <td>{{ $article->title }}</td>
-                            <td>{{ $article->slug }}</td>
                             <td>
-                                @if ($article->status)
-                                    <a href="javascript:void(0)" data-id="{{ $article->id }}"
+                                @if ($email->status)
+                                    <a href="javascript:void(0)" data-id="{{ $email->id }}"
                                         class="btn btn-success btn-sm btnChangeStatus">Aktif</a>
                                 @else
-                                    <a href="javascript:void(0)" data-id="{{ $article->id }}"
+                                    <a href="javascript:void(0)" data-id="{{ $email->id }}"
                                         class="btn btn-danger btn-sm btnChangeStatus">Pasif</a>
                                 @endif
                             </td>
-                            <td>
-                                <span data-bs-container="body" data-bs-toggle="tooltip" data-bs-placement="right"
-                                    data-bs-title="{{ substr($article->body, 0, 200) }}">{{ substr($article->body, 0, 20) }}</span>
-                            </td>
-                            <td>{{ $article->tags }}</td>
-                            <td>{{ $article->view_count }}</td>
-                            <td>{{ $article->like_count }}</td>
-                            {{-- <td>{{ $article->category->name }}</td> --}}
-                            <td>{{ $article->category?->name }}</td>
-                            {{-- burada egerki baglanti silinmis ise sadece olanlar gelir aynisini asagida da yaptim user icin ama kullanma hatani gormek icin acik birak daha once yasadigim gibi --}}
-                            <td>{{ isset($article->publish_date) ? Carbon\Carbon::parse($article->publish_date)->translatedFormat('d F Y H:i:s') : 'Tarih Girilmedi' }}
-                            </td>
-                            {{-- <td>{{ $article->user->name }}</td> --}}
-                            <td>{{ $article->user?->name }}</td>
+
+                            <td>{{ $email->user->name }}</td>
+                            <td>{{ $email->created_at }}</td>
                             <td>
                                 <div class="d-flex">
-                                    <a href="{{ route('article.edit', ['id' => $article->id]) }}"
+                                    <a href="{{ route('admin.email-themes.edit', ['id' => $email->id]) }}"
                                         class="btn btn-warning btn-sm">
                                         <i class="material-icons ms-0">edit</i>
                                     </a>
                                     <a href="javascript:void(0)" class="btn btn-danger btn-sm btnDelete"
-                                        data-id="{{ $article->id }}" data-name="{{ $article->title }}">
+                                        data-id="{{ $email->id }}" data-name="{{ $email->title }}">
                                         <i class="material-icons ms-0">delete</i>
                                     </a>
                                 </div>
@@ -180,6 +123,25 @@
             </div>
         </x-slot:body>
     </x-bootstrap.card>
+
+        <!-- Modal -->
+        <div class="modal fade" id="contentViewModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Sablon Icerigi</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="modalBody">
+                        <pre><code class="language-json" id="jsonData"></code></pre>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 @endsection
 
 @section('js')
@@ -296,15 +258,37 @@
 
             });
 
-            $('#selectParentCategory').select2();
+            $('.btnModelThemeDetail').click(function () {
+                let content = $(this).data("content");
+                let themeType = $(this).data("theme-type");
 
-        });
-    </script>
+                if (themeType == 1) {
 
-    <script>
-        $("#publish_date").flatpickr({
-            enableTime: true,
-            dateFormat: "Y-m-d H:i",
+                    $('#jsonData').html(content.replace('"', '').replace('"', ''));
+                }
+                else{
+                    $('#jsonData').html(JSON.stringify(content, null, 2));
+                    document.querySelectorAll('#jsonData').forEach(block => {
+                            hljs.highlightElement(block);
+                    });
+                }
+            });
+
+            $('#theme_type').select2();
+            $('#process').select2();
+
         });
     </script>
 @endsection
+
+@push('javascript')
+    <script src="{{ asset('assets/front/js/highlight.min.js') }}"></script>
+    <script>
+        hljs.highlightAll();
+    </script>
+@endpush
+
+@push('style')
+    <link rel="stylesheet" href="{{ asset('assets/plugins/highlight/styles/androidstudio.css') }}">
+@endpush
+

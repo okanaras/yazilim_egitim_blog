@@ -15,6 +15,14 @@
                 @csrf
                 <div class="theme-select">
                     <div class="row">
+
+                        @if ($errors->any())
+                            @foreach ($errors->all() as $error)
+                                <div class="alert alert-danger">{{ $error }}</div>
+                            @endforeach
+                        @endif
+
+
                         <div class="col-6">
                             <select name="theme_type" id="theme-type" class="form-control">
                                 <option value="">Tema Turu Seciniz</option>
