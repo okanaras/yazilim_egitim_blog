@@ -129,6 +129,39 @@
         }
     </style>
 </head>
+
+@php
+    if (isset($theme)) {
+        $title = $theme->title;
+
+        $logo = $theme->logo;
+        $logoAlt = $theme->logo_alt;
+        $logoTitle = $theme->logo_title;
+
+
+        $buttonText = $theme->button_text;
+        $description = $theme->description;
+
+        $resetPasswordImage = $theme->reset_password_image;
+        $resetPasswordImageAlt = $theme->reset_password_image_alt;
+        $resetPasswordImageTitle = $theme->reset_password_image_title;
+    }
+    else {
+        $title = "Parola Sifirlama Maili";
+
+        $logo = asset($settings->logo);
+        $logoAlt = "Parola Sifirlama";
+        $logoTitle = "Parola Sifirlama";
+
+        $buttonText = "Parola Sifirla";
+        $description = "Asagidaki linke tiklayarak parolanizi sifirlayabilirsiniz";
+
+        $resetPasswordImage = "Parola Sifirla";
+        $resetPasswordImageAlt = asset($settings->reset_password_image);
+        $resetPasswordImageTitle = "Parola Sifirla";    }
+@endphp
+
+
 <body style="background-color: #fff0e3; margin: 0; padding: 0; -webkit-text-size-adjust: none; text-size-adjust: none;">
 <table border="0" cellpadding="0" cellspacing="0" class="nl-container" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #fff0e3;" width="100%">
     <tbody>
@@ -166,7 +199,7 @@
                                         <tr>
                                             <td class="pad" style="width:100%;padding-right:0px;padding-left:0px;">
                                                 <div align="center" class="alignment" style="line-height:10px">
-                                                    <div style="max-width: 147.33333333333331px;"><img alt="Parola Sifirlama" src="{{ asset($settings->logo) }}" style="display: block; height: auto; border: 0; width: 100%;" title="Parola Sifirlama" width="147.33333333333331"/></div>
+                                                    <div style="max-width: 147.33333333333331px;"><img alt="{{ $logoAlt }}" src="{{ $logo }}" style="display: block; height: auto; border: 0; width: 100%;" title="{{ $logoTitle }}" width="147.33333333333331"/></div>
                                                 </div>
                                             </td>
                                         </tr>
@@ -211,7 +244,7 @@
                                         <tr>
                                             <td class="pad">
                                                 <div align="center" class="alignment" style="line-height:10px">
-                                                    <div class="fullWidth" style="max-width: 374px;"><img alt="Parola Sifirla" src="{{ asset($settings->reset_password_image) }}" style="display: block; height: auto; border: 0; width: 100%;" title="Parola Sifirla" width="374"/></div>
+                                                    <div class="fullWidth" style="max-width: 374px;"><img alt="{{ $resetPasswordImage }}" src="{{ $resetPasswordImage }}" style="display: block; height: auto; border: 0; width: 100%;" title="{{ $resetPasswordImageTitle }}" width="374"/></div>
                                                 </div>
                                             </td>
                                         </tr>
@@ -220,7 +253,7 @@
                                     <table border="0" cellpadding="0" cellspacing="0" class="heading_block block-3" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
                                         <tr>
                                             <td class="pad" style="text-align:center;width:100%;">
-                                                <h1 style="margin: 0; color: #101010; direction: ltr; font-family: Arial, Helvetica Neue, Helvetica, sans-serif; font-size: 27px; font-weight: normal; letter-spacing: normal; line-height: 120%; text-align: center; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 32.4px;"><strong>{{ $title ?? 'Parola Sifirlama Maili' }}</strong></h1>
+                                                <h1 style="margin: 0; color: #101010; direction: ltr; font-family: Arial, Helvetica Neue, Helvetica, sans-serif; font-size: 27px; font-weight: normal; letter-spacing: normal; line-height: 120%; text-align: center; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 32.4px;"><strong>{{ $title }}</strong></h1>
                                             </td>
                                         </tr>
                                     </table>
@@ -247,7 +280,7 @@
                                         <tr>
                                             <td class="pad" style="padding-bottom:10px;padding-left:20px;padding-right:10px;padding-top:10px;">
                                                 <div style="color:#848484;font-family:Arial, Helvetica Neue, Helvetica, sans-serif;font-size:14px;line-height:180%;text-align:center;mso-line-height-alt:25.2px;">
-                                                    <p style="margin: 0; word-break: break-word;"><span>{{ $description ?? "Asagidaki linke tiklayarak parolanizi sifirlayabilirsiniz" }}</span></p>
+                                                    <p style="margin: 0; word-break: break-word;"><span>{{ $description }}</span></p>
                                                 </div>
                                             </td>
                                         </tr>
@@ -261,7 +294,7 @@
                                                         <w:anchorlock/>
                                                         <v:textbox inset="0px,0px,0px,0px">
                                                             <center style="color:#ffffff; font-family:Arial, sans-serif; font-size:16px">
-                                                    <![endif]--><a href="{{ route('passwordResetToken', ['token'=> $token]) }}" style="text-decoration:none;display:inline-block;color:#ffffff;background-color:#101;border-radius:4px;width:auto;border-top:1px solid #101;font-weight:undefined;border-right:1px solid #101;border-bottom:1px solid #101;border-left:1px solid #101;padding-top:5px;padding-bottom:5px;font-family:Arial, Helvetica Neue, Helvetica, sans-serif;font-size:16px;text-align:center;mso-border-alt:none;word-break:keep-all;" target="_blank"><span style="padding-left:20px;padding-right:20px;font-size:16px;display:inline-block;letter-spacing:normal;"><span style="word-break: break-word; line-height: 32px;">Parolami Sifirla</span></span></a><!--[if mso]></center></v:textbox></v:roundrect><![endif]--></div>
+                                                    <![endif]--><a href="{{ route('passwordResetToken', ['token'=> $token]) }}" style="text-decoration:none;display:inline-block;color:#ffffff;background-color:#101;border-radius:4px;width:auto;border-top:1px solid #101;font-weight:undefined;border-right:1px solid #101;border-bottom:1px solid #101;border-left:1px solid #101;padding-top:5px;padding-bottom:5px;font-family:Arial, Helvetica Neue, Helvetica, sans-serif;font-size:16px;text-align:center;mso-border-alt:none;word-break:keep-all;" target="_blank"><span style="padding-left:20px;padding-right:20px;font-size:16px;display:inline-block;letter-spacing:normal;"><span style="word-break: break-word; line-height: 32px;">{{ $buttonText }}</span></span></a><!--[if mso]></center></v:textbox></v:roundrect><![endif]--></div>
                                             </td>
                                         </tr>
                                     </table>
