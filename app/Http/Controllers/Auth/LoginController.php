@@ -12,11 +12,9 @@ use App\Mail\ResetPasswordMail;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\LoginRequest;
 use App\Http\Controllers\Controller;
-use Illuminate\Hashing\BcryptHasher;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use function PHPUnit\Framework\isNull;
 use App\Http\Requests\UserStoreRequest;
 
 use Laravel\Socialite\Facades\Socialite;
@@ -136,7 +134,7 @@ class LoginController extends Controller
         if (Auth::check()) {
             $is_admin = Auth::user()->is_admin;
 
-            $this->log('logout', \auth()->id(), \auth()->user()->toArray(), User::class);
+            $this->log('logout', auth()->id(), auth()->user()->toArray(), User::class);
 
             Auth::logout();
 
@@ -216,7 +214,7 @@ class LoginController extends Controller
         if (!is_null($userCheck)) {
             Auth::login($userCheck);
 
-            $this->log('verify user', \auth()->id, \auth()->user()->toArray(), User::class);
+            $this->log('verify user', auth()->id(), auth()->user()->toArray(), User::class);
 
 
             return redirect()->route('home');
