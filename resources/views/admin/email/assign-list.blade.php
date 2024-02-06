@@ -42,7 +42,7 @@
 
                 <x-slot:rows>
                     @foreach ($list as $email)
-                        <tr id="row-{{ $email->id }}">
+                        <tr id="row-{{ $email->theme_type_id }}">
                             <td>{{ $email->theme->name }}</td>
                             <td>{{ $process[$email->process_id] }}</td>
                             <td>
@@ -56,7 +56,7 @@
                             <td>
                                 <div class="d-flex">
                                     <a href="javascript:void(0)" class="btn btn-danger btn-sm btnDelete"
-                                        data-id="{{ $email->id }}" data-name="{{ $email->title }}">
+                                        data-id="{{ $email->theme_type_id }}" data-name="{{ $email->theme->name }}">
                                         <i class="material-icons ms-0">delete</i>
                                     </a>
                                 </div>
@@ -119,9 +119,8 @@
 
 
             $('.btnDelete').click(function() {
-                let articleID = $(this).data('id');
+                let id = $(this).data('id');
                 let articleName = $(this).data('name');
-                // let articleName = "okan";
 
                 Swal.fire({
                     title: articleName + "'i Silmek istediğinize emin misiniz?",
@@ -134,18 +133,18 @@
                     if (result.isConfirmed) {
                         $.ajax({
                             method: "POST",
-                            url: "{{ route('article.delete') }}",
+                            url: "{{ route('admin.email-themes.assign.delete') }}",
                             data: {
                                 "_method": "DELETE",
-                                articleID: articleID
+                                id: id
                             },
                             async: false,
                             success: function(data) {
 
-                                $('#row-' + articleID).remove();
+                                $('#row-' + id).remove();
                                 Swal.fire({
                                     title: "Basarili",
-                                    text: "Makale Silindi",
+                                    text: "Atama Silindi",
                                     confirmButtonText: 'Tamam',
                                     icon: "success"
                                 });

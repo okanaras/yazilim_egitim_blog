@@ -94,7 +94,8 @@
                 class="{{ Route::is('admin.email-themes.create')
                 || Route::is('admin.email-themes.index')
                 || Route::is('admin.email-themes.assign')
-                || Route::is('admin.email-themes.edit') ? 'open'
+                || Route::is('admin.email-themes.edit')
+                || Route::is('admin.email-themes.assign-list') ? 'open'
                     : '' }}">
                 <a href="#" class="">
                     <i class="material-icons">tune</i>
@@ -113,6 +114,10 @@
                     <li>
                         <a href="{{ route('admin.email-themes.assign') }}"
                             class="{{ Route::is('admin.email-themes.assign') ? 'active' : '' }}">Tema Atama/Secimi</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.email-themes.assign-list') }}"
+                        class="{{ Route::is('admin.email-themes.assign-list') ? 'active' : '' }}">Tema Atama Listesi</a>
                     </li>
                 </ul>
             </li>

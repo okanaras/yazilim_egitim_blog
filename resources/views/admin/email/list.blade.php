@@ -70,6 +70,7 @@
             </form>
             <x-bootstrap.table :class="'table-striped table-hover'" :isResponsive="1">
                 <x-slot:columns>
+                    <th scope="col">Tema Adi</th>
                     <th scope="col">Tema Turu</th>
                     <th scope="col">Islem</th>
                     <th scope="col">Icerik</th>
@@ -82,6 +83,7 @@
                 <x-slot:rows>
                     @foreach ($list as $email)
                         <tr id="row-{{ $email->id }}">
+                            <td>{{ $email->name}}</td>
                             <td>{{ $email->theme_type }}</td>
                             <td>{{ $email->process }}</td>
                             <td>
@@ -109,7 +111,7 @@
                                         <i class="material-icons ms-0">edit</i>
                                     </a>
                                     <a href="javascript:void(0)" class="btn btn-danger btn-sm btnDelete"
-                                        data-id="{{ $email->id }}" data-name="{{ $email->title }}">
+                                        data-id="{{ $email->id }}" data-name="{{ $email->name }}">
                                         <i class="material-icons ms-0">delete</i>
                                     </a>
                                 </div>
@@ -155,7 +157,7 @@
         $(document).ready(function() {
 
             $('.btnChangeStatus').click(function() {
-                let articleID = $(this).data('id');
+                let id = $(this).data('id');
                 let self = $(this);
 
                 Swal.fire({
@@ -166,17 +168,16 @@
                     denyButtonText: `Hayir`,
                     cancelButtonText: "Iptal"
                 }).then((result) => {
-                    /* Read more about isConfirmed, isDenied below */
                     if (result.isConfirmed) {
                         $.ajax({
                             method: "POST",
-                            url: "{{ route('article.changeStatus') }}",
+                            url: "{{ route('admin.email.changeStatus') }}",
                             data: {
-                                articleID: articleID
+                                id: id
                             },
                             async: false,
                             success: function(data) {
-                                if (data.article_status) {
+                                if (data.themeStatus) {
                                     self.removeClass("btn-danger");
                                     self.addClass("btn-success");
                                     self.text("Aktif");
@@ -210,12 +211,11 @@
 
 
             $('.btnDelete').click(function() {
-                let articleID = $(this).data('id');
-                let articleName = $(this).data('name');
-                // let articleName = "okan";
+                let id = $(this).data('id');
+                let themeName = $(this).data('name');
 
                 Swal.fire({
-                    title: articleName + "'i Silmek istediğinize emin misiniz?",
+                    title: themeName + "'i Silmek istediğinize emin misiniz?",
                     showDenyButton: true,
                     showCancelButton: true,
                     confirmButtonText: 'Evet',
@@ -225,18 +225,18 @@
                     if (result.isConfirmed) {
                         $.ajax({
                             method: "POST",
-                            url: "{{ route('article.delete') }}",
+                            url: "{{ route('admin.email-themes.delete') }}",
                             data: {
                                 "_method": "DELETE",
-                                articleID: articleID
+                                id: id
                             },
                             async: false,
                             success: function(data) {
 
-                                $('#row-' + articleID).remove();
+                                $('#row-' + id).remove();
                                 Swal.fire({
                                     title: "Basarili",
-                                    text: "Makale Silindi",
+                                    text: "Tema Silindi",
                                     confirmButtonText: 'Tamam',
                                     icon: "success"
                                 });
