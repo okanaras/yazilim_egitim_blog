@@ -14,6 +14,11 @@ class EmailThemesActive extends Model
     {
         return $this->belongsTo(EmailTheme::class, "theme_type_id", "id");
     }
+    public function themeActive(): BelongsTo
+    {
+        return $this->belongsTo(EmailTheme::class, "theme_type_id", "id")
+            ->where("status", 1);
+    }
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, "user_id", "id");

@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\EmailTheme;
+use App\Models\EmailThemesActive;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -41,10 +42,14 @@ class VerifyNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        $theme = EmailTheme::query()
-            ->where("process", 1)
-            ->where("status", 1)
-            ->first();
+        $theme = EmailThemesActive::query()
+            ->with("themeActive")
+            ->whereHas("themeActive")
+            ->where("process_id", 1)
+            ->firstOrFail();
+
+
+        $theme = $theme->themeActive;
 
         if ($theme->getRawOriginal("theme_type") == 1) {
 

@@ -4,6 +4,7 @@ namespace App\Mail;
 
 use App\Models\User;
 use App\Models\EmailTheme;
+use App\Models\EmailThemesActive;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -44,10 +45,13 @@ class ResetPasswordMail extends Mailable
      */
     public function content()
     {
-        $theme = EmailTheme::query()
-            ->where("process", 2)
-            ->where("status", 1)
-            ->first();
+        $theme = EmailThemesActive::query()
+            ->with("themeActive")
+            ->whereHas("themeActive")
+            ->where("process_id", 2)
+            ->firstOrFail();
+
+        $theme = $theme->themeActive;
 
         if ($theme->getRawOriginal("theme_type") == 2) {
 
