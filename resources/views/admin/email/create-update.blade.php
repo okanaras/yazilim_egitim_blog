@@ -7,7 +7,7 @@
 @section('content')
     <x-bootstrap.card>
         <x-slot:header>
-            <h2 class="card-title">Makale {{ isset($article) ? 'Guncelleme' : 'Ekleme' }}
+            <h2 class="card-title">Tema {{ isset($article) ? 'Guncelleme' : 'Ekleme' }}</h2>
         </x-slot:header>
 
         <x-slot:body>
@@ -23,7 +23,11 @@
                         @endif
 
 
-                        <div class="col-6">
+                        <div class="col-md-4">
+                            <input type="text" name="name" id="name" placeholder="Tema Adi" class="form-control">
+                        </div>
+
+                        <div class="col-md-4">
                             <select name="theme_type" id="theme-type" class="form-control">
                                 <option value="">Tema Turu Seciniz</option>
                                 <option value="1">Kendim Icerik Olusturmak Istiyorum</option>
@@ -31,7 +35,7 @@
                             </select>
                         </div>
 
-                        <div class="col-6">
+                        <div class="col-md-4">
                             <select name="process" id="process" class="form-control">
                                 <option value="">Islem Seciniz</option>
                                 <option value="1">Email Dogrulama Mail Icerigi</option>

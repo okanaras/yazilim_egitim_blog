@@ -58,6 +58,7 @@ class VerifyNotification extends Notification
                 [
                     $notifiable->name,
                     $notifiable->email,
+                    route('verify-token', ['token' => $this->token]),
                     route('verify-token', ['token' => $this->token])
                 ],
                 json_decode($theme->body)

@@ -91,7 +91,10 @@
             </li>
 
             <li
-                class="{{ $settings ? 'open'
+                class="{{ Route::is('admin.email-themes.create')
+                || Route::is('admin.email-themes.index')
+                || Route::is('admin.email-themes.assign')
+                || Route::is('admin.email-themes.edit') ? 'open'
                     : '' }}">
                 <a href="#" class="">
                     <i class="material-icons">tune</i>
@@ -101,7 +104,15 @@
                 <ul class="sub-menu" style="">
                     <li>
                         <a href="{{ route('admin.email-themes.create') }}"
-                            class="{{ Route::is('admin.email-themes.create') ? 'active' : '' }}">Dogrulama Emaili</a>
+                            class="{{ Route::is('admin.email-themes.create') ? 'active' : '' }}">Yeni Tema Ekleme</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.email-themes.index') }}"
+                            class="{{ Route::is('admin.email-themes.index') ? 'active' : '' }}">Temalar</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.email-themes.assign') }}"
+                            class="{{ Route::is('admin.email-themes.assign') ? 'active' : '' }}">Tema Atama/Secimi</a>
                     </li>
                 </ul>
             </li>
