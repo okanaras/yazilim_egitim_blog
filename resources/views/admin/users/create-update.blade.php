@@ -58,8 +58,8 @@
                                 <label for="image" class="form-label">Kullanici Gorseli</label>
                                 <select class="form-control" name="image" id="image">
                                     <option value="{{ null }}">Gorsel Secin</option>
-                                    <option value="/assets/admin/images/user-images/profile1.png" {{ isset($user) && $user->image == '/assets/admin/images/user-images/profile1.png' ? 'selected' : (old('image') == '/assets/admin/images/user-images/profile1.png' ? 'selected' : '' )}}>Profile 1</option>
-                                    <option value="/assets/admin/images/user-images/profile2.png" {{ isset($user) && $user->image == '/assets/admin/images/user-images/profile2.png' ? 'selected' : (old('image') == '/assets/admin/images/user-images/profile2.png' ? 'selected' :'')}}>Profile 2</option>
+                                    <option value="assets/admin/images/user-images/profile1.png" {{ isset($user) && $user->image == 'assets/admin/images/user-images/profile1.png' ? 'selected' : (old('image') == 'assets/admin/images/user-images/profile1.png' ? 'selected' : '' )}}>Profile 1</option>
+                                    <option value="assets/admin/images/user-images/profile2.png" {{ isset($user) && $user->image == 'assets/admin/images/user-images/profile2.png' ? 'selected' : (old('image') == 'assets/admin/images/user-images/profile2.png' ? 'selected' :'')}}>Profile 2</option>
                                 </select>
                             </div>
                             <div class="col-4">
@@ -142,7 +142,7 @@
             });
 
             $('#image').change(function() {
-                $('#profileImage').attr("src", "{{ env('APP_URL') }}" + $(this).val());
+                $('#profileImage').attr("src", "{{ env('APP_URL') }}" + "/" + $(this).val());
             });
         });
     </script>
