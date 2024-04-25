@@ -12,9 +12,7 @@ $('#searchIcon1').click(function () {
     $('#search_text').focus();
 });
 
-/*
-// buralar derste daha eklenmedi
-
+// 150px asagi kaydirildiginda css acip kapatma komutu
 $(window).scroll(function () {
     if ($(window).scrollTop() > 150) {
         $(".scroll-to-top").css("display", "block");
@@ -23,12 +21,14 @@ $(window).scroll(function () {
         $(".scroll-to-top").css("display", "none");
     }
 });
+
+// tiklama islemi gerceklestiginde yukari kayacak kod
 $(".scroll-to-top").click(function () {
     $("html,body").animate({
         scrollTop: $("body").offset().top
     }, 50);
 });
-*/
+
 
 
 $(document).ready(function () {
@@ -43,8 +43,6 @@ $(document).ready(function () {
         slidesPerView: 3,
     });
 
-    // burasi derste daha eklenmedi
-    /*
     const suggest = new Swiper('.swiper-suggest-article', {
         loop: true,
         navigation: {
@@ -59,7 +57,7 @@ $(document).ready(function () {
         spaceBetween: 30,
         slidesPerView: 3,
     });
-    */
+
     const youtube = new Swiper('.swiper-youtube', {
         loop: true,
         speed: 1000,
@@ -77,18 +75,6 @@ $(document).ready(function () {
             nextEl: '.authors-swiper-button-next',
             prevEl: '.authors-swiper-button-prev',
         },
-    });
-
-
-    $('.btnArticleResponse').click(function () {
-        $('.response-form').toggle();
-    });
-
-    $('.btnArticleResponseComment').click(function () {
-        let commentID = $(this).data("id");
-
-        $("#comment_parent_id").val(commentID);
-        $('.response-form').toggle();
     });
 
 });

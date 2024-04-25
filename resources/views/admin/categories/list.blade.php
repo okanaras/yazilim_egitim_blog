@@ -28,7 +28,7 @@
         </x-slot:header>
 
         <x-slot:body>
-            <form action="" method="get">
+            <form action="" method="get" id="formFilter">
                 <div class="row">
                     <div class="col-3 my-2">
                         <input type="text" class="form-control" value="{{ request()->get('name') }}" name="name"
@@ -87,7 +87,7 @@
                     <hr>
                     <div class="col-6 mb-2 d-flex">
                         <button type="submit" class="btn btn-primary w-50 me-4">Filtrele</button>
-                        <button type="button" class="btn btn-warning w-50">Filtreyi Temizle</button>
+                        <button type="button" class="btn btn-warning w-50" id="btnClearFilter">Filtreyi Temizle</button>
                     </div>
                     <hr>
                 </div>

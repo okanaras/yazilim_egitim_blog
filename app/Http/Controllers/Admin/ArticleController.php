@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use \Illuminate\Support\Facades\File;
 use \Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File as FacadesFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -22,6 +23,7 @@ class ArticleController extends Controller
     {
         $categories = Category::all();
         $users = User::all();
+
         $list = Article::query()
             ->with(["category", "user"])
             ->where(function ($query) use ($request) {
@@ -108,7 +110,12 @@ class ArticleController extends Controller
         $data["user_id"] = Auth::->user()->id;
         */
 
-        // dd($data);
+        $status = 0;
+        if (isset($data['status'])) {
+            $status = 1;
+        }
+        $data['status'] = $status;
+
         Article::create($data);
         if (!is_null($request->image)) {
             $imageFile->storeAs($folder, $fileName, "public"); // public in altina articles klasorune verdigimiz ad'daki sekilde atar ve local yerine public ozelliklerini kullanir
@@ -150,23 +157,55 @@ class ArticleController extends Controller
 
     public function update(Request $request)
     {
+        $articleQuery = Article::query()
+            ->where("id", $request->id);
+
+        $articleFind = $articleQuery->first();
+
         $data = $request->except("_token"); // requestten gelen token disindaki verileri al
-        $slug = $data['slug'] ?? $data['title']; // slug kontrolu
+
+        $slug = $articleFind->title != $data['title'] ? $data['title'] : ($data['slug'] ?? $data['title']); // slug kontrolu
         $slug = Str::slug($slug); // sluglama islemi
         $slugTitle = Str::slug($data["title"]);
 
-        $checkSlug = $this->slugCheck($slug);
+        if ($articleFind->slug != $slug) {
 
-        if (!is_null($checkSlug)) {
-            $checkTitleSlug = $this->slugCheck($slugTitle);
-            if (!is_null($checkTitleSlug)) {
-                $slug = Str::slug($slug . time());
-            } else {
-                $slug = $slugTitle;
+            $checkSlug = $this->slugCheck($slug);
+
+            if (!is_null($checkSlug)) {
+                $checkTitleSlug = $this->slugCheck($slugTitle);
+                if (!is_null($checkTitleSlug)) {
+                    $slug = Str::slug($slug . time());
+                } else {
+                    $slug = $slugTitle;
+                }
             }
+            $data["slug"] = $slug;
+        } else
+
+        // bu kosul unutlamsin diye biraktim bu else li kodu
+        // if (empty($data['slug']) && !is_null($articleFind->slug))
+        {
+            unset($data['slug']);
+        }
+        // else {
+        //     unset($data['slug']);
+        // }
+
+        //egerki title guncellendiyse veya data slug varsa ve guncellendiyse veriyi guncelleyip cachlicek ya da cache temizleyip kullanicaz
+        if ($articleFind->title != $data['title'] || (isset($data['slug']) && $articleFind->slug != $data['slug'])) {
+
+            if (Cache::has("most_popular_articles")) {
+                $mpA = Cache::get("most_popular_articles");
+                $mpA->where("title", $articleFind->title)->first()->update([
+                    'title' => $data['title'],
+                    'slug' => $slug
+                ]);
+                Cache::put("most_popular_articles", $mpA, 3600);
+            }
+            // Cache::forget("most_popular_articles");
         }
 
-        $data["slug"] = $slug;
         if (!is_null($request->image)) {
             $imageFile = $request->file("image"); // alacagim dosya inputtaki name
             $originalName = $imageFile->getClientOriginalName(); // original name
@@ -189,12 +228,13 @@ class ArticleController extends Controller
         }
         $data["user_id"] = auth()->id();
 
-        $articleQuery = Article::query()
-            ->where("id", $request->id);
+        $status = 0;
+        if (isset($data['status'])) {
+            $status = 1;
+        }
+        $data['status'] = $status;
 
-        $articleFind = $articleQuery->first();
-
-        $articleQuery->update($data);
+        $articleQuery->first()->update($data);
 
         if (!is_null($request->image)) {
 

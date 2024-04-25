@@ -2,6 +2,8 @@
 
 namespace App\Notifications;
 
+use App\Models\EmailTheme;
+use App\Models\EmailThemesActive;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -40,10 +42,37 @@ class VerifyNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        // dd($notifiable);
+        $theme = EmailThemesActive::query()
+            ->with("themeActive")
+            ->whereHas("themeActive")
+            ->where("process_id", 1)
+            ->firstOrFail();
+
+
+        $theme = $theme->themeActive;
+
+        if ($theme->getRawOriginal("theme_type") == 1) {
+
+            $theme = str_replace(
+                [
+                    "{username}",
+                    "useremail",
+                    "http://{link}",
+                    "https://{link}"
+                ],
+                [
+                    $notifiable->name,
+                    $notifiable->email,
+                    route('verify-token', ['token' => $this->token]),
+                    route('verify-token', ['token' => $this->token])
+                ],
+                json_decode($theme->body)
+            );
+
+            return (new MailMessage)
+                ->view('email.custom', ['theme' => $theme]);
+        }
         return (new MailMessage)
-            // ->view('email.mail.html.message')
-            // ->view('email.verify', ['token' => $this->token, 'user' => $notifiable]);
             ->line("Merhaba $notifiable->name, hosgeldin.")
             ->line("Lutfen asagidaki linkten email adresinizi dogrulayiniz.")
             ->action('Mailimi dogrula', route('verify-token', ['token' => $this->token]))

@@ -37,6 +37,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/admin/images/neptune.png') }}" />
 
     @yield('css')
+    @stack('style')
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -74,10 +75,11 @@
     <script src="{{ asset('assets/admin/plugins/bootstrap/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('assets/admin/plugins/perfectscroll/perfect-scrollbar.min.js') }}"></script>
     <script src="{{ asset('assets/admin/plugins/pace/pace.min.js') }}"></script>
-    <script src="{{ asset('assets/admin/plugins/apexcharts/apexcharts.min.js') }}"></script>
+    {{-- <script src="{{ asset('assets/admin/plugins/apexcharts/apexcharts.min.js') }}"></script> --}}
     <script src="{{ asset('assets/admin/js/main.min.js') }}"></script>
     <script src="{{ asset('assets/admin/js/custom.js') }}"></script>
-    <script src="{{ asset('assets/admin/js/pages/dashboard.js') }}"></script>
+    {{-- <script src="{{ asset('assets/admin/js/pages/dashboard.js') }}"></script> --}}
+    {{-- ders 105 : 1:15 te sercan hoaca yok diye kapattim <script src="{{ asset('assets/front/js/main.js') }}"></script> --}}
 
     {{-- ajax setup --}}
     <script>
@@ -93,6 +95,7 @@
     @include('sweetalert::alert')
 
     @yield('js')
+    @stack('javascript')
 </body>
 
 </html>

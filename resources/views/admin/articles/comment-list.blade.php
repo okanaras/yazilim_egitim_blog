@@ -40,7 +40,7 @@
 
         <x-slot:body>
             <form action="{{ $page == 'commentList' ? route('artical.comment.list') : route('artical.pending-approval') }}"
-                method="get">
+                method="get" id="formFilter">
                 <div class="row">
                     <div class="col-3 my-2">
                         <select class="js-states form-control" name="user_id" tabindex="-1"
@@ -78,7 +78,7 @@
                     <hr>
                     <div class="col-6 mb-2 d-flex">
                         <button type="submit" class="btn btn-primary w-50 me-4">Filtrele</button>
-                        <button type="button" class="btn btn-warning w-50">Filtreyi Temizle</button>
+                        <button type="button" class="btn btn-warning w-50" id="btnClearFilter">Filtreyi Temizle</button>
                     </div>
                     <hr>
                 </div>
@@ -90,7 +90,11 @@
                     <th scope="col">Name</th>
                     <th scope="col">Email</th>
                     <th scope="col">IP</th>
-                    <th scope="col">Status</th>
+                    @if (isset($page) && $page == "commentList")
+                        <th scope="col">Status</th>
+                    @else
+                        <th scope="col">Approve Status</th>
+                    @endif
                     <th scope="col">Comment</th>
                     <th scope="col">Created Date</th>
                     <th scope="col">Actions</th>
@@ -100,28 +104,39 @@
                     @foreach ($comments as $comment)
                         <tr id="row-{{ $comment->id }}">
                             <td>
-                                <a target="_blank"
-                                    href="{{ route('front.articleDetail', ['user' => $comment->article->user->username, 'article' => $comment->article->slug]) }}">
+                                <a href="{{ route("front.articleDetail", [
+                                'user' => $comment->article->user->username,
+                                'article' => $comment->article->slug
+                                ]) }}" target="_blank">
                                     <span class="material-icons-outlined">visibility</span>
                                 </a>
                             </td>
+
                             <td>{{ $comment->user?->name }}</td>
                             <td>{{ $comment->name }}</td>
                             <td>{{ $comment->email }}</td>
                             <td>{{ $comment->ip }}</td>
                             <td>
-                                @if ($comment->status)
-                                    <a href="javascript:void(0)" data-id="{{ $comment->id }}"
-                                        class="btn btn-success btn-sm btnChangeStatus">Aktif</a>
+                                @if (isset($page))
+                                    @if ($comment->approve_status)
+                                        <a href="javascript:void(0)" data-id="{{ $comment->id }}"
+                                            class="btn btn-success btn-sm btnChangeStatus">Aktif</a>
+                                    @else
+                                        <a href="javascript:void(0)" data-id="{{ $comment->id }}"
+                                            class="btn btn-danger btn-sm btnChangeStatus">Pasif</a>
+                                    @endif
                                 @else
-                                    <a href="javascript:void(0)" data-id="{{ $comment->id }}"
-                                        class="btn btn-danger btn-sm btnChangeStatus">Pasif</a>
+                                    @if ($comment->status)
+                                        <a href="javascript:void(0)" data-id="{{ $comment->id }}"
+                                            class="btn btn-success btn-sm btnChangeStatus">Aktif</a>
+                                    @else
+                                        <a href="javascript:void(0)" data-id="{{ $comment->id }}"
+                                            class="btn btn-danger btn-sm btnChangeStatus">Pasif</a>
+                                    @endif
                                 @endif
                             </td>
 
                             <td>
-                                <span data-bs-container="body" data-bs-toggle="tooltip" data-bs-placement="top"
-                                    data-bs-title="{{ substr($comment->comment, 0, 200) }}">{{ substr($comment->comment, 0, 200) }}</span>
                                 <button type="button" class="btn btn-primary lookComment btn-sm p-0 px-2"
                                     data-comment="{{ $comment->comment }}" data-bs-toggle="modal"
                                     data-bs-target="#exampleModal">
@@ -132,15 +147,15 @@
                             <td>{{ isset($comment->created_at) ? Carbon\Carbon::parse($comment->created_at)->translatedFormat('d F Y H:i:s') : 'Tarih Girilmedi' }}
                             </td>
                             <td>
-                                <div class="d-flex">
+                                <div class="d-flex actions-{{ $comment->id }}">
                                     <a href="javascript:void(0)" class="btn btn-danger btn-sm btnDelete"
                                         data-id="{{ $comment->id }}" data-name="{{ $comment->id }}">
                                         <i class="material-icons ms-0">delete</i>
                                     </a>
                                     @if ($comment->deleted_at)
                                         <a href="javascript:void(0)" class="btn btn-primary btn-sm btnRestore"
-                                            data-id="{{ $comment->id }}" data-name="{{ $comment->id }}">
-                                            <i class="material-icons ms-0" title="Geri al">undo</i>
+                                            data-id="{{ $comment->id }}" data-name="{{ $comment->id }}"  title="Geri al">
+                                            <i class="material-icons ms-0">undo</i>
                                         </a>
                                     @endif
                                 </div>
@@ -183,54 +198,119 @@
     <script>
         $(document).ready(function() {
 
-            // changeStatus jq-ajax
-            $('.btnChangeStatus').click(function() {
-                let id = $(this).data('id');
-                let self = $(this);
+            @if (isset($page) && $page != "commentList")
+                // approveChangeStatus jq-ajax
+                $('.btnChangeStatus').click(function() {
+                    let id = $(this).data('id');
+                    let self = $(this);
 
-                Swal.fire({
-                    title: 'Status degistirmek istediginize emin misiniz?',
-                    showDenyButton: true,
-                    showCancelButton: true,
-                    confirmButtonText: 'Evet',
-                    denyButtonText: `Hayir`,
-                    cancelButtonText: "Iptal"
-                }).then((result) => {
-                    /* Read more about isConfirmed, isDenied below */
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            method: "POST",
-                            url: "{{ route('artical.pending-approval.changeStatus') }}",
-                            data: {
-                                id: id
-                            },
-                            async: false,
-                            success: function(data) {
-                                if (data.comment_status) {
+                    Swal.fire({
+                        title: 'Onaylamak istediginize emin misiniz?',
+                        showDenyButton: true,
+                        showCancelButton: true,
+                        confirmButtonText: 'Evet',
+                        denyButtonText: `Hayir`,
+                        cancelButtonText: "Iptal"
+                    }).then((result) => {
+                        /* Read more about isConfirmed, isDenied below */
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                method: "POST",
+                                url: "{{ route('artical.pending-approval.changeStatus') }}",
+                                data: {
+                                    id: id,
+                                    page: "{{ $page }}"
+                                },
+                                async: false,
+                                success: function(data) {
                                     $('#row-' + id).remove();
 
+                                    Swal.fire({
+                                        title: "Basarili",
+                                        text: "Onaylanmistir!",
+                                        confirmButtonText: "Tamam",
+                                        icon: "success"
+                                    });
+
+                                },
+                                error: function() {
+                                    console.log("hata geldi");
                                 }
-                                Swal.fire({
-                                    title: "Basarili",
-                                    text: "Yorum Onaylandi!",
-                                    confirmButtonText: "Tamam",
-                                    icon: "success"
-                                });
-                            },
-                            error: function() {
-                                console.log("hata geldi");
-                            }
-                        });
-                    } else if (result.isDenied) {
-                        Swal.fire({
-                            title: "Bilgi",
-                            text: "Herhangi bir islem yapilmadi!",
-                            confirmButtonText: "Tamam",
-                            icon: "info"
-                        });
-                    }
-                })
-            });
+                            });
+                        } else if (result.isDenied) {
+                            Swal.fire({
+                                title: "Bilgi",
+                                text: "Herhangi bir islem yapilmadi!",
+                                confirmButtonText: "Tamam",
+                                icon: "info"
+                            });
+                        }
+                    })
+                });
+            @else
+                // changeStatus jq-ajax
+                $('.btnChangeStatus').click(function() {
+                    let id = $(this).data('id');
+                    let self = $(this);
+
+                    Swal.fire({
+                        title: 'Status degistirmek istediginize emin misiniz?',
+                        showDenyButton: true,
+                        showCancelButton: true,
+                        confirmButtonText: 'Evet',
+                        denyButtonText: `Hayir`,
+                        cancelButtonText: "Iptal"
+                    }).then((result) => {
+                        /* Read more about isConfirmed, isDenied below */
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                method: "POST",
+                                url: "{{ route('artical.pending-approval.changeStatus') }}",
+                                data: {
+                                    id: id
+                                },
+                                async: false,
+                                success: function(data) {
+                                    if (data.comment_status) {
+                                        self.removeClass('btn-danger');
+                                        self.addClass('btn-success');
+                                        self.text('Aktif');
+
+                                        Swal.fire({
+                                            title: "Basarili",
+                                            text: "Yorum aktif olarak guncellendi!",
+                                            confirmButtonText: "Tamam",
+                                            icon: "success"
+                                        });
+                                    }
+                                    else {
+                                        self.removeClass('btn-success');
+                                        self.addClass('btn-danger');
+                                        self.text('Pasif');
+
+                                        Swal.fire({
+                                            title: "Basarili",
+                                            text: "Yorum pasif olarak guncellendi!",
+                                            confirmButtonText: "Tamam",
+                                            icon: "success"
+                                        });
+                                    }
+                                },
+                                error: function() {
+                                    console.log("hata geldi");
+                                }
+                            });
+                        } else if (result.isDenied) {
+                            Swal.fire({
+                                title: "Bilgi",
+                                text: "Herhangi bir islem yapilmadi!",
+                                confirmButtonText: "Tamam",
+                                icon: "info"
+                            });
+                        }
+                    })
+                });
+            @endif
 
             // delete jq-ajax
             $('.btnDelete').click(function() {
@@ -255,8 +335,22 @@
                             },
                             async: false,
                             success: function(data) {
+                                let aElement = document.createElement("a");
+                                aElement.className="btn btn-primary btn-sm btnRestore";
+                                aElement.setAttribute("data-id", id);
+                                aElement.setAttribute("data-name", id);
+                                aElement.setAttribute("title", "Geri Al");
+                                aElement.href="javascript:void(0)";
 
-                                $('#row-' + id).remove();
+                                let iElement = document.createElement("i");
+                                iElement.className="material-icons ms-0";
+                                iElement.innerText="undo";
+
+                                aElement.append(iElement);
+
+                                let actions = document.getElementsByClassName('actions-' + id);
+                                actions[0].appendChild(aElement);
+
                                 Swal.fire({
                                     title: "Basarili",
                                     text: "Yorum Silindi",
@@ -282,7 +376,8 @@
             });
 
             // restore jq-ajax
-            $('.btnRestore').click(function() {
+            $(document).on('click', 'body .btnRestore', function () {
+
                 let id = $(this).data('id');
                 let articleName = $(this).data('name');
 

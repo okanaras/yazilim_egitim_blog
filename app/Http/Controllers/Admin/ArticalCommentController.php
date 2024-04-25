@@ -7,11 +7,13 @@ use App\Models\ArticleComment;
 use App\Models\User;
 use App\Models\UserLikeArticle;
 use App\Models\UserLikeComment;
+use App\Traits\Loggable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ArticalCommentController extends Controller
 {
+    use Loggable;
     public function approvalList(Request $request)
     {
         $users = User::all();
@@ -48,7 +50,17 @@ class ArticalCommentController extends Controller
     public function changeStatus(Request $request)
     {
         $comment = ArticleComment::findOrFail($request->id);
-        $comment->status = $comment->status ? 0 : 1;
+
+        $page = $request->page;
+
+        // jq ile gelen page == approval ise aprrove status guncelle degilse status guncelle!
+        if ($page == "approval") {
+            $comment->approve_status = 1;
+        } else {
+            $comment->status = $comment->status ? 0 : 1;
+        }
+
+        $this->updateLog($comment, ArticleComment::class);
         $comment->save();
 
         return response()
@@ -66,6 +78,7 @@ class ArticalCommentController extends Controller
     public function delete(Request $request)
     {
         $comment = ArticleComment::findOrFail($request->id);
+        $this->log("delete", $comment->id, $comment->toArray(), ArticleComment::class);
         $comment->delete();
 
         return response()
@@ -73,8 +86,7 @@ class ArticalCommentController extends Controller
                 [
                     'status' => "succes",
                     "message" => "Basarili",
-                    "data" => $comment,
-                    "comment_status" => $comment->status
+                    "data" => $comment
                 ]
             )
             ->setStatusCode(200);

@@ -11,72 +11,20 @@
         <!-- one cikarilan articles -->
         <section class="feature-categories mt-4">
             <div class="row">
-                <div class="col-md-3 p-2" data-aos="fade-down-right" data-aos-duration="1000" data-aos-easing="ease-in-out">
-                    <div style="
-                background:url('https://via.placeholder.com/600x400') no-repeat center center;
-                background-size: cover;
-                height: 300px;"
-                        class="p-4 position-relative">
+                @foreach ($mostPopularCategories as $category)
+                    <div class="col-6 col-md-3 p-3 most-popular-category-wrapper" data-aos="fade-down-left" data-aos-duration="1000" data-aos-easing="ease-in-out" onclick="window.location.href='{{ route('front.categoryArticles', ['category' => $category->slug]) }}'" >
 
-                        <h2 class="text-center text-secondary">Lorem, ipsum.</h2>
-                        <p class="" style="text-align: justify;">Lorem ipsum dolor sit amet consectetur
-                            adipisicing
-                            elit.
-                            Veniam, voluptates.</p>
-                        <p class="position-absolute" style="bottom: 10px; left: 10px; right: 10px;">Lorem ipsum dolor
-                            sit
-                            amet.
-                        </p>
-                    </div>
-                </div>
-                <div class="col-md-3 p-2" data-aos="fade-down-right" data-aos-duration="1000" data-aos-easing="ease-in-out">
-                    <div style="
-                    background:url('https://via.placeholder.com/600x400') no-repeat center center;
-                    background-size: cover;
-                    height: 300px;"
-                        class="p-4 position-relative">
+                        <div class="d-flex justify-content-center align-items-center shadow-sm most-popular-category" style="height:300px; background-color: {{ $category->color }}; border-radius:10px;">
+                            <div class="w-75">
+                                <div class="d-flex justify-content-center">
+                                    <img src="{{ imageExist($category->image, $settings->category_default_image) }}" alt="category image" class="img-fluid" style="width: 90px">
+                                </div>
+                                <div class="text-center text-secondary mt-3 border-1 border-secondary border-top mt-4 pt-2"><h2>{{ $category->name }}</h2></div>
+                            </div>
+                        </div>
 
-                        <h2 class="text-center text-secondary">Lorem, ipsum.</h2>
-                        <p class="" style="text-align: justify;">Lorem ipsum dolor sit amet consectetur
-                            adipisicing
-                            elit.
-                            Veniam, voluptates.</p>
-                        <p class="position-absolute" style="bottom: 10px; left: 10px; right: 10px;">Lorem ipsum dolor
-                            sit
-                            amet.
-                        </p>
                     </div>
-                </div>
-                <div class="col-md-3 p-2" data-aos="fade-down-left" data-aos-duration="1000" data-aos-easing="ease-in-out">
-                    <div style="background:url('https://via.placeholder.com/600x400') no-repeat center center; background-size:cover; height: 300px;"
-                        class="p-4 position-relative">
-
-                        <h2 class="text-center text-secondary">Lorem, ipsum.</h2>
-                        <p class="" style="text-align: justify;">Lorem ipsum dolor sit amet consectetur
-                            adipisicing
-                            elit.
-                            Veniam, voluptates.</p>
-                        <p class="position-absolute" style="bottom: 10px; left: 10px; right: 10px;">Lorem ipsum dolor
-                            sit
-                            amet.
-                        </p>
-                    </div>
-                </div>
-                <div class="col-md-3 p-2" data-aos="fade-down-left" data-aos-duration="1000" data-aos-easing="ease-in-out">
-                    <div style="background:url('https://via.placeholder.com/600x400') no-repeat center center; background-size: cover; height: 300px;"
-                        class="p-4 position-relative">
-
-                        <h2 class="text-center text-secondary">Lorem, ipsum.</h2>
-                        <p class="" style="text-align: justify;">Lorem ipsum dolor sit amet consectetur
-                            adipisicing
-                            elit.
-                            Veniam, voluptates.</p>
-                        <p class="position-absolute" style="bottom: 10px; left: 10px; right: 10px;">Lorem ipsum dolor
-                            sit
-                            amet.
-                        </p>
-                    </div>
-                </div>
+                @endforeach
             </div>
         </section>
     @endif
@@ -100,153 +48,33 @@
             <div class="swiper-most-popular mt-3">
                 <div class="swiper-wrapper ">
                     <!-- Slides -->
-                    <div class="swiper-slide">
-                        <a href="#">
-                            <img src="https://via.placeholder.com/600x400" class="img-fluid">
-                        </a>
-                        <div class="most-popular-body mt-2">
-                            <div class="most-popular-author most-popular-author d-flex justify-content-between">
-                                <div>Yazar: <a href="#">Okan Aras</a></div>
-                                <div class="text-end">Kategori: <a href="#">Css</a></div>
-                            </div>
-                            <div class="most-popular-title">
-                                <h4 class="text-black">
-                                    <a href="#">Lorem ipsum dolor sit amet consectetur
-                                        adipisicing
-                                        elit...</a>
-                                </h4>
-                            </div>
-                            <div class="most-popular-date">
-                                <span>8 Ekim 2023</span> &#x25CF; <span>10 dk</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <a href="#">
-                            <img src="https://via.placeholder.com/600x400" class="img-fluid">
-                        </a>
-                        <div class="most-popular-body mt-2">
-                            <div class="most-popular-author most-popular-author d-flex justify-content-between">
-                                <div>Yazar: <a href="#">Okan Aras</a></div>
-                                <div class="text-end">Kategori: <a href="#">Css</a></div>
-                            </div>
-                            <div class="most-popular-title">
-                                <h4 class="text-black">
-                                    <a href="#">Lorem ipsum dolor sit amet consectetur
-                                        adipisicing
-                                        elit...</a>
-                                </h4>
-                            </div>
-                            <div class="most-popular-date">
-                                <span>8 Ekim 2023</span> &#x25CF; <span>10 dk</span>
+                    @foreach ($mostPopularArticles as $article)
+                        <div class="swiper-slide">
+                            <a href="{{ route('front.articleDetail', [
+                                'user' => $article->user->username,
+                                'article' => $article->slug
+                                ]) }}">
+                                <img src="{{ imageExist($article->image, $settings->article_default_image) }}" class="img-fluid">
+                            </a>
+                            <div class="most-popular-body mt-2">
+                                <div class="most-popular-author most-popular-author d-flex justify-content-between">
+                                    <div>Yazar: <a href="{{ route('front.authorArticles', ['user' => $article->user->username]) }}">{{ $article->user->name }}</a></div>
+                                    <div class="text-end">Kategori: <a href="{{ route('front.categoryArticles', ['category' => $article->category->slug]) }}">{{ $article->category->name }}</a></div>
+                                </div>
+                                <div class="most-popular-title">
+                                    <h4 class="text-black">
+                                        <a href="{{ route('front.articleDetail', [
+                                            'user' => $article->user->username,
+                                            'article' => $article->slug
+                                            ]) }}">{{ $article->title }}</a>
+                                    </h4>
+                                </div>
+                                <div class="most-popular-date">
+                                    <span>{{ $article->format_publish_date }}</span> &#x25CF; <span>10 dk</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <a href="#">
-                            <img src="https://via.placeholder.com/600x400" class="img-fluid">
-                        </a>
-                        <div class="most-popular-body mt-2">
-                            <div class="most-popular-author most-popular-author d-flex justify-content-between">
-                                <div>Yazar: <a href="#">Okan Aras</a></div>
-                                <div class="text-end">Kategori: <a href="#">Css</a></div>
-                            </div>
-                            <div class="most-popular-title">
-                                <h4 class="text-black">
-                                    <a href="#">Lorem ipsum dolor sit amet consectetur
-                                        adipisicing
-                                        elit...</a>
-                                </h4>
-                            </div>
-                            <div class="most-popular-date">
-                                <span>8 Ekim 2023</span> &#x25CF; <span>10 dk</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <a href="#">
-                            <img src="https://via.placeholder.com/600x400" class="img-fluid">
-                        </a>
-                        <div class="most-popular-body mt-2">
-                            <div class="most-popular-author most-popular-author d-flex justify-content-between">
-                                <div>Yazar: <a href="#">Okan Aras</a></div>
-                                <div class="text-end">Kategori: <a href="#">Css</a></div>
-                            </div>
-                            <div class="most-popular-title">
-                                <h4 class="text-black">
-                                    <a href="#">Lorem ipsum dolor sit amet consectetur
-                                        adipisicing
-                                        elit...</a>
-                                </h4>
-                            </div>
-                            <div class="most-popular-date">
-                                <span>8 Ekim 2023</span> &#x25CF; <span>10 dk</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <a href="#">
-                            <img src="https://via.placeholder.com/600x400" class="img-fluid">
-                        </a>
-                        <div class="most-popular-body mt-2">
-                            <div class="most-popular-author most-popular-author d-flex justify-content-between">
-                                <div>Yazar: <a href="#">Okan Aras</a></div>
-                                <div class="text-end">Kategori: <a href="#">Css</a></div>
-                            </div>
-                            <div class="most-popular-title">
-                                <h4 class="text-black">
-                                    <a href="#">Lorem ipsum dolor sit amet consectetur
-                                        adipisicing
-                                        elit...</a>
-                                </h4>
-                            </div>
-                            <div class="most-popular-date">
-                                <span>8 Ekim 2023</span> &#x25CF; <span>10 dk</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <a href="#">
-                            <img src="https://via.placeholder.com/600x400" class="img-fluid">
-                        </a>
-                        <div class="most-popular-body mt-2">
-                            <div class="most-popular-author most-popular-author d-flex justify-content-between">
-                                <div>Yazar: <a href="#">Okan Aras</a></div>
-                                <div class="text-end">Kategori: <a href="#">Css</a></div>
-                            </div>
-                            <div class="most-popular-title">
-                                <h4 class="text-black">
-                                    <a href="#">Lorem ipsum dolor sit amet consectetur
-                                        adipisicing
-                                        elit...</a>
-                                </h4>
-                            </div>
-                            <div class="most-popular-date">
-                                <span>8 Ekim 2023</span> &#x25CF; <span>10 dk</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <a href="#">
-                            <img src="https://via.placeholder.com/600x400" class="img-fluid">
-                        </a>
-                        <div class="most-popular-body mt-2">
-                            <div class="most-popular-author most-popular-author d-flex justify-content-between">
-                                <div>Yazar: <a href="#">Okan Aras</a></div>
-                                <div class="text-end">Kategori: <a href="#">Css</a></div>
-                            </div>
-                            <div class="most-popular-title">
-                                <h4 class="text-black">
-                                    <a href="#">Lorem ipsum dolor sit amet consectetur
-                                        adipisicing
-                                        elit...</a>
-                                </h4>
-                            </div>
-                            <div class="most-popular-date">
-                                <span>8 Ekim 2023</span> &#x25CF; <span>10 dk</span>
-                            </div>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
             </div>
         </div>
@@ -270,128 +98,38 @@
         <div class="populer-title col-md-12 p-0">
             <h2 class="font-montserrat fw-semibold">Son Makaleler</h2>
         </div>
-        <div class="col-md-4 mt-4">
-            <a href="#">
-                <img src="https://via.placeholder.com/600x400" class="img-fluid">
-            </a>
-            <div class="most-popular-body mt-2">
-                <div class="most-popular-author most-popular-author d-flex justify-content-between">
-                    <div>Yazar: <a href="#">Okan Aras</a></div>
-                    <div class="text-end">Kategori: <a href="#">Css</a></div>
-                </div>
-                <div class="most-popular-title">
-                    <h4 class="text-black">
-                        <a href="#">Lorem ipsum dolor sit amet consectetur adipisicing
-                            elit...</a>
-                    </h4>
-                </div>
-                <div class="most-popular-date">
-                    <span>8 Ekim 2023</span> &#x25CF; <span>10 dk</span>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mt-4">
-            <a href="#">
-                <img src="https://via.placeholder.com/600x400" class="img-fluid">
-            </a>
-            <div class="most-popular-body mt-2">
-                <div class="most-popular-author most-popular-author d-flex justify-content-between">
-                    <div>Yazar: <a href="#">Okan Aras</a></div>
-                    <div class="text-end">Kategori: <a href="#">Css</a></div>
-                </div>
-                <div class="most-popular-title">
-                    <h4 class="text-black">
-                        <a href="#">Lorem ipsum dolor sit amet consectetur adipisicing
-                            elit...</a>
-                    </h4>
-                </div>
-                <div class="most-popular-date">
-                    <span>8 Ekim 2023</span> &#x25CF; <span>10 dk</span>
+        @foreach ($lastPublishedArticles as $article)
+            <div class="col-md-4 mt-4">
+                <a href="{{ route('front.articleDetail', ['user' => $article->user->username, 'article' => $article->slug]) }}">
+                    <img src="{{ imageExist($article->image, $settings->article_default_image) }}" class="img-fluid">
+                </a>
+                <div class="most-popular-body mt-2">
+                    <div class="most-popular-author most-popular-author d-flex justify-content-between">
+                        <div>Yazar: <a href="{{ route('front.authorArticles', ['user' => $article->user->username]) }}">{{ $article->user->name }}</a></div>
+                        <div class="text-end">Kategori: <a href="{{ route('front.categoryArticles', ['category' => $article->category->slug]) }}">{{ $article->category->name }}</a></div>
+                    </div>
+                    <div class="most-popular-title">
+                        <h4 class="text-black">
+                            <a href="{{ route('front.articleDetail', [
+                                            'user' => $article->user->username,
+                                            'article' => $article->slug
+                                            ]) }}">{{ $article->title }}</a>
+                        </h4>
+                    </div>
+                    <div class="most-popular-date">
+                        <span>{{ $article->format_publish_date }}</span> &#x25CF; <span>10 dk</span>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-md-4 mt-4">
-            <a href="#">
-                <img src="https://via.placeholder.com/600x400" class="img-fluid">
-            </a>
-            <div class="most-popular-body mt-2">
-                <div class="most-popular-author most-popular-author d-flex justify-content-between">
-                    <div>Yazar: <a href="#">Okan Aras</a></div>
-                    <div class="text-end">Kategori: <a href="#">Css</a></div>
-                </div>
-                <div class="most-popular-title">
-                    <h4 class="text-black">
-                        <a href="#">Lorem ipsum dolor sit amet consectetur adipisicing
-                            elit...</a>
-                    </h4>
-                </div>
-                <div class="most-popular-date">
-                    <span>8 Ekim 2023</span> &#x25CF; <span>10 dk</span>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mt-4">
-            <a href="#">
-                <img src="https://via.placeholder.com/600x400" class="img-fluid">
-            </a>
-            <div class="most-popular-body mt-2">
-                <div class="most-popular-author most-popular-author d-flex justify-content-between">
-                    <div>Yazar: <a href="#">Okan Aras</a></div>
-                    <div class="text-end">Kategori: <a href="#">Css</a></div>
-                </div>
-                <div class="most-popular-title">
-                    <h4 class="text-black">
-                        <a href="#">Lorem ipsum dolor sit amet consectetur adipisicing
-                            elit...</a>
-                    </h4>
-                </div>
-                <div class="most-popular-date">
-                    <span>8 Ekim 2023</span> &#x25CF; <span>10 dk</span>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mt-4">
-            <a href="#">
-                <img src="https://via.placeholder.com/600x400" class="img-fluid">
-            </a>
-            <div class="most-popular-body mt-2">
-                <div class="most-popular-author most-popular-author d-flex justify-content-between">
-                    <div>Yazar: <a href="#">Okan Aras</a></div>
-                    <div class="text-end">Kategori: <a href="#">Css</a></div>
-                </div>
-                <div class="most-popular-title">
-                    <h4 class="text-black">
-                        <a href="#">Lorem ipsum dolor sit amet consectetur adipisicing
-                            elit...</a>
-                    </h4>
-                </div>
-                <div class="most-popular-date">
-                    <span>8 Ekim 2023</span> &#x25CF; <span>10 dk</span>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mt-4">
-            <a href="#">
-                <img src="https://via.placeholder.com/600x400" class="img-fluid">
-            </a>
-            <div class="most-popular-body mt-2">
-                <div class="most-popular-author most-popular-author d-flex justify-content-between">
-                    <div>Yazar: <a href="#">Okan Aras</a></div>
-                    <div class="text-end">Kategori: <a href="#">Css</a></div>
-                </div>
-                <div class="most-popular-title">
-                    <h4 class="text-black">
-                        <a href="#">Lorem ipsum dolor sit amet consectetur adipisicing
-                            elit...</a>
-                    </h4>
-                </div>
-                <div class="most-popular-date">
-                    <span>8 Ekim 2023</span> &#x25CF; <span>10 dk</span>
-                </div>
-            </div>
-        </div>
+        @endforeach
     </section>
 @endsection
+
+@push('meta')
+    <meta name="keyword" content="{{ $settings->seo_keywords_home }}">
+    <meta name="description" content="{{ $settings->seo_description_home }}">
+    <meta name="author" content="Yazilim Egitim">
+@endpush
 
 @section('js')
 @endsection

@@ -6,15 +6,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Category extends Model
 {
     use HasFactory;
     protected $guarded = ['id', 'created_at', 'updated_at'];
 
-    protected $casts = ['order' => 'string'];
+    protected $casts = ['created_at' => 'datetime'];
 
-    protected $hidden = ['created_at'];
+    public function getCreatedAtAttribute($value): string
+    {
+        return date("Y-m-d H:i", strtotime($value));
+    }
 
     /* Scope Start */
     public function scopeName($query, $name)
@@ -53,6 +57,10 @@ class Category extends Model
     {
         return $this->hasOne(Category::class, "id", "parent_id");
     }
+    public function childCategories(): HasMany
+    {
+        return $this->hasMany(Category::class, "parent_id", "id");
+    }
 
     public function user(): HasOne
     {
@@ -68,5 +76,10 @@ class Category extends Model
         return $this->hasMany(Article::class, "category_id", "id")->where("status", 1)
             ->whereNotNull("publish_date")
             ->where("publish_date", "<=", now());
+    }
+
+    public function logs(): MorphMany
+    {
+        return $this->morphMany(Log::class, 'loggable');
     }
 }

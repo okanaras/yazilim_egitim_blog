@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SettingsRequest;
 use App\Models\Settings;
+use App\Traits\Loggable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class SettingsController extends Controller
 {
+    use Loggable;
     public function show()
     {
         $settings = Settings::first();
@@ -24,6 +26,10 @@ class SettingsController extends Controller
         $settings->header_text = $request->header_text;
         $settings->footer_text = $request->footer_text;
         $settings->telegram_link = $request->telegram_link;
+        $settings->seo_keywords_home = $request->seo_keywords_home;
+        $settings->seo_description_home = $request->seo_description_home;
+        $settings->seo_keywords_articles = $request->seo_keywords_articles;
+        $settings->seo_description_articles = $request->seo_description_articles;
 
         if ($request->feature_categories_is_active)
             $settings->feature_categories_is_active = 1;
@@ -40,12 +46,6 @@ class SettingsController extends Controller
         else
             $settings->author_is_active = 0;
 
-
-        $settings->logo = $request->logo;
-        $settings->category_default_image = $request->category_default_image;
-        $settings->article_default_image = $request->article_default_image;
-
-
         if (!is_null($request->logo)) {
             $settings->logo = $this->imageUpload($request, "logo", $settings->logo);
         }
@@ -55,8 +55,14 @@ class SettingsController extends Controller
         if (!is_null($request->article_default_image)) {
             $settings->article_default_image = $this->imageUpload($request, "article_default_image", $settings->article_default_image);
         }
+        if (!is_null($request->reset_password_image)) {
+            $settings->reset_password_image = $this->imageUpload($request, "reset_password_image", $settings->reset_password_image);
+        }
+
+        $this->updateLog($settings, Settings::class);
 
         $settings->save();
+
 
         alert()
             ->success('Basarili', 'Ayarlar Guncellendi!')
@@ -65,7 +71,7 @@ class SettingsController extends Controller
         return redirect()->route('settings');
     }
 
-    public function imageUpload(Request $request, string $imageName, string $oldImagePath): string
+    public function imageUpload(Request $request, string $imageName, string|null $oldImagePath): string
     {
         $imageFile = $request->file($imageName); // alacagim dosya inputtaki name
         $originalName = $imageFile->getClientOriginalName(); // original name

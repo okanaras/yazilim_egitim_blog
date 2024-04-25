@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class User extends Authenticatable
 {
@@ -98,6 +99,16 @@ class User extends Authenticatable
     public function commentLike(): HasMany
     {
         return $this->hasMany(UserLikeComment::class, "user_id", "id");
+    }
+
+    public function hasLogs(): HasMany
+    {
+        return $this->hasMany(Log::class, 'user_id', 'id');
+    }
+
+    public function logs(): MorphMany
+    {
+        return $this->morphMany(Log::class, 'loggable');
     }
 
 }

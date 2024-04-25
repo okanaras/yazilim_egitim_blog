@@ -8,22 +8,24 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Article extends Model
 {
     use HasFactory;
     protected $guarded = ['id', 'created_at', 'updated_at'];
-    // protected $fillable=['name','status']; bu sekilde cok uzun suruyor
 
-    public function getTagsToArrayAttribute(): array|false
+    public function getTagsToArrayAttribute(): array|false|null
     {
-        return explode(",", $this->attributes['tags']);
+        if (!is_null($this->attributes['tags']))
+            return explode(",", $this->attributes['tags']);
+        return $this->attributes['tags'];
     }
+    public function getFormatPublishDateAttribute(): string
+    {
 
-    // protected function getTagsToStringAttribute(): string
-    // {
-    //     return is_array($this->tags) ? implode(',', $this->tags) : '';
-    // }
+        return Carbon::parse($this->attributes['publish_date'])->format("d-m-Y H:i");
+    }
 
     public function category(): HasOne
     {
@@ -42,6 +44,11 @@ class Article extends Model
     public function articleLikes(): HasMany
     {
         return $this->hasMany(UserLikeArticle::class, "article_id", "id");
+    }
+
+    public function logs(): MorphMany
+    {
+        return $this->morphMany(Log::class, 'loggable');
     }
 
     public function scopeStatus($query, $status)
@@ -64,12 +71,11 @@ class Article extends Model
         }
     }
 
-    public function scopepublishDate($query, $publish_date)
+    public function scopePublishDate($query, $publish_date)
     {
         if (!is_null($publish_date)) {
             $publish_date = Carbon::parse("publish_date")->format("Y-m-d H:i:s"); // tarihi formatladik
             $query->where("publish_date", $publish_date);
-            // $query->where("publish_date", ">", $publish_date); burada 2. par olarak esitlik kucukluk buyukluk kontrolu de yapilabilinir
         }
     }
 }

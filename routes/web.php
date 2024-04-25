@@ -1,12 +1,15 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\ArticalCommentController;
 use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\EmailController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\FrontController;
+use App\Http\Controllers\Admin\LogController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -26,10 +29,13 @@ Route::prefix("admin")->middleware(["auth", "verified"])->group(function () {
         Route::group(['prefix' => 'filemanager'], function () {
             \UniSharp\LaravelFilemanager\Lfm::routes();
         });
+        Route::get('logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index']);
+        Route::get('logs2', [\Arcanedev\LogViewer\Http\Controllers\LogViewerController::class, 'index']);
 
-        Route::get('/', function () {
-            return view('admin.index');
-        })->name("admin.index");
+        Route::get('logs-db', [LogController::class, 'index'])->name('dbLogs');
+        Route::get('logs-db/{id}', [LogController::class, 'getLog'])->name('dblogs.getLog')->whereNumber("id");
+
+        Route::get('/', [AdminController::class, "index"])->name("admin.index");
 
         Route::get("articles", [ArticleController::class, "index"])->name("article.index");
         Route::get("articles/create", [ArticleController::class, "create"])->name("article.create");
@@ -68,6 +74,23 @@ Route::prefix("admin")->middleware(["auth", "verified"])->group(function () {
         Route::post('users/{user:username}/edit', [UserController::class, "update"])->whereNumber("id");
         Route::delete('users/delete', [UserController::class, "delete"])->name("user.delete");
         Route::post('users/restore', [UserController::class, "restore"])->name("user.restore");
+
+        Route::get("email-themes", [EmailController::class, "themes"])->name("admin.email-themes.index");
+        Route::get("email-themes/create", [EmailController::class, "create"])->name("admin.email-themes.create");
+        Route::post("email-themes/create", [EmailController::class, "store"]);
+        Route::get("email-themes/edit", [EmailController::class, "edit"])->name("admin.email-themes.edit");
+        Route::post("email-themes/edit", [EmailController::class, "update"]);
+        Route::delete("email-themes/delete", [EmailController::class, "delete"])->name("admin.email-themes.delete");
+        Route::post("email-themes/change-status", [EmailController::class, "changeStatus"])->name("admin.email.changeStatus");
+
+        Route::get("email-themes/assign-list", [EmailController::class, "assignList"])->name("admin.email-themes.assign-list");
+        Route::get("email-themes/assign-list/show-email", [EmailController::class, "showEmail"])->name("admin.email-themes.assign.show.email");
+        Route::delete("email-themes/assign-list/delete", [EmailController::class, "assignDelete"])->name("admin.email-themes.assign.delete");
+        Route::get("email-themes/assign", [EmailController::class, "assignShow"])->name("admin.email-themes.assign");
+        Route::post("email-themes/assign", [EmailController::class, "assign"]);
+        Route::get("email-themes/assign/get-theme", [EmailController::class, "assignGetTheme"])->name('admin.email-themes.assign.getTheme');
+
+
     });
 
     // user role
@@ -82,9 +105,12 @@ Route::post("admin/login", [LoginController::class, "login"]);
 
 // front
 Route::get('/', [FrontController::class, "home"])->name("home");
-Route::get('/kategoriler/{category:slug}', [FrontController::class, "category"])->name("front.category");
-Route::get('/@{user:username}/{article:slug}', [FrontController::class, "articleDetail"])->name("front.articleDetail");
+Route::get('makaleler', [FrontController::class, "articleList"])->name("front.articleList");
+Route::get('/kategoriler/{category:slug}', [FrontController::class, "category"])->name("front.categoryArticles");
+Route::get('/yazarlar/{user:username}', [FrontController::class, "authorArticles"])->name("front.authorArticles");
+Route::get('/@{user:username}/{article:slug}', [FrontController::class, "articleDetail"])->name("front.articleDetail")->middleware("visitedArticle");
 Route::post("{article:id}/makale-yorum", [FrontController::class, "articleComment"])->name("article.comment");
+Route::get("/arama", [FrontController::class, "search"])->name("front.search");
 
 // login
 
@@ -97,8 +123,18 @@ Route::post("/register", [LoginController::class, "register"]);
 Route::get("/login", [LoginController::class, "showLoginUser"])->name("user.login");
 Route::post("/login", [LoginController::class, "loginUser"]);
 
+Route::post("/iletisim", [LoginController::class, ""])->name("contact");
+
+// password reset
+Route::get("/parola-sifirla", [LoginController::class, "showPasswordReset"])->name("passwordReset");
+Route::post("/parola-sifirla", [LoginController::class, "sendPasswordReset"]);
+Route::get("/parola-sifirla/{token}", [LoginController::class, "showPasswordResetConfirm"])->name("passwordResetToken");
+Route::post("/parola-sifirla/{token}", [LoginController::class, "passwordReset"]);
+
+
 // mail
 Route::get("/auth/verify/{token}", [LoginController::class, "verify"])->name("verify-token");
+
 // google
 Route::get('auth/{driver}/callback', [LoginController::class, "socialVerify"])->name("socialVerify");
 Route::get('auth/{driver}', [LoginController::class, "socialLogin"])->name("socialLogin");
